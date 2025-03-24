@@ -1,5 +1,5 @@
 {
-  "name": "workflows-mcp",
+  "name": "@agentdesk/workflows-mcp",
   "version": "0.1.0",
   "description": "MCP workflow orchestration tool with presets for thinking, coding and more",
   "type": "module",
@@ -16,6 +16,16 @@
     "test": "node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js src/tests/**/*.test.ts",
     "mcp-test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts"
   },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "workflows",
+    "prompts",
+    "prompt engineering",
+    "ai"
+  ],
+  "author": "AgentDesk AI",
+  "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.7.0",
     "js-yaml": "^4.1.0",
