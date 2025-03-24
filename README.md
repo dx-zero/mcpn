@@ -8,9 +8,7 @@ Think of it like a dynamic prompting library that you can easily share and versi
 
 ## Overview
 
-The key to effective MCP use is to know when/how to use the right tools. Workflows MCP helps make this process 10x easier + faster 🚀
-
-With Workflows MCP, you can:
+The key to effective MCP use is to know when/how to use the right tools. Workflows MCP helps make this process MUCH easier and faster. With Workflows MCP, you can:
 
 ✅ Combine prompts with MCP servers into reusable & easy to edit/share/organize workflows
 
@@ -20,7 +18,7 @@ With Workflows MCP, you can:
 
 ✅ Easily onboard your team to the best prompts + ways to use many MCP tools w/ version control.
 
-We also provide a number of useful presets to get you started 🫡
+_We also provide a number of useful presets to get you started 🫡_
 
 ### So why use this?
 
@@ -31,9 +29,12 @@ Workflows for MCP are also **incredibly** powerful! For instance, you can create
 - Gathering logs across many MCP tools for Kubernetes, Cloudwatch, Splunk, etc
 - Checking Github issues or a vector database for similar issues in the past
 - Perform web searches for useful information on the web
-- Analyzing your code with all the gathered context from the prior steps
+- Analyze your code with all the gathered context from the prior steps
+- Write a detailed incident report with all the context from the prior steps
+- Gather input from you to better understand the problem space
+- Implement a fix for issue if possible
 
-All in all, this should make it MUCH easier to rally your team around when/how to use the best prompts and MCP tools for specific tasks 🦾
+And since these workflows are all defined in YAML and can be referenced from anywhere on your machine, you can **easily** rally your team around when/how to use the best prompts and sequences of MCP tools for specific tasks 🦾
 
 ## Features
 
