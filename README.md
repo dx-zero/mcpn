@@ -6,7 +6,7 @@ Workflows MCP is a Model Context Protocol (MCP) server that allows you to orches
 
 Think of it like a dynamic prompting library that you can easily share and version control through yaml files that also lets your define how to best use many MCP tools across many MCP servers for specific tasks.
 
-## High Level Overview
+## Overview
 
 The key to effective MCP use is to know when/how to use the right tools. Workflows MCP helps make this process 10x easier + faster 🚀
 
@@ -21,6 +21,12 @@ With Workflows MCP, you can:
 ✅ Easily onboard your team to the best prompts + ways to use many MCP tools w/ version control.
 
 We also provide a number of useful presets to get you started 🫡
+
+### So why use this?
+
+The goal of this project is to make prompts more programmable and rules for AI in a code editor more deterministic while reducing the overall amount of token use across all requests.
+
+Since stuffing a global set of rules for AI can eat up your context window, using MCP to route to prompts and workflows can help reduce the overall amount of tokens used across all requests.
 
 All in all, this should make it MUCH easier to rally your team around when/how to use the best prompts and MCP tools for specific tasks 🦾
 
@@ -63,7 +69,7 @@ Universally applicable tools for common coding tasks
 Install the MCP server into an MCP client using the following command or JSON:
 
 ```bash
-npx @agentdesk/workflows-mcp@latest
+npx -y @agentdesk/workflows-mcp@latest
 ```
 
 If using JSON in Cursor to setup your MCP server, you can use the following config:
@@ -100,7 +106,7 @@ Here's what this would look like in a Cursor config all combined:
       "command": "npx",
       "args": [
         "-y",
-        "@agentdesk/workflows-mcp@lates --config /path/to/.workflows --preset thinking,coding,github"
+        "@agentdesk/workflows-mcp@latest --config /path/to/.workflows --preset thinking,coding"
       ]
     }
   }
@@ -121,7 +127,7 @@ Create a `.workflows` or `.mcp-workflows` directory in your project and add YAML
 
 ### Example Configuration Files
 
-#### override-default.yaml
+#### .workflows/override-default.yaml
 
 ```yaml
 # Override a preset tool
@@ -135,7 +141,7 @@ custom_tool:
   prompt: "# Custom Tool\n\nThis is a completely custom tool."
 ```
 
-#### parameterized-tools.yaml
+#### .workflows/parameterized-tools.yaml
 
 ```yaml
 # Create a tool with typed parameters
