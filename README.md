@@ -24,9 +24,14 @@ We also provide a number of useful presets to get you started 🫡
 
 ### So why use this?
 
-The goal of this project is to make prompts more programmable and rules for AI in a code editor more deterministic while reducing the overall amount of token use across all requests.
+The goal of this project is to turn prompts into programmable tools and rules for AI in a code editor more deterministic while reducing the overall amount of token use across all requests. Since stuffing a global set of rules for AI can eat up your context window, using MCP to route to prompts and workflows can help reduce the overall amount of tokens used across all requests.
 
-Since stuffing a global set of rules for AI can eat up your context window, using MCP to route to prompts and workflows can help reduce the overall amount of tokens used across all requests.
+Workflows for MCP are also **incredibly** powerful! For instance, you can create an **"production incident workflow"** tool that has a special system prompt to reason about an incident in a particular way and then use a series of tools in a specific order to analyze + potentially resolve the incident. This may involve things like:
+
+- Gathering logs across many MCP tools for Kubernetes, Cloudwatch, Splunk, etc
+- Checking Github issues or a vector database for similar issues in the past
+- Perform web searches for useful information on the web
+- Analyzing your code with all the gathered context from the prior steps
 
 All in all, this should make it MUCH easier to rally your team around when/how to use the best prompts and MCP tools for specific tasks 🦾
 
