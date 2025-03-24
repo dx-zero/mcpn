@@ -1,0 +1,35 @@
+{
+  "name": "workflows-mcp",
+  "version": "0.1.0",
+  "description": "MCP workflow orchestration tool with presets for thinking, coding and more",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "workflows-mcp": "./dist/server.js"
+  },
+  "scripts": {
+    "inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/server.js",
+    "build": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/",
+    "start": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node dist/server.js",
+    "prepublishOnly": "npm run build",
+    "update": "npm run build && npm version patch && npm publish",
+    "test": "node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js src/tests/**/*.test.ts",
+    "mcp-test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.7.0",
+    "js-yaml": "^4.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.5",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.0.0",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,6 @@
+special_chars_tool:
+  description: "Tool with special characters: !@#$%^&*()"
+  prompt: |
+    # Special Characters
+
+    This tool has `code`, *formatting*, and [links](https://example.com).

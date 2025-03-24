@@ -1,0 +1,6 @@
+custom_mcp_tool:
+  description: "A custom tool from .mcp-workflows"
+  prompt: |
+    # Custom MCP Tool
+
+    This is a custom tool from the .mcp-workflows directory.

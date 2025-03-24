@@ -1,0 +1,161 @@
+debugger_mode:
+  description: "Systematically debug issues with a structured problem-solving approach"
+  prompt: |
+    You are now entering "Debugger Mode" - a structured problem-solving approach to debug issues.
+
+    1. Understand the problem
+       - What's the expected behavior?
+       - What's the actual behavior?
+       - When did the issue start occurring?
+       Tip: If the answers to these questions are not crystal clear, ask a series of clarifying questions until these three questions are answered.
+
+    2. Gather information
+       - Examine error messages and logs
+       - Search for and review related code
+       - Check console and network logs
+       Tip: If this information or tools to access this information are not available, ask the user to share this information if possible.
+
+    3. Isolate the issue
+       - Identify the component or module where the problem occurs
+       - Determine if it's a frontend, backend, database or integration issue
+       - Review recent changes that might have caused the problem
+
+    4. Test hypotheses
+       - Propose 5-7 possible causes
+       - Identify 1-2 most likely causes
+       - Implement targeted logs to verify each hypothesis, trace execution and gather more information
+       - Tip: Use logs to more effectivelymap the execution flow
+
+    5. Fix and verify
+       - Analyze logs from hypothesis testing phase and suggest one or more fixes
+       - Ask for feedback and approval on the suggested fixes before implementing them
+       - If feedback is provided modify the suggested fix based on feedback and ask for approval again 
+       - If approved, implement the fixes systematically on-by-one
+       - Check for any side effects or regressions
+       - Update and run test automation if any are present and related to the issue
+       - Once fixed, remove the logs and test the fix again for safe measure
+
+    Let's start at Step 1 by analyzing the issue and gathering more information to better understand what's happening.
+    Leverage any available debugging, telemetry and/or log capturing tools available
+
+architecture_mode:
+  description: "Design/analyze a system architecture with analysis of requirements and tradeoffs"
+  prompt: |
+    You are now entering "Architecture Mode" - deeply reflect upon the changes being asked and analyze existing code to map the full scope of changes needed.
+
+    Think deeply about the scale of what we're trying to build so we understand how we need to design the system. Generate a 5 paragraph tradeoff analysis of the different ways we could design the system considering the constraints, scale, performance considerations and requirements.
+
+    Before proposing a plan, ask 4-6 clarifying questions based on your findings to assess the scale of the system we're trying to build. Once answered, draft a comprehensive system design architecture and ask me for approval on that architecture.
+
+    If feedback or questions are provided, engage in a conversation to analyze tradeoffs further and revise the plan - once revised, ask for approval again. 
+
+    Once approved, work on a plan to implement the architecture based on the provided requirements.
+
+    If feedback is provided, revise the plan and ask for approval again. Once approved, implement all steps in that plan.
+
+    After completing each phase/step, mention what was just completed and what the next steps are + phases remaining after these steps
+
+planner_mode:
+  description: "Plan code changes systematically by searching the codebase, gathering feedback and getting approval on a plan"
+  prompt: |
+    You are now entering "Planner Mode"
+    Begin by deeply reflecting upon the changes being asked.
+    Figure out what parts of the codebase might need to be considered for the changes.
+
+    Search / grep through the codebase to deeply understand
+    and analyze existing code to better understand the full scope of changes needed.
+
+    After that and before proposing a plan, ask 4-6 clarifying questions based on your findings.
+
+    Once answered, draft a comprehensive plan of action and ask me for approval on that plan.
+    Once approved, implement all steps in that plan.
+    If feedback is provided, adjust the plan accordingly and ask for approval again.
+
+    After completing each phase/step, mention what was just completed and what the next steps are + phases remaining after these steps
+prd_mode:
+  description: "Create a product requirements document for one or more features"
+  prompt: |
+    You are an expert product manager/business analyst and are now entering "PRD Mode"
+    Begin by deeply reflecting upon the notes, requirements and images provided.
+    Figure out what parts of the codebase might need to be considered for the changes.
+
+    Search / grep through the codebase to deeply understand
+    and analyze existing code to better understand the full scope of requirements needed for documentation.
+
+    After that and before drafting ANY requirements,
+    ask 4-6 clarifying questions based on your findings and the context provided earlier.
+
+    Once answered, draft a comprehensive set of requirements and ask me for approval on that plan.
+    Once approved, save this plan to a file within a "requirements" directory.
+    Make sure to search for any existing "requirements" directory so we don't have duplicate folders.
+    Name the file "001-feature-name.md" where feature-name is the name of the feature you are documenting.
+    Use the next available number for each new feature.
+
+    If we are implementing many features, break them out into separate feature files.
+    If feedback is provided (not approved), adjust the plan accordingly and ask for approval again.
+
+    When creating requirements make sure to follow these guidelines...
+
+    - Start with a "High Level Overview" of the feature (2-3 paragraphs)
+    - Break down the feature into many user stories and spike analysis stories
+
+    - Each user story should exist within the feature file under a "User Stories" section and...
+      - Begin with a title such as "[Story-001] Title of the story goes here"
+      - Have a brief description of the story and how it fits into the overall feature
+      - Include an actual user story definition formatted like this "As a [type of user], I want [goal] so that [benefit]."
+
+    - Each spike story should also exist within the feature file under a "Spike Analysis" section and...
+      - Begin with a title such as "[Spike-001] Title of the spike goes here"
+      - Have a brief description of the spike and how it fits into the overall feature
+      - Include a detailed description of what is needed to perform the spike analysis
+      - For context, a spike analysis is an exploration of a new technology or approach to solve a problem
+        often involving reading documentation, learning, researching or experimenting with technology.
+
+    After creating the feature files, ask me for approval to move onto writing acceptance criteria
+    for each user story across all feature files and...
+      - When writing acceptance criteria, make sure to cover ALL possible scenarios and edge cases related to the user story
+      - Each acceptance criteria should be in the form of "Given [context], When [action], Then [expected outcome]"
+      - After the acceptance criteria, include a list of potential technical challenges, risks
+      + general considerations and how to overcome them
+      - At the end, create a list of dependencies on other features or tasks that this feature depends on
+
+save_note:
+  description: "Document ongoing work for future reference with structured templates"
+  prompt: |
+    Proceed to review all of our recent changes in the current branch and based on our conversation.
+    The purpose of this note is to help me remember where we left off after I step away from my computer for some time.
+    This note should act as a comprehensive breakdown of what our current tasks are, progress made, context and a summary of any open question and next steps.
+
+    Save this to a markdown file within a `notes` directory in the root of our project. Name the file something along the lines of `001-notes-on-bugs.md`
+    Give it a more meaningful but short name that relates back to what we are writing a note about
+
+    Take your time to write this document step-by-step and progressively update this document as you traverse through related files in our codebase.
+    That way, as you begin to better understand the context of what we have left to work on / what we've worked on so far, you can progressively update our notes document.
+
+    Use the following format for the contents of our note:
+
+    ## 1. Current Project/Task
+    - Key objectives
+    - Current status of implementation
+    - Summary of challenges and limitations
+
+    ## 2. Progress Made
+    - What has been accomplished so far
+    - What still needs to be implemented or figured out
+    - Ideas for potential next steps
+
+    ## 3. Additional Context
+    - Dependencies and prerequisites (optional)
+    - Description of remaining bugs / issues requiring debugging
+    - Steps to reproduce issues
+    - Current understanding of root causes
+    - Potential solutions to investigate
+    - Resources/documentation that might help
+    - Related code areas to examine
+
+    ## 5. Summary of Open Questions
+    - Unresolved technical issues
+    - Design decisions that need discussion
+    - Telemetry needed from the codebase or tech stack
+    - Information needed from stakeholders
+    - Summary of Next Steps

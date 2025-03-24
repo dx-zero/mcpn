@@ -1,0 +1,6 @@
+custom_tool:
+  description: "A completely custom tool"
+  prompt: |
+    # Custom Tool
+
+    This is a custom tool that doesn't exist in presets.
