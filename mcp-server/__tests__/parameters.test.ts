@@ -13,6 +13,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { McpTestClient } from "../src/client.js";
+import { processTemplate } from "../src/utils.js";
 
 // Create dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -356,6 +357,96 @@ parameterized_tool:
         },
         required: ["thought"],
       });
+    });
+  });
+
+  describe("Template Parameter Injection", function () {
+    it("should process template strings with parameters", function () {
+      const template = "Search for {{query}} with limit {{limit}}";
+      const params = {
+        query: "test keywords",
+        limit: 10,
+      };
+
+      const { result, usedParams } = processTemplate(template, params);
+
+      expect(result).to.equal("Search for test keywords with limit 10");
+      expect(usedParams.size).to.equal(2);
+      expect(usedParams.has("query")).to.be.true;
+      expect(usedParams.has("limit")).to.be.true;
+    });
+
+    it("should create templated tool configurations", function () {
+      // Create test config file with templated parameters
+      const configContent = `
+templated_tool:
+  name: "template_tool"
+  description: "Tool with template parameters"
+  prompt: |
+    This is a tool that uses {{placeholder}} templates.
+    The user wants to search for {{query}} with up to {{limit}} results.
+  parameters:
+    query:
+      type: "string"
+      description: "The search query"
+      required: true
+    limit:
+      type: "number"
+      description: "Maximum number of results"
+      default: 10
+    placeholder:
+      type: "string"
+      description: "Type of templates to use"
+      default: "parameter"
+`;
+
+      // Ensure test directory exists
+      if (!fs.existsSync(TEST_WORKFLOWS_DIR)) {
+        fs.mkdirSync(TEST_WORKFLOWS_DIR, { recursive: true });
+      }
+
+      // Write test config file
+      fs.writeFileSync(
+        path.join(TEST_WORKFLOWS_DIR, "templated.yaml"),
+        configContent
+      );
+
+      try {
+        const config = loadConfigSync(TEST_WORKFLOWS_DIR);
+
+        // Verify the config was loaded correctly
+        expect(config).to.have.property("templated_tool");
+        if (!config.templated_tool) {
+          throw new Error("templated_tool not found in config");
+        }
+
+        // Check that prompt contains template placeholders
+        expect(config.templated_tool.prompt).to.include("{{placeholder}}");
+        expect(config.templated_tool.prompt).to.include("{{query}}");
+        expect(config.templated_tool.prompt).to.include("{{limit}}");
+
+        // Process the template with parameters
+        const prompt = config.templated_tool.prompt || "";
+        const params = {
+          placeholder: "dynamic",
+          query: "test query",
+          limit: 5,
+        };
+
+        const { result, usedParams } = processTemplate(prompt, params);
+
+        // Verify template processing
+        expect(result).to.include("dynamic templates");
+        expect(result).to.include("search for test query");
+        expect(result).to.include("up to 5 results");
+        expect(usedParams.size).to.equal(3);
+      } finally {
+        // Clean up test config file
+        const configPath = path.join(TEST_WORKFLOWS_DIR, "templated.yaml");
+        if (fs.existsSync(configPath)) {
+          fs.unlinkSync(configPath);
+        }
+      }
     });
   });
 });

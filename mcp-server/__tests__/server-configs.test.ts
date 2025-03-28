@@ -495,4 +495,165 @@ describe("MCP Server Configuration Tests", function () {
       expect(promptText).to.include("- 2: Another tool with a description");
     });
   });
+
+  // Add a new test section after the "Configuration Scenarios" describe block
+  describe("New Tool Format Tests", () => {
+    beforeEach(() => {
+      // Create test YAML files for new tool format testing
+      fs.writeFileSync(
+        path.join(WORKFLOWS_DIR, "string-tools.yaml"),
+        `string_tools_config:
+  description: "Config with string-based tools"
+  tools: "tool1, tool2, tool3"
+  prompt: |
+    Test prompt with string tools list.`
+      );
+
+      fs.writeFileSync(
+        path.join(WORKFLOWS_DIR, "object-tools.yaml"),
+        `object_tools_config:
+  description: "Config with object-based tools"
+  tools:
+    tool1: "Tool 1 description"
+    tool2: 
+      description: "Tool 2 description"
+      prompt: "Tool 2 specific prompt"
+    tool3:
+      description: "Tool 3 description"
+      optional: true
+  prompt: |
+    Test prompt with object-based tools.`
+      );
+
+      client = new McpTestClient();
+    });
+
+    afterEach(async () => {
+      try {
+        await client.close();
+
+        // Clean up test files
+        const stringToolsPath = path.join(WORKFLOWS_DIR, "string-tools.yaml");
+        const objectToolsPath = path.join(WORKFLOWS_DIR, "object-tools.yaml");
+
+        if (fs.existsSync(stringToolsPath)) {
+          fs.unlinkSync(stringToolsPath);
+        }
+
+        if (fs.existsSync(objectToolsPath)) {
+          fs.unlinkSync(objectToolsPath);
+        }
+      } catch (error) {
+        console.error("Error in test cleanup:", error);
+      }
+    });
+
+    it("N1: Should support string-based tools format", async () => {
+      await client.connect([
+        "--config",
+        path.join(__dirname, "test-workflows", ".workflows"),
+      ]);
+
+      const tools = await client.listTools();
+      const toolNames = tools.tools.map((t: any) => t.name);
+
+      // Check that string_tools_config is loaded
+      expect(
+        tools.tools.some((t: any) =>
+          t.description?.includes("string-based tools")
+        )
+      ).to.be.true;
+    });
+
+    it("N2: Should support object-based tools format", async () => {
+      await client.connect([
+        "--config",
+        path.join(__dirname, "test-workflows", ".workflows"),
+      ]);
+
+      const tools = await client.listTools();
+      const toolNames = tools.tools.map((t: any) => t.name);
+
+      // Check that object_tools_config is loaded
+      expect(
+        tools.tools.some((t: any) =>
+          t.description?.includes("object-based tools")
+        )
+      ).to.be.true;
+    });
+
+    it("N3: Should support tools with prompt property", async () => {
+      // Add a config with tool-specific prompts
+      fs.writeFileSync(
+        path.join(WORKFLOWS_DIR, "tool-prompts.yaml"),
+        `tool_prompt_config:
+  description: "Config with tool-specific prompts"
+  tools:
+    tool1:
+      description: "Tool with custom prompt"
+      prompt: "This is a custom prompt for tool1"
+  prompt: |
+    Base prompt.`
+      );
+
+      try {
+        await client.connect([
+          "--config",
+          path.join(__dirname, "test-workflows", ".workflows"),
+        ]);
+
+        const response = await client.getPrompt("tool_prompt_config");
+
+        // Check that the response includes the tool prompt
+        expect(response.content[0].text).to.include(
+          "This is a custom prompt for tool1"
+        );
+      } finally {
+        // Clean up
+        const toolPromptsPath = path.join(WORKFLOWS_DIR, "tool-prompts.yaml");
+        if (fs.existsSync(toolPromptsPath)) {
+          fs.unlinkSync(toolPromptsPath);
+        }
+      }
+    });
+
+    it("N4: Should support optional tools flag", async () => {
+      // Add a config with optional tools
+      fs.writeFileSync(
+        path.join(WORKFLOWS_DIR, "optional-tools.yaml"),
+        `optional_tools_config:
+  description: "Config with optional tools"
+  tools:
+    required_tool:
+      description: "Required tool"
+    optional_tool:
+      description: "Optional tool"
+      optional: true
+  prompt: |
+    Base prompt with optional tools.`
+      );
+
+      try {
+        await client.connect([
+          "--config",
+          path.join(__dirname, "test-workflows", ".workflows"),
+        ]);
+
+        const response = await client.getPrompt("optional_tools_config");
+
+        // Check for the (Optional) flag in the prompt
+        expect(response.content[0].text).to.include("Optional tool");
+        expect(response.content[0].text).to.include("(Optional)");
+      } finally {
+        // Clean up
+        const optionalToolsPath = path.join(
+          WORKFLOWS_DIR,
+          "optional-tools.yaml"
+        );
+        if (fs.existsSync(optionalToolsPath)) {
+          fs.unlinkSync(optionalToolsPath);
+        }
+      }
+    });
+  });
 });

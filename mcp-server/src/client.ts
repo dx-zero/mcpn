@@ -1,3 +1,7 @@
+/**
+ * @fileoverview MCP test client for testing the MCP server
+ */
+
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 // import { spawn, ChildProcessWithoutNullStreams } from "child_process";
@@ -71,6 +75,19 @@ export class McpTestClient {
     return await this.client.callTool({
       name,
       arguments: args,
+    });
+  }
+
+  /**
+   * Get the prompt for a specific tool or configuration; used for testing
+   * @param name Name of the tool or configuration to get prompt for
+   * @returns Promise containing the prompt text
+   */
+  async getPrompt(name: string): Promise<any> {
+    // Call the tool with no arguments to get its prompt
+    return await this.client.callTool({
+      name,
+      arguments: {},
     });
   }
 }

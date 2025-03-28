@@ -23,7 +23,7 @@ export interface ToolItem {
 export function formatToolsList(
   tools: string | Record<string, string | ToolConfig> | undefined
 ): ToolItem[] {
-  if (!tools) {
+  if (tools === undefined || tools === null) {
     return [];
   }
 
@@ -32,6 +32,11 @@ export function formatToolsList(
   // Handle different formats for tools
   if (typeof tools === "string") {
     // Handle comma-separated string format: "tool1, tool2, tool3"
+    // Handle empty string as a special case
+    if (tools.trim() === "") {
+      return [{ name: "", description: "" }];
+    }
+
     toolsList = tools.split(",").map((t: string) => ({
       name: t.trim(),
       description: "",
@@ -153,6 +158,11 @@ export function processTemplate(
   params: Record<string, any>
 ): { result: string; usedParams: Set<string> } {
   const usedParams = new Set<string>();
+
+  // Handle undefined or null template
+  if (template === undefined || template === null) {
+    return { result: "", usedParams };
+  }
 
   // Skip processing if no params provided
   if (!params || Object.keys(params).length === 0) {
