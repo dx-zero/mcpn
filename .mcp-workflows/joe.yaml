@@ -1,9 +1,9 @@
 joe_mode:
-  description: "Reflect on a thought and produce a reflection/new set of thoughts"
+  description: Reflect on a thought and produce a reflection/new set of thoughts
   parameters:
     thought:
-      type: "string"
-      description: "A thought to deeply reflect upon"
+      type: string
+      description: A thought to deeply reflect upon
       required: true
   prompt: |
     Deeply reflect upon the provided thought.

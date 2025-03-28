@@ -23,3 +23,9 @@ ted_mode:
       description: "Validate findings against requirements"
       prompt: "asdasdasdasdasd"
       optional: true
+
+web_debugger_mode:
+  description: Debug my codebase my web application with browser logs and BrowserTools MCP
+  prompt: |
+    Deeply reflect upon all of this and think about why this isn't working. Theorize 4-6 different possible sources of the problem.
+  tools: getConsoleLogs, getConsoleErrors, getNetworkLogs, getNetworkErrors, takeScreenshot

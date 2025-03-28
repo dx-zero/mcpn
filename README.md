@@ -133,53 +133,134 @@ Create a `.workflows` or `.mcp-workflows` directory in your project and add YAML
 
 ### Example Configuration Files
 
-#### .workflows/override-default.yaml
+#### Basic Workflow Configuration
 
 ```yaml
-# Override a preset tool
-debugger_mode:
-  description: "Custom debugging tool"
-  context: "This is a user-defined override."
-
-# Add a completely new tool
-custom_tool:
-  description: "Custom user-defined tool"
-  prompt: "# Custom Tool\n\nThis is a completely custom tool."
-```
-
-#### .workflows/parameterized-tools.yaml
-
-```yaml
-# Create a tool with typed parameters
-search_tool:
-  name: "search"
-  description: "Search for information"
-  parameters:
-    query:
-      type: "string"
-      description: "The search query"
-      required: true
-    limit:
-      type: "number"
-      description: "Maximum number of results"
-      default: 10
-    includeArchived:
-      type: "boolean"
-      description: "Whether to include archived items"
-      default: false
-    filterType:
-      type: "enum"
-      enum: ["all", "recent", "popular"]
-      description: "Type of filter to apply"
-      default: "all"
+workflow_name:
+  description: "Description of what this workflow does"
   prompt: |
-    This is a search tool that allows searching for information.
-
-    When a user asks for information, use this tool with their query to find relevant results.
-    Make sure to use appropriate filters based on the context of their request.
+    Enter your multi-line
+    prompt here like this
+  toolMode: "situational" # can be omitted as it's the default
+  tools: "analyzeLogs, generateReport, validateFindings"
 ```
 
-## Configuration Structure
+#### Tools Configuration Styles
+
+You can define tools in several ways.
+
+Here's an example of a tool that debugs a problem in a codebase with tools used situationally / as needed:
+
+```yaml
+web_debugger_mode:
+  description: Debug my codebase my web application with browser logs and BrowserTools MCP
+  prompt: |
+    Deeply reflect upon all of this and think about why this isn't working. Theorize 4-6 different possible sources of the problem.
+
+    Then, deeply reason about the root cause and distill your theories down to the 1-2 most probable sources of the problem before suggesting next steps.
+  tools: getConsoleLogs, getConsoleErrors, getNetworkLogs, getNetworkErrors, takeScreenshot
+```
+
+This will return the following MCP response:
+
+```
+Deeply reflect upon all of this and think about why this isn't working. Theorize 4-6 different possible sources of the problem.
+
+
+## Available Tools
+Use these tools as needed to complete the user's request:
+
+- getConsoleLogs
+- getConsoleErrors
+- getNetworkLogs
+- getNetworkErrors
+- takeScreenshot
+
+After using each tool, return a 'Next Steps' section with a list of the next steps to take / remaining tools to invoke along with each tool's prompt/description and 'optional' flag if present.
+```
+
+#### Parameter Injection
+
+A powerful feature is the ability to inject parameters into your prompts using the `{{ parameter_name }}` syntax:
+
+```yaml
+custom_mode:
+  description: "Workflow with parameter injection"
+  parameters:
+    thought:
+      type: "string"
+      description: "A thought to deeply reflect upon"
+      required: true
+    idea:
+      type: "string"
+      description: "An additional idea to consider"
+  prompt: |
+    Deeply reflect upon the provided thought.
+    Here's the thought: {{ thought }}
+
+    Additional idea to consider: {{ idea }}
+
+    Reflect upon the implications/tradeoffs it may have as it relates to my current goals.
+```
+
+Parameters are automatically validated based on their type definitions and injected into your prompts at runtime.
+
+#### Sequential Tool Configuration
+
+In sequential mode, tools are executed in a specific order:
+
+```yaml
+web_debugger_mode:
+  description: Debug my codebase my web application with browser logs and BrowserTools MCP
+  prompt: |
+    Deeply reflect upon all of this and think about why this isn't working. Theorize 4-6 different possible sources of the problem.
+  toolMode: sequential
+  tools: getConsoleLogs, getConsoleErrors, getNetworkLogs, getNetworkErrors, takeScreenshot
+```
+
+This will return the following MCP response:
+
+```
+Deeply reflect upon all of this and think about why this isn't working. Theorize 4-6 different possible sources of the problem.
+
+## Available Tools
+If all required user input/feedback is acquired or if no input/feedback is needed, execute this exact sequence of tools to complete this task:
+
+1. getConsoleLogs
+2. getConsoleErrors
+3. getNetworkLogs
+4. getNetworkErrors
+5. takeScreenshot
+
+After using each tool, return a 'Next Steps' section with a list of the next steps to take / remaining tools to invoke along with each tool's prompt/description and 'optional' flag if present.
+```
+
+### Advanced Tool Configuration
+
+Includes ability to define prompts for each tool and an optional flag to indicate if the tool is optional or not in the sequence:
+
+```yaml
+deep_thinking_mode:
+  description: Reflect on a thought and produce a reflection/new set of thoughts
+  parameters:
+    thought:
+      type: string
+      description: A thought to deeply reflect upon
+      required: true
+  prompt: |
+    Deeply reflect upon the provided thought.
+    Reflect upon the implications/tradeoffs it may have as it relates to my current goals, challenges and our conversation.
+    Do not change anything in our system, just return some thoughts/considerations/analysis based on your reflection of the provided thought.
+  toolMode: "sequential"
+  tools:
+    analyze_thought: analyze a previously generated thought
+    explore_perspectives: think about additional perspectives given the analysis
+    apply_findings:
+      propmt: implement the findings of the analysis
+      optional: true
+```
+
+### Configuration Structure
 
 Each YAML file should contain a mapping of tool names to their configuration. Configurations can be loaded from two sources:
 
@@ -194,52 +275,10 @@ For each tool, you can specify:
 - `description`: Description of what the workflow/tool does
 - `prompt`: Custom prompt (completely replaces default prompt if workflow name is also an active preset)
 - `context`: Additional context to append to the prompt (does not replace default prompt for presets)
-- `tools`: Array of tools available in this mode, each with `name`, `description` and optional `parameters`
+- `tools`: Array or object of tools available in this mode, with flexible definition styles
 - `toolMode`: Mode of tool execution, either "sequential" or "situational" (defaults to "situational")
-- `parameters`: Object mapping of parameters as input to the tool (improves reasoning)
+- `parameters`: Object mapping of parameters as input to the tool - supports template injection using {{ parameter_name }}
 - `disabled`: Boolean to disable the tool
-
-### Tool Configuration Examples
-
-#### Sequential Tool Configuration
-
-In sequential mode, tools are executed in a specific order:
-
-```yaml
-workflow_mode:
-  description: "Custom workflow with sequential steps"
-  prompt: "Enter your prompt here..."
-  toolMode: "sequential"
-
-  # sequence is based on the order of the tools below
-  tools:
-    - name: "step_one_console_logs"
-      description: "First, gather console logs"
-    - name: "step_two_console_errors"
-      description: "Then, gather console errors"
-    - name: "step_three_network_logs"
-      description: "Finally, gather all network logs"
-```
-
-#### Situational Tool Configuration
-
-In situational mode (default), tools can be used as needed based on context:
-
-```yaml
-workflow_mode:
-  description: "Custom workflow with dynamic tool usage"
-  prompt: |
-    Enter your multi-line
-    prompt here like this
-  toolMode: "situational" # can be omitted as it's the default
-  tools:
-    - name: "analyze"
-      description: "Analyze code or data"
-    - name: "generate"
-      description: "Generate new content"
-    - name: "validate"
-      description: "Validate changes or output"
-```
 
 ### Input Parameter Configuration
 
