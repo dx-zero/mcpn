@@ -1,20 +1,18 @@
 {
-  "name": "@agentdesk/workflows-mcp",
-  "version": "0.1.0",
-  "description": "MCP workflow orchestration tool with presets for thinking, coding and more",
+  "name": "mcpn",
+  "version": "0.0.2",
+  "description": "MCP workflow orchestration and registry tool with presets for thinking, coding and more",
   "type": "module",
   "main": "dist/server.js",
   "bin": {
-    "workflows-mcp": "./dist/server.js"
+    "mcpn": "./dist/server.js"
   },
   "scripts": {
     "inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/server.js",
     "build": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/",
-    "start": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node dist/server.js",
     "prepublishOnly": "npm run build",
-    "update": "npm run build && npm version patch && npm publish",
-    "test": "node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js src/tests/**/*.test.ts",
-    "mcp-test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts"
+    "update": "npm version patch && npm publish",
+    "test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts"
   },
   "keywords": [
     "mcp",
@@ -22,9 +20,11 @@
     "workflows",
     "prompts",
     "prompt engineering",
-    "ai"
+    "ai",
+    "mcpn",
+    "mcp network"
   ],
-  "author": "AgentDesk AI",
+  "author": "Ted Werbel",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.7.0",

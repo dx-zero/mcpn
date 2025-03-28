@@ -150,8 +150,8 @@ describe("Parameterized Tool Integration Tests", function () {
   });
 });
 
-// Add a separate describe block for thinking_mode tests
-describe("Thinking Mode Parameter Tests", function () {
+// Add a separate describe block for generate_thought tests
+describe("Generate Thought Parameter Tests", function () {
   this.timeout(15000); // Increase timeout for server startup
   let client: McpTestClient;
   let serverProcess: any;
@@ -179,15 +179,15 @@ describe("Thinking Mode Parameter Tests", function () {
     }
   });
 
-  it("should be able to call thinking_mode with thought parameter", async function () {
+  it("should be able to call generate_thought with thought parameter", async function () {
     try {
-      // Try calling the thinking_mode tool with the required thought parameter
-      const result = await client.callTool("thinking_mode", {
-        thought: "I wonder if this test will pass",
+      // Try calling the generate_thought tool with the required thought parameter
+      const result = await client.callTool("generate_thought", {
+        thought: "What is the meaning of life?",
       });
 
       console.log(
-        "Thinking tool call result:",
+        "Generate thought tool call result:",
         JSON.stringify(result, null, 2)
       );
 
@@ -198,7 +198,7 @@ describe("Thinking Mode Parameter Tests", function () {
 
       // Response should include the thought parameter
       const responseText = result.content[0].text;
-      expect(responseText).to.include("Parameters");
+      expect(responseText).to.include("reflect");
       expect(responseText).to.include("thought");
     } catch (error) {
       // If we get the known Zod validation error, treat this as a partial success
@@ -207,7 +207,7 @@ describe("Thinking Mode Parameter Tests", function () {
         error.message.includes("keyValidator._parse is not a function")
       ) {
         console.log(
-          "Received expected Zod validation error for thinking_mode - tool exists but schema validation failed"
+          "Received expected Zod validation error for generate_thought - tool exists but schema validation failed"
         );
 
         // Assert that we received the expected error type so test passes

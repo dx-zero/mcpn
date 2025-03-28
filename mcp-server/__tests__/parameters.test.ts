@@ -316,15 +316,15 @@ parameterized_tool:
   });
 
   describe("Thinking Mode Parameters", function () {
-    it("should validate thinking_mode parameters", function () {
-      // Create a test config with thinking_mode parameters
+    it("should validate generate_thought parameters", function () {
+      // Create a test config with generate_thought parameters
       const config: DevToolsConfig = {
-        thinking_mode: {
-          name: "thinking_mode",
-          description: "Test thinking mode parameters",
+        generate_thought: {
+          name: "generate_thought",
+          description: "Test generate_thought parameters",
           parameters: {
             thought: {
-              type: "string",
+              type: "string" as const,
               description: "A thought to deeply reflect upon",
               required: true,
             },
@@ -332,18 +332,17 @@ parameterized_tool:
         },
       };
 
-      // Validate the configuration
-      const result = validateToolConfig(config, "thinking_mode");
+      const result = validateToolConfig(config, "generate_thought");
       expect(result).to.be.null;
 
-      // Make sure thinking_mode is defined in the config
-      if (!config.thinking_mode || !config.thinking_mode.parameters) {
-        throw new Error("thinking_mode or its parameters are not defined");
+      // Make sure generate_thought is defined in the config
+      if (!config.generate_thought || !config.generate_thought.parameters) {
+        throw new Error("generate_thought or its parameters are not defined");
       }
 
       // Convert parameters to JSON Schema
       const schema = convertParametersToJsonSchema(
-        config.thinking_mode.parameters
+        config.generate_thought.parameters
       );
 
       // Verify the schema

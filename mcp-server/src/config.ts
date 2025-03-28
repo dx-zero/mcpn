@@ -41,6 +41,10 @@ export interface ToolConfig {
   name: string;
   /** Description of what the tool does */
   description?: string;
+  /** Specific prompt text for this tool */
+  prompt?: string;
+  /** Whether this tool is optional to use */
+  optional?: boolean;
   /** Parameters that the tool accepts */
   parameters?: Record<string, ParameterConfig>;
 }
@@ -55,8 +59,12 @@ export interface PromptConfig {
   prompt?: string;
   /** Additional context to append to the prompt (either default or custom) */
   context?: string;
-  /** Available tools for this prompt */
-  tools?: ToolConfig[];
+  /**
+   * Available tools for this prompt. Can be:
+   * - A Record of tool names to either description strings or ToolConfig objects
+   * - A comma-separated string of tool names
+   */
+  tools?: Record<string, string | ToolConfig> | string;
   /** Whether tools should be executed sequentially or situationally */
   toolMode?: "sequential" | "situational";
   /** Description for the tool (used as second parameter in server.tool) */
@@ -116,16 +124,13 @@ export function mergeConfigs(
 }
 
 /**
- * Helper function to merge tools arrays from two configs
+ * Helper function to merge tools from two configs
  *
- * @param {ToolConfig[] | undefined} targetTools - The target tools array
- * @param {ToolConfig[] | undefined} sourceTools - The source tools array to merge
- * @returns {ToolConfig[] | undefined} The merged tools array or undefined if both inputs are undefined
+ * @param {any} targetTools - The target tools
+ * @param {any} sourceTools - The source tools to merge
+ * @returns {any} The merged tools or undefined if both inputs are undefined
  */
-function mergeTools(
-  targetTools?: ToolConfig[],
-  sourceTools?: ToolConfig[]
-): ToolConfig[] | undefined {
+function mergeTools(targetTools?: any, sourceTools?: any): any {
   if (!targetTools && !sourceTools) {
     return undefined;
   }
@@ -135,7 +140,46 @@ function mergeTools(
   if (!sourceTools) {
     return targetTools;
   }
-  return [...targetTools, ...sourceTools];
+
+  // Handle string format
+  if (typeof targetTools === "string" && typeof sourceTools === "string") {
+    // Merge comma-separated strings
+    const toolsSet = new Set([
+      ...targetTools.split(",").map((t) => t.trim()),
+      ...sourceTools.split(",").map((t) => t.trim()),
+    ]);
+    return Array.from(toolsSet).join(", ");
+  }
+
+  // Convert string to object format if needed
+  const targetObj =
+    typeof targetTools === "string"
+      ? Object.fromEntries(targetTools.split(",").map((t) => [t.trim(), ""]))
+      : targetTools;
+
+  const sourceObj =
+    typeof sourceTools === "string"
+      ? Object.fromEntries(sourceTools.split(",").map((t) => [t.trim(), ""]))
+      : sourceTools;
+
+  // Merge objects with deep merge for tool properties
+  const result = { ...targetObj };
+
+  for (const [key, value] of Object.entries(sourceObj)) {
+    if (
+      key in result &&
+      typeof result[key] === "object" &&
+      typeof value === "object"
+    ) {
+      // Deep merge for object values (preserving properties like prompt and optional)
+      result[key] = { ...result[key], ...value };
+    } else {
+      // Replace or add the source value
+      result[key] = value;
+    }
+  }
+
+  return result;
 }
 
 /**

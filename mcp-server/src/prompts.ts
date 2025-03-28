@@ -4,6 +4,11 @@ import * as yaml from "js-yaml";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { DevToolsConfig, PromptConfig } from "./config.js";
+import {
+  formatToolsList,
+  appendFormattedTools,
+  processTemplate,
+} from "./utils.js";
 
 // In ES modules, __dirname is not available directly
 const __filename = fileURLToPath(import.meta.url);
@@ -17,11 +22,19 @@ const PRESETS_DIR = path.join(__dirname, "presets");
  *
  * @param {string} defaultPrompt - The base prompt text to modify
  * @param {PromptConfig} [config] - Optional configuration to apply to the prompt
+ * @param {Record<string, any>} [params] - Optional parameters for template processing
  * @returns {string} The final prompt with configuration applied
  */
-const applyConfig = (defaultPrompt: string, config?: PromptConfig): string => {
+const applyConfig = (
+  defaultPrompt: string,
+  config?: PromptConfig,
+  params?: Record<string, any>
+): string => {
   if (!config) {
-    return defaultPrompt;
+    // If no config, just process the default prompt with parameters
+    return params
+      ? processTemplate(defaultPrompt, params).result
+      : defaultPrompt;
   }
 
   // Use prompt if provided, otherwise use default
@@ -32,35 +45,14 @@ const applyConfig = (defaultPrompt: string, config?: PromptConfig): string => {
     finalPrompt += `\n\n${config.context}`;
   }
 
-  // Add tools section if tools are provided
-  if (config.tools && config.tools.length > 0) {
-    finalPrompt += `\n\n## Available Tools\n`;
-
-    if (config.toolMode === "sequential") {
-      finalPrompt += "Follow this sequence of tools to complete the task:\n\n";
-
-      config.tools.forEach((tool, index) => {
-        finalPrompt += `${index + 1}. **${tool.name}**`;
-        if (tool.description) {
-          finalPrompt += `: ${tool.description}`;
-        }
-        finalPrompt += "\n";
-      });
-    } else {
-      // Default to situational mode
-      finalPrompt += "You can use these tools as needed:\n\n";
-
-      config.tools.forEach((tool) => {
-        finalPrompt += `- **${tool.name}**`;
-        if (tool.description) {
-          finalPrompt += `: ${tool.description}`;
-        }
-        finalPrompt += "\n";
-      });
-    }
+  // Add tools section if tools are provided using utility functions
+  if (config.tools) {
+    const toolsList = formatToolsList(config.tools);
+    finalPrompt = appendFormattedTools(finalPrompt, toolsList, config.toolMode);
   }
 
-  return finalPrompt;
+  // Process any template parameters in the final prompt
+  return params ? processTemplate(finalPrompt, params).result : finalPrompt;
 };
 
 /**
@@ -106,19 +98,23 @@ function discoverPresetConfigs(): { [key: string]: any } {
  * @param {string} modeName - The name of the mode to create a prompt function for
  * @param {string} presetName - The name of the preset configuration to use
  * @param {Record<string, any>} presetConfigs - Object containing all loaded preset configurations
- * @returns {(config?: DevToolsConfig) => string} A function that generates a prompt based on the mode and preset
+ * @returns {(config?: DevToolsConfig, params?: Record<string, any>) => string} A function that generates a prompt based on the mode, preset, and parameters
  */
 function createPromptFunction(
   modeName: string,
   presetName: string,
   presetConfigs: { [key: string]: any }
-): (config?: DevToolsConfig) => string {
-  return (config?: DevToolsConfig) => {
+): (config?: DevToolsConfig, params?: Record<string, any>) => string {
+  return (config?: DevToolsConfig, params?: Record<string, any>) => {
     try {
       const presetConfig = presetConfigs[presetName];
 
       if (presetConfig && presetConfig[modeName]?.prompt) {
-        return applyConfig(presetConfig[modeName].prompt, config?.[modeName]);
+        return applyConfig(
+          presetConfig[modeName].prompt,
+          config?.[modeName],
+          params
+        );
       }
     } catch (error) {
       console.error(
@@ -128,11 +124,16 @@ function createPromptFunction(
     }
 
     // Fallback if preset prompt not found
-    return `# ${modeName
+    const defaultPrompt = `# ${modeName
       .replace(/_/g, " ")
       .replace(/\b\w/g, (l) =>
         l.toUpperCase()
       )}\n\nNo default prompt found for this tool.`;
+
+    // Still process parameters even in fallback mode
+    return params
+      ? processTemplate(defaultPrompt, params).result
+      : defaultPrompt;
   };
 }
 
@@ -140,7 +141,10 @@ function createPromptFunction(
 const presetConfigs = discoverPresetConfigs();
 
 // Object to store prompt functions for all modes
-const promptFunctions: Record<string, (config?: DevToolsConfig) => string> = {};
+const promptFunctions: Record<
+  string,
+  (config?: DevToolsConfig, params?: Record<string, any>) => string
+> = {};
 
 /**
  * Initializes prompt functions by processing all discovered preset configurations
@@ -148,7 +152,7 @@ const promptFunctions: Record<string, (config?: DevToolsConfig) => string> = {};
  */
 function initializePromptFunctions(): Record<
   string,
-  (config?: DevToolsConfig) => string
+  (config?: DevToolsConfig, params?: Record<string, any>) => string
 > {
   // Process each preset file
   Object.entries(presetConfigs).forEach(([presetName, presetConfig]) => {

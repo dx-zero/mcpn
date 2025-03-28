@@ -12,6 +12,11 @@ import {
   convertParametersToJsonSchema,
   convertParametersToZodSchema,
 } from "./config.js";
+import {
+  formatToolsList,
+  appendFormattedTools,
+  processTemplate,
+} from "./utils.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import fs from "fs";
@@ -237,82 +242,91 @@ function registerToolsFromConfig(
       toolConfig.description || `${key.replace(/_/g, " ")} tool`,
       inputSchema,
       async (params?: Record<string, any>) => {
-        // Generate the tool prompt
-        let text = generateToolPrompt(key, toolConfig, promptFunction, config);
+        // Generate the tool prompt with template processing
+        const { text, usedParams } = generateToolPrompt(
+          key,
+          toolConfig,
+          promptFunction,
+          config,
+          params
+        );
 
-        // If we have parameters, add them to the response
+        // Add unused parameters as JSON at the end
+        let finalText = text;
         if (params && Object.keys(params).length > 0) {
-          text += `\n\nParameters: ${JSON.stringify(params, null, 2)}`;
+          // Filter out used parameters
+          const unusedParams: Record<string, any> = {};
+          for (const [paramKey, value] of Object.entries(params)) {
+            if (!usedParams.has(paramKey)) {
+              unusedParams[paramKey] = value;
+            }
+          }
+
+          // Only append if there are unused parameters
+          if (Object.keys(unusedParams).length > 0) {
+            finalText += `\n\nParameters: ${JSON.stringify(
+              unusedParams,
+              null,
+              2
+            )}`;
+          }
         }
 
-        return { content: [{ type: "text", text }] };
+        return { content: [{ type: "text", text: finalText }] };
       }
     );
   });
 }
 
 /**
- * Generates the prompt text for a tool based on its configuration
- * @param key - The tool key
- * @param toolConfig - The tool configuration
- * @param promptFunction - Optional prompt generation function
- * @param fullConfig - The complete configuration object
+ * Processes the template with parameters
+ * @returns Object containing the processed text and set of used parameters
  */
 function generateToolPrompt(
   key: string,
   toolConfig: Record<string, any>,
-  promptFunction: ((config: Record<string, any>) => string) | undefined,
-  fullConfig: Record<string, any>
-): string {
-  // Use the prompt function if available
-  if (promptFunction) {
-    return promptFunction(fullConfig);
-  }
+  promptFunction:
+    | ((config: Record<string, any>, params?: Record<string, any>) => string)
+    | undefined,
+  fullConfig: Record<string, any>,
+  params?: Record<string, any>
+): { text: string; usedParams: Set<string> } {
+  let basePrompt = "";
 
-  // Otherwise use the prompt directly from config
-  if (toolConfig.prompt) {
-    let text = toolConfig.prompt;
+  // Get the base prompt text
+  if (promptFunction) {
+    basePrompt = promptFunction(fullConfig, params);
+    // Since the prompt function already processed templates, return without further processing
+    return {
+      text: basePrompt,
+      usedParams: params ? new Set(Object.keys(params)) : new Set(),
+    };
+  } else if (toolConfig.prompt) {
+    basePrompt = toolConfig.prompt;
 
     // Add context if provided
     if (toolConfig.context) {
-      text += `\n\n${toolConfig.context}`;
+      basePrompt += `\n\n${toolConfig.context}`;
     }
 
-    // Add tools section if provided
-    if (toolConfig.tools && toolConfig.tools.length > 0) {
-      text += "\n\n## Available Tools\n";
-
-      if (toolConfig.toolMode === "sequential") {
-        text +=
-          "If all required user input/feedback is acquired or if no input/feedback is needed, execute this exact sequence of tools to complete this task:\n\n";
-
-        toolConfig.tools.forEach((tool: any, index: number) => {
-          text += `${index + 1}. **${tool.name}**`;
-          if (tool.description) {
-            text += `: ${tool.description}`;
-          }
-          text += "\n";
-        });
-      } else {
-        // Default to dynamic mode
-        text += `Use these tools as needed to complete the user's request:\n\n`;
-
-        toolConfig.tools.forEach((tool: any) => {
-          text += `- **${tool.name}**`;
-          if (tool.description) {
-            text += `: ${tool.description}`;
-          }
-          text += "\n";
-        });
-      }
+    // Add tools section if provided using utility function
+    if (toolConfig.tools) {
+      const toolsList = formatToolsList(toolConfig.tools);
+      basePrompt = appendFormattedTools(
+        basePrompt,
+        toolsList,
+        toolConfig.toolMode
+      );
     }
-
-    return text;
+  } else {
+    // No prompt available
+    console.error(`Tool "${key}" has no prompt defined`);
+    basePrompt = `# ${key}\n\nNo prompt defined for this tool.`;
   }
 
-  // No prompt available
-  console.error(`Tool "${key}" has no prompt defined`);
-  return `# ${key}\n\nNo prompt defined for this tool.`;
+  // Process the template with parameters
+  const processed = processTemplate(basePrompt, params || {});
+  return { text: processed.result, usedParams: processed.usedParams };
 }
 
 /**

@@ -1,4 +1,4 @@
-thinking_mode:
+generate_thought:
   description: "Reflect on a thought and produce a reflection/new set of thoughts"
   parameters:
     thought:
@@ -6,9 +6,12 @@ thinking_mode:
       description: "A thought to deeply reflect upon"
       required: true
   prompt: |
-    Deeply reflect upon the provided thought.
+    Deeply reflect upon the provided thought step-by-step.
     Reflect upon the implications/tradeoffs it may have as it relates to my current goals, challenges and our conversation.
     Do not change anything in our system, just return some thoughts/considerations/analysis based on your reflection of the provided thought.
+
+    Here is the thought to reflect on:
+    {{ thought }}
 
 deep_thinking_mode:
   description: "Deeply reflect upon the provided idea/problem/question"

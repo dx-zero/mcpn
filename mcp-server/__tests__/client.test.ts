@@ -22,10 +22,10 @@ describe("MCP Client Tests", function () {
     await client.connect();
     const tools = await client.listTools();
 
-    // When no args provided, default preset is "thinking", so it should include thinking_mode
+    // When no args provided, default preset is "thinking", so it should include generate_thought
     expect(tools.tools).to.be.an("array");
     const toolNames = tools.tools.map((t: any) => t.name);
-    expect(toolNames).to.include("thinking_mode");
+    expect(toolNames).to.include("generate_thought");
   });
 
   it("should connect with specific preset", async () => {
@@ -47,7 +47,7 @@ describe("MCP Client Tests", function () {
     // Should have tools from both presets
     expect(tools.tools).to.be.an("array");
     const toolNames = tools.tools.map((t: any) => t.name);
-    expect(toolNames).to.include("thinking_mode"); // from thinking
+    expect(toolNames).to.include("generate_thought"); // from thinking
     expect(toolNames).to.include("debugger_mode"); // from coding
   });
 });

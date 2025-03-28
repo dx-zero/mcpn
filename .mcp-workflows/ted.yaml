@@ -1,0 +1,25 @@
+ted_mode:
+  description: "Reflect on a thought and produce a reflection/new set of thoughts"
+  parameters:
+    thought:
+      type: "string"
+      description: "A thought to deeply reflect upon"
+      required: true
+    idea:
+      type: "string"
+      description: "a random idea"
+  prompt: |
+    Deeply reflect upon the provided thought.
+    Here's the thought: {{ thought }}
+    Reflect upon the implications/tradeoffs it may have as it relates to my current goals, challenges and our conversation.
+    Do not change anything in our system, just return some thoughts/considerations/analysis based on your reflection of the provided thought.
+
+    Here's an idea too: {{idea}}
+  tools:
+    analyzeLogs: "Analyze code or logs"
+    generateReport: "Generate a report"
+    validateFindings: "Validate findings"
+    reflection:
+      description: "Validate findings against requirements"
+      prompt: "asdasdasdasdasd"
+      optional: true
