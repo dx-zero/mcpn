@@ -1,6 +1,6 @@
 {
   "name": "mcpn",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "MCP workflow orchestration and registry tool with presets for thinking, coding and more",
   "type": "module",
   "main": "dist/server.js",
