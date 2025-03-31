@@ -43,7 +43,7 @@
     "prepublishOnly": "npm run build",
     "release": "npm publish",
     "release:alpha": "npm publish --tag alpha",
-    "mcpn": "node ./dist/mcpn.mjs",
+    "mcpn": "node ./bin/mcpn.mjs",
     "mcpn-bun": "bun --bun ./dist/mcpn.mjs"
   },
   "devDependencies": {
