@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "workflows-mcp": {
+      "command": "node",
+      "args": [
+        "dist/server.js --config .workflows"
+      ]
+    }
+  }
+}

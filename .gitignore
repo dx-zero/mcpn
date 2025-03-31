@@ -22,3 +22,5 @@ yarn-error.log*
 # OS specific
 .DS_Store
 Thumbs.db
+.hidden
+llms_*.txt

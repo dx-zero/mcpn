@@ -1,0 +1,45 @@
+packages:
+  - 'packages/*'
+  - 'templates/*'
+  - 'docs/*'
+ignoredBuiltDependencies:
+  - better-sqlite3
+  - esbuild
+onlyBuiltDependencies:
+  - better-sqlite3
+  - esbuild
+  - simple-git-hooks
+catalogs:
+  cli:
+    '@antfu/eslint-config': ^4.10.1
+    '@antfu/ni': ^24.1.0
+    '@modelcontextprotocol/inspector': ^0.6.0
+    bumpp: ^10.1.0
+    eslint: ^9.22.0
+    lint-staged: ^15.5.0
+    nodemon: ^3.1.9
+    simple-git-hooks: ^2.11.1
+    tsx: ^4.19.3
+    typescript: ~5.8.2
+    unbuild: ^3.5.0
+    vite: ^6.2.1
+  prod:
+    '@modelcontextprotocol/sdk': ^1.7.0
+    ansis: ^3.17.0
+    async-cache-dedupe: ^2.2.0
+    citty: ^0.1.6
+    debug: ^4.4.0
+    h3: ^1.15.1
+    pathe: ^2.0.3
+    unimport: ^4.1.2
+    zod: ^3.24.2
+  testing:
+    vitest: ^3.0.8
+    vitest-package-exports: ^0.1.1
+    yaml: ^2.7.0
+  types:
+    '@types/debug': ^4.1.12
+    '@types/node': latest
+  utils:
+    '@antfu/utils': ^9.1.0
+    tinyexec: ^0.3.2
