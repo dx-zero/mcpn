@@ -60,6 +60,11 @@ export default defineCommand({
       type: 'positional',
       description: 'Directory to initialize in (defaults to current directory)',
       default: '.',
+    },
+    // Replace boolean flags with a single string flag for IDE selection
+    ide: {
+      type: 'string',
+      description: 'Specify IDE integration (options: cursor, windsurf, cline, rootcode, headless). Defaults to auto-detection.',
     }
   },
   async run(ctx) {
@@ -83,16 +88,42 @@ export default defineCommand({
          logger.info(`Workflow directory already exists: ${colors.cyan(relative(process.cwd(), workflowsPath))}`);
       }
 
-      const ide = detectIDE()
-      const config: Partial<McpnConfig> = {};
-      if (ide) {
-        logger.info(`Detected IDE: ${ide}`)
-        config.ide = ide;
-      } else {
-        logger.info('Could not automatically detect IDE. You can set it manually in mcpn.config.mjs')
+      // Determine IDE based on the --ide flag or detection
+      let selectedIde: string | undefined | null = undefined; // Use null to signify headless explicitly chosen
+      const validIdeOptions = ['cursor', 'windsurf', 'cline', 'rootcode', 'headless'];
+
+      if (ctx.args.ide) {
+        const ideArg = ctx.args.ide.toLowerCase();
+        if (validIdeOptions.includes(ideArg)) {
+          if (ideArg === 'headless') {
+            selectedIde = null; // Headless mode requested
+            logger.info('Configuring in headless mode (no IDE specific settings).');
+          } else {
+            selectedIde = ideArg;
+            logger.info(`Configuring for specified IDE: ${selectedIde}`);
+          }
+        } else {
+          logger.warn(`Invalid value "${ctx.args.ide}" for --ide flag. Valid options are: ${validIdeOptions.join(', ')}. Falling back to auto-detection.`);
+        }
       }
 
-      // Create the config file with detected or default settings
+      // If no valid flag was provided, attempt detection
+      if (selectedIde === undefined) {
+        selectedIde = detectIDE();
+        if (selectedIde) {
+          logger.info(`Detected IDE: ${selectedIde}`);
+        } else {
+          logger.info('Could not automatically detect IDE. No specific IDE configured.');
+        }
+      }
+
+      const config: Partial<McpnConfig> = {};
+      // Only add 'ide' to config if it's not headless mode
+      if (selectedIde !== null && selectedIde !== undefined) {
+        config.ide = selectedIde;
+      }
+
+      // Create the config file with determined settings
       await createConfigFile(projectPath, config);
 
     } catch (err) {

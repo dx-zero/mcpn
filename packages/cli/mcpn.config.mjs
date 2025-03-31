@@ -2,5 +2,5 @@
 // Add your configuration options here
 
 export default {
-  "ide": "vscode"
+  "ide": "cursor"
 };

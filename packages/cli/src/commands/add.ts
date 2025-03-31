@@ -56,7 +56,7 @@ export default defineCommand({
     if (!existsSync(workflowsDir)) {
       logger.error(
         `No MCPN folder or config found in ${cwd}! Please run ${colors.cyan(
-          'npx mcpn init',
+          'npx mcpn@latest init',
         )} to get started.`,
       )
       process.exit(1)
