@@ -19,7 +19,7 @@ orientation: horizontal
   :::
 
 #title
-MCP Workflows
+MCPN Workflows
 
 #description
 MCPN connects your favorite AI tools right in your code editor, making your coding faster and easier.
