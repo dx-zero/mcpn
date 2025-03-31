@@ -12,7 +12,8 @@
     "build": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/",
     "prepublishOnly": "npm run build",
     "update": "npm version patch && npm publish",
-    "test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts"
+    "test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/*.test.ts ./__tests__/**/*.test.ts",
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node dist/server.js"
   },
   "keywords": [
     "mcp",
@@ -27,17 +28,22 @@
   "author": "Ted Werbel",
   "license": "MIT",
   "dependencies": {
+    "@inquirer/prompts": "^7.4.0",
     "@modelcontextprotocol/sdk": "^1.7.0",
+    "commander": "^13.1.0",
+    "inquirer": "^12.5.0",
     "js-yaml": "^4.1.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/chai": "^4.3.5",
     "@types/js-yaml": "^4.0.9",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^18.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^18.19.84",
+    "@types/sinon": "^17.0.4",
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
+    "sinon": "^20.0.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3"

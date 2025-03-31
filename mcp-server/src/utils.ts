@@ -3,6 +3,9 @@
  */
 
 import { ToolConfig } from "./config.js";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import fs from "fs";
 
 /**
  * Interface for a tool in the tools list
@@ -12,6 +15,17 @@ export interface ToolItem {
   description?: string;
   prompt?: string;
   optional?: boolean;
+}
+
+/**
+ * Gets the package version from package.json
+ * @returns {Object} The parsed package.json content
+ */
+export function getPackageInfo(): Record<string, any> {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const packageJsonPath = join(__dirname, "..", "package.json");
+  return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 }
 
 /**

@@ -12,7 +12,12 @@ joe_mode:
   toolMode: "sequential"
   tools:
     analyzeLogs:
-      prompt: "Analyze code or logs123"
+      prompt: Analyze code or logs123
       optional: true
-    generateReport: "Generate a report"
-    validateFindings: "Validate findings"
+    generateReport: Generate a report
+    validateFindings: Validate findings
+rules:
+  - name: always import shadcn components
+    description: asdasd
+    propmt: asdasdasd
+    extensions:

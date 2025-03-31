@@ -412,3 +412,78 @@ This architecture allows for powerful, type-safe interactions between tools and 
 ## License
 
 MIT
+
+## Notes
+
+1. vibe coders
+2. engineers (solo founders)
+3. enterprise teams
+
+--
+
+npx mcpn@latest add task-manager
+npx mcpn@latest add vibe-coder
+npx mcpn@latest add react
+npx mcpn@latest add firebase-auth
+npx mcpn@latest add "https://tedx.ai/mcp/supabase"
+npx mcpn@latest add supabase
+
+- installing global rules for AI
+- installing supabase MCP
+- installing MCPN workflows (dynamically routes prompts OR prompts with tools)
+
+"bundler" - rules, prompts, mcp tools
+
+--
+
+generalized workflows (vibe-coder)
+tech-stack specific workflows (react, supabase, firebase-auth); need to talk options
+
+---
+
+npx mcpn@latest login
+
+- trigger a login flow
+  - trigger oauth / sso login flows
+  - aves token to local machine,
+  - token is passed in headers to future API requests when fetching packages (privately hosted JSON)
+- this token is used to authenticate into registries
+
+tasks:
+
+- what is the schema for the JSON file that enterprises/private registries expose?
+- how do we define in our yaml template global rules for AI to be installed?
+- how do we orchestrate + define in our yaml template the installation of an MCP server?
+- how does updating packages work?
+
+---
+
+phase 1:
+
+- yaml template, public remote registry
+- mcpn directory for tech stack specific presets + starter kit presets
+- documentation
+  - CLI intro
+  - starter kits
+  - contribution guidelines
+  - intention
+- branding
+- video content / x content strategy
+- partnership agreement
+- github org
+
+phase 2:
+
+- automate mcp installation (find something existing for now)
+- automate global/project rules for AI
+
+phase 3:
+
+- private remote registry w/ login flow
+
+---
+
+prompts vs mcpn workflows
+
+todo: scoping for mcp tool registration based on yaml file name
+many MCP servers may have tools of the same name...

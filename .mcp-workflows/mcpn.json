@@ -1,0 +1,16 @@
+{
+  "packages": {
+    "ted.yaml": {
+      "source": "built-in",
+      "alias": "thinking",
+      "installedAt": "2023-04-01T12:00:00Z",
+      "updatedAt": "2023-04-01T12:00:00Z"
+    },
+    "kevin.yaml": {
+      "source": "url",
+      "url": "https://example.com/my-preset.yaml",
+      "installedAt": "2023-04-01T12:30:00Z",
+      "updatedAt": "2023-04-01T12:30:00Z"
+    }
+  }
+}

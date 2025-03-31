@@ -18,12 +18,12 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 
 ## Test Environment Setup
 
-- [ ] Extend the existing Mocha/Chai testing framework for CLI tests
-- [ ] Utilize the existing `__tests__/cli/` directory for CLI test files
-- [ ] Create file system mocks for directory and file operations
-- [ ] Set up command-line argument parsing mocks
-- [ ] Create test fixtures for IDE configurations
-- [ ] Add helper functions for CLI output testing
+- [x] Extend the existing Mocha/Chai testing framework for CLI tests
+- [x] Utilize the existing `__tests__/cli/` directory for CLI test files
+- [x] Create file system mocks for directory and file operations
+- [x] Set up command-line argument parsing mocks
+- [x] Create test fixtures for IDE configurations
+- [x] Add helper functions for CLI output testing
 - [ ] Set up a local HTTP server for URL-based preset testing
   - [ ] Create server setup/teardown utilities
   - [ ] Create mock YAML presets for the server to serve
@@ -33,99 +33,105 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 
 ### Test First
 
-- [ ] Create tests in `__tests__/cli/command-parser.test.ts` for command-line parsing
-- [ ] Create tests in `__tests__/cli/help-display.test.ts` for help documentation
-- [ ] Create tests in `__tests__/cli/backward-compatibility.test.ts` for existing flags
-- [ ] Create tests to verify command routing (init, add, remove, default server)
-- [ ] Create tests for command aliases (i → add, rm/uninstall → remove)
+- [x] Create tests in `__tests__/cli/command-parser.test.ts` for command-line parsing
+- [x] Create tests in `__tests__/cli/help-display.test.ts` for help documentation
+- [x] Create tests in `__tests__/cli/backward-compatibility.test.ts` for existing flags
+- [x] Create tests to verify command routing (init, add, remove, default server)
+- [x] Create tests for command aliases (i → add, rm/uninstall → remove)
 
 ### Then Implement
 
-- [ ] Build CLI framework on top of existing MCP server code
-- [ ] Create CLI entry point that maintains backward compatibility
-- [ ] Set up command parsing using commander.js or similar
-- [ ] Implement help documentation
-- [ ] Ensure existing --config and --preset flags still work
-- [ ] Implement command aliases for add and remove commands
+- [x] Build CLI framework on top of existing MCP server code
+- [x] Create CLI entry point that maintains backward compatibility
+- [x] Set up command parsing using commander.js or similar
+- [x] Implement help documentation
+- [x] Ensure existing --config and --preset flags still work
+- [x] Implement command aliases for add and remove commands
 
 ## Phase 2: Default Server Command
 
 ### Test First
 
-- [ ] Extend existing server tests to verify CLI invocation behavior
-- [ ] Create tests to verify server runs with default configuration when no command
-- [ ] Create tests to verify commands prevent server startup
-- [ ] Create tests for backward compatibility with existing flags
-- [ ] Create tests for migrating from existing usage patterns
+- [x] Extend existing server tests to verify CLI invocation behavior
+- [x] Create tests to verify server runs with default configuration when no command
+- [x] Create tests to verify commands prevent server startup
+- [x] Create tests for backward compatibility with existing flags
+- [x] Create tests for migrating from existing usage patterns
+- [x] Use the McpTestClient from client.ts for testing instead of sinon mocks
 
 ### Then Implement
 
-- [ ] Refactor existing server.ts to work as both standalone and CLI-invoked server
-- [ ] Ensure server runs when no command is specified
-- [ ] Maintain current configuration path and preset handling
-- [ ] Implement migration path from existing usage patterns
+- [x] Refactor existing server.ts to work as both standalone and CLI-invoked server
+- [x] Ensure server runs when no command is specified
+- [x] Maintain current configuration path and preset handling
+- [x] Implement migration path from existing usage patterns
 
 ## Phase 3: Init Command
 
 ### Test First
 
-- [ ] Create tests in `__tests__/cli/init-command.test.ts` for all init functionality
-- [ ] Create tests for interactive IDE selection with mocked prompts
-- [ ] Create tests for directory creation and file generation
-- [ ] Create tests for each IDE configuration format
-- [ ] Create tests for headless mode configuration
-- [ ] Create tests for handling existing configurations
-- [ ] Create tests for non-interactive mode with IDE flags
+- [x] Create tests in `__tests__/cli/init-command.test.ts` for all init functionality
+- [x] Create tests for interactive IDE selection with mocked prompts
+- [x] Create tests for directory creation and file generation
+- [x] Create tests for each IDE configuration format
+- [x] Create tests for headless mode configuration
+- [x] Create tests for handling existing configurations
+- [x] Create tests for non-interactive mode with IDE flags
 
 ### Then Implement
 
-- [ ] Create interactive CLI prompts for IDE selection
-- [ ] Implement `.mcp-workflows` directory creation
-- [ ] Create `mcp-config.js` file generation
-- [ ] Implement IDE-specific configuration
-- [ ] Implement headless mode with `--headless` flag
-  - [ ] Create mcpn directory in user's documents
-  - [ ] Create .mcp-workflows in the mcpn directory
-  - [ ] Set proper config paths
-- [ ] Add direct IDE selection flags (--cursor, --windsurf, etc.)
-- [ ] Implement detection and handling of existing configurations
+- [x] Create interactive CLI prompts for IDE selection
+- [x] Implement `.mcp-workflows` directory creation
+- [x] Create `mcp-config.js` file generation
+- [x] Implement IDE-specific configuration
+- [x] Implement headless mode with `--headless` flag
+  - [x] Create mcpn directory in user's documents
+  - [x] Create .mcp-workflows in the mcpn directory
+  - [x] Set proper config paths
+- [x] Add direct IDE selection flags (--cursor, --windsurf, etc.)
+- [x] Implement detection and handling of existing configurations
+
+### Additional Completed Tasks
+
+- [x] Simplify configuration format to only include the necessary IDE name
+- [x] Place configuration file inside the `.mcp-workflows` directory
+- [x] Replace readline-based prompting with modern `@inquirer/prompts` select interface
+- [x] Add dependency injection for better testability
+- [x] Install and integrate necessary type definitions for tests
+- [x] Implement robust error handling for all operations
 
 ## Phase 4: Add Command (Extending Existing Preset System)
 
 ### Test First
 
 - [ ] Create tests in `__tests__/cli/add-command.test.ts` for all add functionality
-- [ ] Create tests that verify integration with existing preset system
-- [ ] Create tests for URL-based preset downloading with mocked HTTP responses
-- [ ] Create tests for YAML validation using existing test fixtures
-- [ ] Create tests for workflow name conflict detection and resolution
-- [ ] Create tests for filename conflict handling
-- [ ] Create tests for URL validation and security measures
+- [ ] Create tests for alias resolution to built-in presets
+- [ ] Create tests for URL validation and security checks
+- [ ] Create tests for HTTP request handling with mock server
+- [ ] Create tests for YAML syntax and schema validation
+- [ ] Create tests for filename generation and conflict resolution
+- [ ] Create tests for workflow name conflict detection
+- [ ] Create tests for metadata creation and updates
+- [ ] Create tests for the `--force` flag behavior
+- [ ] Create tests for interactive conflict resolution using mocked prompts
 - [ ] Create tests for alias support (`npx mcpn i`)
-- [ ] Create tests using local HTTP server for URL preset download testing
-  - [ ] Test downloading valid YAML preset files
-  - [ ] Test downloading malformed YAML files
-  - [ ] Test downloading non-YAML files
-  - [ ] Test handling redirects
-  - [ ] Test handling authentication requirements
-  - [ ] Test handling network timeouts
-  - [ ] Test handling server errors
+- [ ] Create integration tests with the CLI command routing
 
 ### Then Implement
 
-- [ ] Extend current preset system to support user-managed presets
-- [ ] Add URL-based preset downloading
-- [ ] Create YAML validation for presets
-- [ ] Implement workflow name conflict detection
-- [ ] Create conflict resolution UI with radio buttons
-- [ ] Add filename conflict handling with automatic suffix
-- [ ] Implement URL security validation and user warnings
-- [ ] Implement alias support for add command
-- [ ] Implement robust HTTP request handling for URL presets
-  - [ ] Add support for redirects
-  - [ ] Add timeout handling
-  - [ ] Add proper error messages for network issues
-  - [ ] Add validation of downloaded content
+- [ ] Create the add command structure with dependency injection
+- [ ] Implement alias resolution for built-in presets
+- [ ] Add URL validation with security checks
+- [ ] Create HTTP request handling for URL-based presets
+- [ ] Implement YAML validation for preset schema conformance
+- [ ] Add filename generation with sanitization
+- [ ] Implement file conflict detection and resolution
+- [ ] Add workflow name conflict detection and resolution
+- [ ] Create metadata.json tracking system
+- [ ] Implement force flag for automatic conflict resolution
+- [ ] Add interactive conflict resolution UI with @inquirer/prompts
+- [ ] Implement error handling with user-friendly messages
+- [ ] Connect command to CLI framework and alias support
 
 ## Phase 5: Remove Command
 
@@ -349,3 +355,9 @@ A phase is considered complete when:
 4. Documentation has been updated
 5. No regressions in previous phases
 6. Backward compatibility is maintained
+
+### Completion Status
+
+- Phase 1: Project Structure & CLI Framework Integration - ✓ COMPLETE
+- Phase 2: Default Server Command - ✓ COMPLETE
+- Phase 3: Init Command - ✓ COMPLETE
