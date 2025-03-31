@@ -2,9 +2,9 @@
 
 Built by [@tedx_ai](https://x.com/tedx_ai)
 
-Workflows MCP is a Model Context Protocol (MCP) server that allows you to orchestrate / combine many prompts + MCP servers into compound MCP prompting tools.
+Workflows MCP (mcpn) are the building blocks of software development, an orchestration of multiple MCP servers and prompts.
 
-Think of it like a dynamic prompting library that you can easily share and version control through yaml files that also lets your define how to best use many MCP tools across many MCP servers for specific tasks.
+Think of it like a dynamic prompting library that you can easily share and version control through yaml files that also lets you define how to best use many MCP tools across many MCP servers for specific tasks.
 
 ## Overview
 
@@ -75,7 +75,7 @@ Universally applicable tools for common coding tasks
 Install the MCP server into an MCP client using the following command or JSON:
 
 ```bash
-npx -y @agentdesk/workflows-mcp@latest
+npx -y mcpn@latest init
 ```
 
 If using JSON in Cursor to setup your MCP server, you can use the following config:
@@ -85,7 +85,7 @@ If using JSON in Cursor to setup your MCP server, you can use the following conf
   "mcpServers": {
     "workflows-mcp": {
       "command": "npx",
-      "args": ["-y", "@agentdesk/workflows-mcp@latest"]
+      "args": ["-y", "mcpn@latest"]
     }
   }
 }
@@ -94,13 +94,13 @@ If using JSON in Cursor to setup your MCP server, you can use the following conf
 To provide custom configurations, you can use the `--config` flag to point to a directory containing YAML configuration files. The directory must be named `.workflows` or `.mcp-workflows` as so:
 
 ```bash
-npx @agentdesk/workflows-mcp@latest --config /path/to/.workflows
+npx mcpn@latest --config /path/to/.workflows
 ```
 
 If you want to enable presets, you can use the `--preset` flag to specify which presets to load:
 
 ```bash
-npx @agentdesk/workflows-mcp@latest --preset thinking,coding,github
+npx mcpn@latest --preset thinking,coding,github
 ```
 
 Here's what this would look like in a Cursor config all combined:
@@ -110,10 +110,7 @@ Here's what this would look like in a Cursor config all combined:
   "mcpServers": {
     "workflows-mcp": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@agentdesk/workflows-mcp@latest --config /path/to/.workflows --preset thinking,coding"
-      ]
+      "args": ["mcpn@latest", "--config", "/path/to/.workflows", "--preset", "thinking,coding"]
     }
   }
 }
