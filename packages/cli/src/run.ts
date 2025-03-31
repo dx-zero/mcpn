@@ -1,7 +1,22 @@
 import { runCommand as _runCommand, runMain as _runMain } from 'citty'
+import { fileURLToPath } from 'node:url'
 import main from './main'
 
 import { commands } from './commands'
+
+
+globalThis.__mcpn_cli__ = globalThis.__mcpn_cli__ || {
+  // Programmatic usage fallback
+  startTime: Date.now(),
+  entry: fileURLToPath(
+    new URL(
+      import.meta.url.endsWith('.ts')
+        ? '../bin/mcpn.mjs'
+        : '../../bin/mcpn.mjs',
+      import.meta.url,
+    ),
+  ),
+}
 
 // extend citty for mcpn features
 export const runMain = () => _runMain(main)
