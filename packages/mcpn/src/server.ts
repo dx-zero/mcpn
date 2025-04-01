@@ -2,25 +2,26 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { promptFunctions } from "./prompts.js";
+import { promptFunctions } from "./prompts";
 import {
   loadConfigSync,
-  loadPresetConfigs,
-  listAvailablePresets,
   mergeConfigs,
   validateToolConfig,
   convertParametersToJsonSchema,
   convertParametersToZodSchema,
-} from "./config.js";
+} from "./config";
+import {
+  loadPresetConfigs,
+  listAvailablePresets,
+} from "./preset";
 import {
   formatToolsList,
   appendFormattedTools,
   processTemplate,
-} from "./utils.js";
+} from "./utils";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import fs from "fs";
-import { main as cliMain } from "./cli/cli.js";
 
 // Define TypeScript interfaces for returned types
 interface CommandLineArgs {
@@ -353,34 +354,3 @@ export async function startServer(
     console.error("Error starting server:", err);
   }
 }
-
-// Main execution
-// (async function main() {
-//   // Check for the first non-flag argument
-//   const firstArg = process.argv.slice(2).find((arg) => !arg.startsWith("-"));
-
-//   // If first argument is a command, use CLI framework
-//   if (
-//     firstArg &&
-//     ["init", "add", "i", "remove", "rm", "uninstall"].includes(firstArg)
-//   ) {
-//     await cliMain();
-//   } else {
-//     // Backward compatibility mode - run as MCP server
-
-//     // Get package info
-//     const packageJson = getPackageInfo();
-
-//     // Parse command line arguments
-//     const { configPath, presets } = parseCommandLineArgs();
-
-//     // Load and merge configuration
-//     const finalConfig = loadAndMergeConfig(presets, configPath);
-
-//     // Create and configure the MCP server
-//     const server = createMcpServer(finalConfig, packageJson.version);
-
-//     // Start the server
-//     await startServer(server, presets, configPath);
-//   }
-// })();

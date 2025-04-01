@@ -2,7 +2,7 @@
  * Shared utility functions for MCP server
  */
 
-import { ToolConfig } from "./config.js";
+import { ToolConfig } from "./config";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import fs from "fs";

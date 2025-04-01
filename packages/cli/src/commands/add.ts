@@ -10,34 +10,21 @@ import { dirname, join, basename, resolve } from 'pathe'
 
 import { logger } from '../utils/logger'
 import { cwdArgs, logLevelArgs } from './_shared'
+import { listAvailablePresets } from '@mcpn/core'
 
-// --- Removed Default Registry Constants ---
-
-// Helper function to get the path to the built-in presets directory
-// Needed again for handling simple names
-function getBuiltInPresetsDir(): string {
-  // Assuming this command runs from dist/commands/add.js
-  const currentFilePath = fileURLToPath(import.meta.url)
-  const commandsDir = dirname(currentFilePath)
-  const srcOrDistDir = dirname(commandsDir) // Should be dist/ or src/
-  const cliRootDir = dirname(srcOrDistDir) // Should be packages/cli/
-  // Point to src, assuming build copies assets or resolves correctly.
-  // May need adjustment based on actual build output structure.
-  return resolve(cliRootDir, 'src', 'utils', 'presets')
-}
-
+// --- Removed getBuiltInPresetsDir function as it's already in core ---
 
 export default defineCommand({
   meta: {
     name: 'add',
-    description: 'Add a workflow preset: from built-in names or a giget source.', // Updated description
+    description: 'Add a workflow preset: from built-in names or a giget source.',
   },
   args: {
     ...cwdArgs,
     ...logLevelArgs,
     force: {
       type: 'boolean',
-      description: 'Override existing preset file or directory in .mcp-workflows', // Updated description
+      description: 'Override existing preset file or directory in .mcp-workflows',
     },
     source: {
       type: 'positional',
@@ -72,6 +59,13 @@ export default defineCommand({
       presetName = pathPart ? basename(pathPart) : ''
     } else {
       presetName = sourceArg // Simple name is the preset name
+      
+      // Check if the preset exists in built-in presets
+      const availablePresets = listAvailablePresets()
+      if (!availablePresets.includes(presetName)) {
+        logger.error(`Built-in preset '${presetName}' not found. Available presets: ${availablePresets.join(', ')}`)
+        process.exit(1)
+      }
     }
 
     if (!presetName) {
@@ -82,21 +76,11 @@ export default defineCommand({
     // --- Branch Logic: Simple Name vs Giget Source ---
     if (!isGigetSource) {
       // --- 3a. Handle Simple Name (Built-in Preset) ---
-      const builtInPresetsDir = getBuiltInPresetsDir()
-      const sourceFilePath = join(builtInPresetsDir, `${presetName}.yaml`)
       const destFilePath = join(workflowsDir, `${presetName}.yaml`)
 
       try {
-        logger.info(`Attempting to add built-in preset '${presetName}'`) 
-        logger.debug(`Source: ${sourceFilePath}`) 
-        logger.debug(`Destination: ${destFilePath}`) 
-
-        // Check if built-in file exists
-        if (!existsSync(sourceFilePath)) {
-          logger.error(`Built-in preset '${presetName}' not found at ${sourceFilePath}.`)
-          // TODO: List available built-in presets?
-          process.exit(1)
-        }
+        logger.info(`Attempting to add built-in preset '${presetName}'`)
+        logger.debug(`Destination: ${destFilePath}`)
 
         // Check destination and handle --force for file
         if (existsSync(destFilePath)) {
@@ -111,8 +95,9 @@ export default defineCommand({
           }
         }
 
-        // Read built-in file content
-        const content = await fsp.readFile(sourceFilePath, 'utf-8')
+        // Get the preset content from core
+        const presetPath = join(fileURLToPath(new URL('../presets', import.meta.url)), `${presetName}.yaml`)
+        const content = await fsp.readFile(presetPath, 'utf-8')
 
         // Write to destination
         await fsp.writeFile(destFilePath, content)

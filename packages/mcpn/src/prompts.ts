@@ -3,12 +3,12 @@ import * as path from "path";
 import * as yaml from "js-yaml";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { DevToolsConfig, PromptConfig } from "./config.js";
+import { DevToolsConfig, PromptConfig } from "./config";
 import {
   formatToolsList,
   appendFormattedTools,
   processTemplate,
-} from "./utils.js";
+} from "./utils";
 
 // In ES modules, __dirname is not available directly
 const __filename = fileURLToPath(import.meta.url);
