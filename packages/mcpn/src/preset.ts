@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { DevToolsConfig } from "./config";
 import { mergeConfigs } from "./config";
+import { logger } from "./utils/logger";
 
 // In ES modules, __dirname is not available directly
 const __filename = fileURLToPath(import.meta.url);
@@ -56,8 +57,40 @@ export function listAvailablePresets(): string[] {
       .filter((file) => file.endsWith(".yaml") || file.endsWith(".yml"))
       .map((file) => path.basename(file, path.extname(file)));
   } catch (error) {
-    console.error("Error listing available presets:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`Error listing available presets: ${errorMessage}`);
     return [];
+  }
+}
+
+/**
+ * Gets the raw content of a specific built-in preset file.
+ *
+ * @param {string} presetName - The name of the preset (without extension).
+ * @returns {string} The content of the preset file.
+ * @throws {Error} If the preset is not found or cannot be read.
+ */
+export function getPresetContent(presetName: string): string {
+  const availablePresets = listAvailablePresets();
+  if (!presetName || !availablePresets.includes(presetName)) {
+    throw new Error(`Preset "${presetName}" not found. Available: ${availablePresets.join(', ')}`);
+  }
+
+  try {
+    const presetsDir = path.join(__dirname, "presets");
+    // Attempt both .yaml and .yml extensions
+    let presetPath = path.join(presetsDir, `${presetName}.yaml`);
+    if (!fs.existsSync(presetPath)) {
+        presetPath = path.join(presetsDir, `${presetName}.yml`);
+        if (!fs.existsSync(presetPath)) {
+             // This should ideally not happen if listAvailablePresets worked correctly
+             throw new Error(`Preset file for "${presetName}" not found in ${presetsDir} with .yaml or .yml extension.`);
+        }
+    }
+    return fs.readFileSync(presetPath, "utf-8");
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Error reading preset "${presetName}": ${errorMessage}`);
   }
 }
 

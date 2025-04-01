@@ -3,16 +3,14 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
 
-import { defineCommand } from 'citty'
+import { defineCommand, type CommandContext } from 'citty'
 import { colors } from 'consola/utils'
 import { downloadTemplate } from 'giget'
 import { dirname, join, basename, resolve } from 'pathe'
+import { listAvailablePresets, getPresetContent } from '@mcpn/core'
 
 import { logger } from '../utils/logger'
 import { cwdArgs, logLevelArgs } from './_shared'
-import { listAvailablePresets } from '@mcpn/core'
-
-// --- Removed getBuiltInPresetsDir function as it's already in core ---
 
 export default defineCommand({
   meta: {
@@ -33,7 +31,7 @@ export default defineCommand({
       valueHint: 'preset-name|giget-source',
     },
   },
-  async run(ctx) {
+  async run(ctx: CommandContext) {
     const cwd = resolve(ctx.args.cwd)
     const sourceArg = ctx.args.source
     const force = ctx.args.force
@@ -95,9 +93,8 @@ export default defineCommand({
           }
         }
 
-        // Get the preset content from core
-        const presetPath = join(fileURLToPath(new URL('../presets', import.meta.url)), `${presetName}.yaml`)
-        const content = await fsp.readFile(presetPath, 'utf-8')
+        // Get the preset content from core using the new function
+        const content = getPresetContent(presetName)
 
         // Write to destination
         await fsp.writeFile(destFilePath, content)

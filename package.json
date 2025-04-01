@@ -13,7 +13,9 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm -r --filter './packages/**' build",
+    "a": "node packages/cli/dist/index.mjs server --preset thinking",
     "cl": "pnpm -r --filter './packages/**' build && pnpm -r --filter './packages/cli' run mcpn",
+    "clf": "pnpm -r --filter './packages/cli' run mcpn",
     "mcpn": "pnpm -r --filter './packages/cli' run mcpn",
     "build:templates": "pnpm -r --filter './templates/**' build",
     "build:docs": "pnpm -r --filter './docs/**' build",
