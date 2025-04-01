@@ -1,7 +1,6 @@
 import { runCommand as _runCommand, runMain as _runMain } from 'citty'
 import { fileURLToPath } from 'node:url'
 import main from './main'
-
 import { commands } from './commands'
 
 
@@ -38,3 +37,4 @@ export async function runCommand(
     },
   })
 }
+

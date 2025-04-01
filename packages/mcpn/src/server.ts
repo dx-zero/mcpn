@@ -72,7 +72,7 @@ function parseCommandLineArgs(): CommandLineArgs {
  * @param presets - Array of preset names to load
  * @param configPath - Optional path to user config
  */
-function loadAndMergeConfig(
+export function loadAndMergeConfig(
   presets: string[],
   configPath?: string
 ): Record<string, any> {
@@ -111,7 +111,7 @@ function loadAndMergeConfig(
  * @param config - The tool configuration object
  * @param version - Server version
  */
-function createMcpServer(
+export function createMcpServer(
   config: Record<string, any>,
   version: string
 ): McpServer {
@@ -355,32 +355,32 @@ export async function startServer(
 }
 
 // Main execution
-(async function main() {
-  // Check for the first non-flag argument
-  const firstArg = process.argv.slice(2).find((arg) => !arg.startsWith("-"));
+// (async function main() {
+//   // Check for the first non-flag argument
+//   const firstArg = process.argv.slice(2).find((arg) => !arg.startsWith("-"));
 
-  // If first argument is a command, use CLI framework
-  if (
-    firstArg &&
-    ["init", "add", "i", "remove", "rm", "uninstall"].includes(firstArg)
-  ) {
-    await cliMain();
-  } else {
-    // Backward compatibility mode - run as MCP server
+//   // If first argument is a command, use CLI framework
+//   if (
+//     firstArg &&
+//     ["init", "add", "i", "remove", "rm", "uninstall"].includes(firstArg)
+//   ) {
+//     await cliMain();
+//   } else {
+//     // Backward compatibility mode - run as MCP server
 
-    // Get package info
-    const packageJson = getPackageInfo();
+//     // Get package info
+//     const packageJson = getPackageInfo();
 
-    // Parse command line arguments
-    const { configPath, presets } = parseCommandLineArgs();
+//     // Parse command line arguments
+//     const { configPath, presets } = parseCommandLineArgs();
 
-    // Load and merge configuration
-    const finalConfig = loadAndMergeConfig(presets, configPath);
+//     // Load and merge configuration
+//     const finalConfig = loadAndMergeConfig(presets, configPath);
 
-    // Create and configure the MCP server
-    const server = createMcpServer(finalConfig, packageJson.version);
+//     // Create and configure the MCP server
+//     const server = createMcpServer(finalConfig, packageJson.version);
 
-    // Start the server
-    await startServer(server, presets, configPath);
-  }
-})();
+//     // Start the server
+//     await startServer(server, presets, configPath);
+//   }
+// })();

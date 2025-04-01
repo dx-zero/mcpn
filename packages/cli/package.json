@@ -62,11 +62,11 @@
     "jiti": "^2.4.2",
     "listhen": "^1.9.0",
     "magicast": "^0.3.5",
+    "mri": "^1.2.0",
     "nitropack": "npm:nitropack-nightly",
     "nypm": "^0.6.0",
     "ofetch": "^1.4.1",
     "ohash": "^2.0.11",
-    "pathe": "^2.0.3",
     "perfect-debounce": "^1.0.0",
     "pkg-types": "^2.1.0",
     "rollup": "^4.38.0",
@@ -75,7 +75,27 @@
     "std-env": "^3.8.1",
     "ufo": "^1.5.4",
     "unplugin-purge-polyfills": "^0.0.7",
-    "youch": "^4.1.0-beta.6"
+    "youch": "^4.1.0-beta.6",
+    "@types/chai": "^4.3.5",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.0.0",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.7.3",
+    "@modelcontextprotocol/sdk": "catalog:prod",
+    "ansis": "catalog:prod",
+    "debug": "catalog:prod",
+    "pathe": "catalog:prod",
+    "zod": "catalog:prod"
   },
-  "packageManager": "pnpm@10.6.3"
+  "packageManager": "pnpm@10.6.3",
+  "dependencies": {
+    "@mcpn/core": "workspace:*",
+    "@types/js-yaml": "^4.0.9",
+    "js-yaml": "^4.1.0"
+  }
 }
