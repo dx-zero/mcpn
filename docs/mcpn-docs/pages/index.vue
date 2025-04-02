@@ -1,18 +1,24 @@
 <script setup lang="ts">
-const { data: page } = await useAsyncData('index', () => queryCollection('landing').path('/').first())
+const { data: page } = await useAsyncData("index", () =>
+	queryCollection("landing").path("/").first(),
+);
 if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
+	throw createError({
+		statusCode: 404,
+		statusMessage: "Page not found",
+		fatal: true,
+	});
 }
 
 useSeoMeta({
-  title: page.value.seo.title,
-  titleTemplate: null,
-  ogTitle: page.value.seo.title,
-  description: page.value.seo.description,
-  ogDescription: page.value.seo.description,
-  ogImage: 'https://mcpn.ai/social-card.png',
-  twitterImage: 'https://mcpn.ai/social-card.png'
-})
+	title: page.value.seo.title,
+	titleTemplate: null,
+	ogTitle: page.value.seo.title,
+	description: page.value.seo.description,
+	ogDescription: page.value.seo.description,
+	ogImage: "https://mcpn.ai/social-card.png",
+	twitterImage: "https://mcpn.ai/social-card.png",
+});
 </script>
 
 <template>

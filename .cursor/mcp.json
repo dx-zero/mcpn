@@ -1,10 +1,10 @@
 {
-  "mcpServers": {
-    "workflows-mcp": {
-      "command": "node",
-      "args": [
-        "/Users/kregenrek/projects/mcpn/packages/cli/bin/mcpn.mjs server --preset thinking"
-      ]
-    }
-  }
+	"mcpServers": {
+		"workflows-mcp": {
+			"command": "node",
+			"args": [
+				"/Users/kregenrek/projects/mcpn/packages/cli/bin/mcpn.mjs server --preset thinking"
+			]
+		}
+	}
 }

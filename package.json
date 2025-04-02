@@ -1,97 +1,103 @@
 {
-  "name": "@dx0/mcpn",
-  "private": true,
-  "version": "0.0.1",
-  "homepage": "https://mcpn.com",
-  "engines": {
-    "node": "^18.0.0 || >=20.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dx-zero/mcpn"
-  },
-  "license": "MIT",
-  "scripts": {
-    "build": "pnpm -r --filter './packages/**' build",
-    "a": "node packages/cli/dist/index.mjs server --preset thinking",
-    "cl": "pnpm -r --filter './packages/**' build && pnpm -r --filter './packages/cli' run mcpn",
-    "clf": "pnpm -r --filter './packages/cli' run mcpn",
-    "mcpn": "pnpm -r --filter './packages/cli' run mcpn",
-    "build:templates": "pnpm -r --filter './templates/**' build",
-    "build:docs": "pnpm -r --filter './docs/**' build",
-    "dev:docs": "pnpm -r --filter './docs/**' dev",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
-    "typecheck": "tsc -p scripts --noEmit && pnpm -r --parallel run typecheck",
-    "publish-npm": "pnpm -r --filter='./packages/mcpn' run build && tsx scripts/release.ts",
-    "link-create": "cd packages/create-mcpn && pnpm link --global",
-    "llms": "npx repomix docs/mcpn-docs/content --include '**/*.md' --ignore '**/1.index.md,index.md,*credits*.md,*mcpn*' --output docs/mcpn-docs/public/llms_full.txt",
-    "test:dist": "pnpm -r test:dist"
-  },
-  "keywords": [
-    "mcpn",
-    "cli",
-    "model-context-protocol",
-    "claude",
-    "react-three-fiber",
-    "ai-coding"
-  ],
-  "devDependencies": {
-    "@antfu/eslint-config": "catalog:cli",
-    "@antfu/ni": "catalog:cli",
-    "@antfu/utils": "catalog:utils",
-    "@cloudflare/workers-types": "^4.20250204.0",
-    "@modelcontextprotocol/inspector": "catalog:cli",
-    "@modelcontextprotocol/sdk": "catalog:prod",
-    "@release-it/bumper": "^6.0.1",
-    "@release-it/conventional-changelog": "^8.0.2",
-    "@types/json-query": "^2.2.6",
-    "@types/node": "catalog:types",
-    "@types/pg": "^8.11.11",
-    "@vitejs/release-scripts": "^1.3.3",
-    "bumpp": "catalog:cli",
-    "chalk": "^5.4.1",
-    "conventional-changelog-cli": "^5.0.0",
-    "cursor-tools": "latest",
-    "eslint": "catalog:cli",
-    "execa": "^9.5.2",
-    "globals": "^15.15.0",
-    "h3": "catalog:prod",
-    "inquirer": "^10.2.2",
-    "lint-staged": "catalog:cli",
-    "mustache": "^4.2.0",
-    "nodemon": "catalog:cli",
-    "picocolors": "^1.1.1",
-    "prompts": "^2.4.2",
-    "release-it": "^17.11.0",
-    "rimraf": "^5.0.10",
-    "semver": "^7.7.1",
-    "simple-git-hooks": "catalog:cli",
-    "tinyexec": "catalog:utils",
-    "tslib": "^2.8.1",
-    "tsx": "catalog:cli",
-    "typescript": "catalog:cli",
-    "typescript-eslint": "^8.26.1",
-    "unbuild": "catalog:cli",
-    "vite": "catalog:cli",
-    "vitest": "catalog:testing",
-    "vitest-package-exports": "catalog:testing",
-    "wrangler": "^3.1.0",
-    "yaml": "catalog:testing",
-    "yargs": "^17.7.2",
-    "zod": "catalog:prod"
-  },
-  "packageManager": "pnpm@10.6.3",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3"
-    ],
-    "overrides": {
-      "mcpn": "workspace:*"
-    }
-  },
-  "dependencies": {
-    "@types/js-yaml": "^4.0.9",
-    "js-yaml": "^4.1.0"
-  }
+	"name": "@dx0/mcpn",
+	"private": true,
+	"version": "0.0.1",
+	"homepage": "https://mcpn.com",
+	"engines": {
+		"node": "^18.0.0 || >=20.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dx-zero/mcpn"
+	},
+	"license": "MIT",
+	"scripts": {
+		"build": "pnpm -r --filter './packages/**' build",
+		"cli:dist": "node packages/cli/dist/index.mjs server --preset thinking",
+		"cli:brun": "pnpm -r --filter './packages/**' build && pnpm -r --filter './packages/cli' run mcpn",
+		"cli:run": "pnpm -r --filter './packages/cli' run mcpn",
+		"link-create": "cd packages/create-mcpn && pnpm link --global",
+		"docs:build": "pnpm -r --filter './docs/**' build",
+		"docs:llms": "npx repomix docs/mcpn-docs/content --include '**/*.md' --ignore '**/1.index.md,index.md,*credits*.md,*mcpn*' --output docs/mcpn-docs/public/llms_full.txt",
+		"docs:dev": "pnpm -r --filter './docs/**' dev",
+		"test:dist": "pnpm -r test:dist",
+		"biome:check": "biome check", 
+		"biome:fix": "biome check --fix",
+		"biome:fix:unsafe": "biome check --fix --unsafe",
+		"biome:format": "biome format --write",
+		"lint": "biome lint",
+		"biome:lint:fix": "biome lint --fix",
+		"biome:precommit": "biome check --staged --fix",
+		"biome:ci": "biome ci",
+		"publish-npm": "pnpm -r --filter='./packages/mcpn' run build && tsx scripts/release.ts",
+		"clean": "find . -name 'node_modules' -type d -prune -exec rm -rf {} \\; 2>/dev/null || true",
+		"clean:dist": "find . -name 'dist' -type d -prune -exec rm -rf {} \\; 2>/dev/null || true",
+		"clean:all": "pnpm clean && pnpm clean:dist"
+	},
+	"keywords": [
+		"mcpn",
+		"cli",
+		"model-context-protocol",
+		"claude",
+		"react-three-fiber",
+		"ai-coding"
+	],
+	"devDependencies": {
+		"@antfu/eslint-config": "catalog:cli",
+		"@antfu/ni": "catalog:cli",
+		"@antfu/utils": "catalog:utils",
+		"@cloudflare/workers-types": "^4.20250204.0",
+		"@modelcontextprotocol/inspector": "catalog:cli",
+		"@modelcontextprotocol/sdk": "catalog:prod",
+		"@release-it/bumper": "^6.0.1",
+		"@release-it/conventional-changelog": "^8.0.2",
+		"@types/js-yaml": "catalog:types",
+		"@types/json-query": "^2.2.6",
+		"@types/node": "catalog:types",
+		"@types/pg": "^8.11.11",
+		"@vitejs/release-scripts": "^1.3.3",
+		"bumpp": "catalog:cli",
+		"chalk": "catalog:utils",
+		"conventional-changelog-cli": "^5.0.0",
+		"cursor-tools": "latest",
+		"eslint": "catalog:cli",
+		"eslint-config-unjs": "^0.4.2",
+		"execa": "catalog:utils",
+		"globals": "^15.15.0",
+		"h3": "catalog:prod",
+		"inquirer": "catalog:cli",
+		"js-yaml": "catalog:prod",
+		"lint-staged": "catalog:cli",
+		"mustache": "^4.2.0",
+		"nodemon": "catalog:cli",
+		"picocolors": "catalog:utils",
+		"prompts": "catalog:cli",
+		"release-it": "^17.11.0",
+		"rimraf": "catalog:utils",
+		"semver": "catalog:utils",
+		"simple-git-hooks": "catalog:cli",
+		"tinyexec": "catalog:utils",
+		"tslib": "catalog:prod",
+		"tsx": "catalog:cli",
+		"typescript": "catalog:cli",
+		"typescript-eslint": "^8.26.1",
+		"unbuild": "catalog:cli",
+		"vite": "catalog:cli",
+		"vitest": "catalog:testing",
+		"vitest-package-exports": "catalog:testing",
+		"wrangler": "^3.1.0",
+		"yaml": "catalog:testing",
+		"yargs": "catalog:cli",
+		"zod": "catalog:prod"
+	},
+	"packageManager": "pnpm@10.6.3",
+	"pnpm": {
+		"onlyBuiltDependencies": ["better-sqlite3"],
+		"overrides": {
+			"mcpn": "workspace:*"
+		}
+	},
+	"dependencies": {
+		"@biomejs/biome": "catalog:cli"
+	}
 }

@@ -1,9 +1,9 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-import { DevToolsConfig } from "./config";
+import type { DevToolsConfig } from "./config";
 import { mergeConfigs } from "./config";
 import { logger } from "./utils/logger";
 
@@ -18,25 +18,25 @@ const __dirname = dirname(__filename);
  * @returns {DevToolsConfig} The loaded configuration or empty object on error
  */
 export function loadPresetConfig(filePath: string): DevToolsConfig {
-  try {
-    const content = fs.readFileSync(filePath, "utf-8");
-    const config = yaml.load(content) as DevToolsConfig;
+	try {
+		const content = fs.readFileSync(filePath, "utf8");
+		const config = yaml.load(content) as DevToolsConfig;
 
-    if (typeof config !== "object") {
-      console.error(
-        `Preset config in ${filePath} must be an object, returning empty config`
-      );
-      return {};
-    }
+		if (typeof config !== "object") {
+			console.error(
+				`Preset config in ${filePath} must be an object, returning empty config`,
+			);
+			return {};
+		}
 
-    return config;
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(
-      `Error loading preset config from ${filePath}: ${errorMessage}`
-    );
-    return {};
-  }
+		return config;
+	} catch (error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		console.error(
+			`Error loading preset config from ${filePath}: ${errorMessage}`,
+		);
+		return {};
+	}
 }
 
 /**
@@ -45,22 +45,22 @@ export function loadPresetConfig(filePath: string): DevToolsConfig {
  * @returns {string[]} Array of available preset names (without file extensions)
  */
 export function listAvailablePresets(): string[] {
-  try {
-    const presetsDir = path.join(__dirname, "presets");
-    if (!fs.existsSync(presetsDir)) {
-      console.error(`Presets directory not found at ${presetsDir}`);
-      return [];
-    }
+	try {
+		const presetsDir = path.join(__dirname, "presets");
+		if (!fs.existsSync(presetsDir)) {
+			console.error(`Presets directory not found at ${presetsDir}`);
+			return [];
+		}
 
-    return fs
-      .readdirSync(presetsDir)
-      .filter((file) => file.endsWith(".yaml") || file.endsWith(".yml"))
-      .map((file) => path.basename(file, path.extname(file)));
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`Error listing available presets: ${errorMessage}`);
-    return [];
-  }
+		return fs
+			.readdirSync(presetsDir)
+			.filter((file) => file.endsWith(".yaml") || file.endsWith(".yml"))
+			.map((file) => path.basename(file, path.extname(file)));
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		console.error(`Error listing available presets: ${errorMessage}`);
+		return [];
+	}
 }
 
 /**
@@ -71,27 +71,31 @@ export function listAvailablePresets(): string[] {
  * @throws {Error} If the preset is not found or cannot be read.
  */
 export function getPresetContent(presetName: string): string {
-  const availablePresets = listAvailablePresets();
-  if (!presetName || !availablePresets.includes(presetName)) {
-    throw new Error(`Preset "${presetName}" not found. Available: ${availablePresets.join(', ')}`);
-  }
+	const availablePresets = listAvailablePresets();
+	if (!presetName || !availablePresets.includes(presetName)) {
+		throw new Error(
+			`Preset "${presetName}" not found. Available: ${availablePresets.join(", ")}`,
+		);
+	}
 
-  try {
-    const presetsDir = path.join(__dirname, "presets");
-    // Attempt both .yaml and .yml extensions
-    let presetPath = path.join(presetsDir, `${presetName}.yaml`);
-    if (!fs.existsSync(presetPath)) {
-        presetPath = path.join(presetsDir, `${presetName}.yml`);
-        if (!fs.existsSync(presetPath)) {
-             // This should ideally not happen if listAvailablePresets worked correctly
-             throw new Error(`Preset file for "${presetName}" not found in ${presetsDir} with .yaml or .yml extension.`);
-        }
-    }
-    return fs.readFileSync(presetPath, "utf-8");
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    throw new Error(`Error reading preset "${presetName}": ${errorMessage}`);
-  }
+	try {
+		const presetsDir = path.join(__dirname, "presets");
+		// Attempt both .yaml and .yml extensions
+		let presetPath = path.join(presetsDir, `${presetName}.yaml`);
+		if (!fs.existsSync(presetPath)) {
+			presetPath = path.join(presetsDir, `${presetName}.yml`);
+			if (!fs.existsSync(presetPath)) {
+				// This should ideally not happen if listAvailablePresets worked correctly
+				throw new Error(
+					`Preset file for "${presetName}" not found in ${presetsDir} with .yaml or .yml extension.`,
+				);
+			}
+		}
+		return fs.readFileSync(presetPath, "utf8");
+	} catch (error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		throw new Error(`Error reading preset "${presetName}": ${errorMessage}`);
+	}
 }
 
 /**
@@ -101,31 +105,31 @@ export function getPresetContent(presetName: string): string {
  * @returns {DevToolsConfig} The merged preset configuration
  */
 export function loadPresetConfigs(presets: string[]): DevToolsConfig {
-  const mergedConfig: DevToolsConfig = {};
-  const availablePresets = listAvailablePresets();
+	const mergedConfig: DevToolsConfig = {};
+	const availablePresets = listAvailablePresets();
 
-  for (const preset of presets) {
-    try {
-      // If preset is empty, skip
-      if (!preset) {
-        console.error("Empty preset name provided, skipping");
-        continue;
-      }
+	for (const preset of presets) {
+		try {
+			// If preset is empty, skip
+			if (!preset) {
+				console.error("Empty preset name provided, skipping");
+				continue;
+			}
 
-      // Check if preset exists
-      if (!availablePresets.includes(preset)) {
-        console.error(`Preset "${preset}" not found, skipping`);
-        continue;
-      }
+			// Check if preset exists
+			if (!availablePresets.includes(preset)) {
+				console.error(`Preset "${preset}" not found, skipping`);
+				continue;
+			}
 
-      // Load preset from the internal presets directory
-      const presetPath = path.join(__dirname, "presets", `${preset}.yaml`);
-      const presetConfig = loadPresetConfig(presetPath);
-      mergeConfigs(mergedConfig, presetConfig);
-    } catch (error) {
-      console.error(`Error loading preset "${preset}": ${error}`);
-    }
-  }
+			// Load preset from the internal presets directory
+			const presetPath = path.join(__dirname, "presets", `${preset}.yaml`);
+			const presetConfig = loadPresetConfig(presetPath);
+			mergeConfigs(mergedConfig, presetConfig);
+		} catch (error) {
+			console.error(`Error loading preset "${preset}": ${error}`);
+		}
+	}
 
-  return mergedConfig;
+	return mergedConfig;
 }

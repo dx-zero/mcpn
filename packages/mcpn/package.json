@@ -1,81 +1,79 @@
 {
-  "name": "@mcpn/core",
-  "version": "0.0.1",
-  "description": "MCP workflow orchestration and registry tool with presets for thinking, coding and more",
-  "type": "module",
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "workflows",
-    "prompts",
-    "prompt engineering",
-    "ai",
-    "mcpn",
-    "mcp network"
-  ],
-  "contributors": [
-    {
-      "name": "Ted Werbel",
-      "email": "ted@agentdesk.ai"
-    },
-    {
-      "name": "Kevin Kern",
-      "email": "kevin@instructa.org"
-    }
-  ],
-  "bugs": "https://github.com/dx-zero/mcpn/issues",
-  "license": "MIT",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "scripts": {
-    "dev": "tsx src/server.ts",
-    "dev:verbose": "NODE_ENV=development tsx src/server.ts",
-    "start": "node dist/server.js",
-    "inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/server.js",
-    "build": "unbuild",
-    "prepublishOnly": "npm run build",
-    "update": "npm version patch && npm publish",
-    "test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.7.0",
-    "js-yaml": "^4.1.0",
-    "mcpn": "workspace:*",
-    "zod": "^3.24.2"
-  },
-  "devDependencies": {
-    "@modelcontextprotocol/sdk": "catalog:prod",
-    "@rollup/plugin-replace": "^6.0.2",
-    "@rollup/plugin-yaml": "^4.1.2",
-    "@types/chai": "^4.3.5",
-    "@types/fs-extra": "^11.0.4",
-    "@types/js-yaml": "^4.0.9",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^18.0.0",
-    "ansis": "catalog:prod",
-    "chai": "^4.3.7",
-    "debug": "catalog:prod",
-    "fs-extra": "^11.2.0",
-    "mocha": "^10.2.0",
-    "pathe": "catalog:prod",
-    "rollup": "^4.38.0",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
-    "tsx": "^4.6.0",
-    "typescript": "^5.7.3",
-    "unbuild": "^2.0.0",
-    "zod": "catalog:prod"
-  },
-  "packageManager": "pnpm@10.6.3"
+	"name": "@mcpn/core",
+	"version": "0.0.1",
+	"description": "MCP workflow orchestration and registry tool with presets for thinking, coding and more",
+	"type": "module",
+	"keywords": [
+		"mcp",
+		"model-context-protocol",
+		"workflows",
+		"prompts",
+		"prompt engineering",
+		"ai",
+		"mcpn",
+		"mcp network"
+	],
+	"contributors": [
+		{
+			"name": "Ted Werbel",
+			"email": "ted@agentdesk.ai"
+		},
+		{
+			"name": "Kevin Kern",
+			"email": "kevin@instructa.org"
+		}
+	],
+	"bugs": "https://github.com/dx-zero/mcpn/issues",
+	"license": "MIT",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": ["dist"],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"scripts": {
+		"dev": "tsx src/server.ts",
+		"dev:verbose": "NODE_ENV=development tsx src/server.ts",
+		"start": "node dist/server.js",
+		"inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/server.js",
+		"build": "unbuild",
+		"prepublishOnly": "npm run build",
+		"update": "npm version patch && npm publish",
+		"test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "catalog:prod",
+		"js-yaml": "catalog:prod",
+		"mcpn": "workspace:*",
+		"zod": "catalog:prod"
+	},
+	"devDependencies": {
+		"@modelcontextprotocol/sdk": "catalog:prod",
+		"@rollup/plugin-replace": "^6.0.2",
+		"@rollup/plugin-yaml": "catalog:cli",
+		"@types/chai": "catalog:types",
+		"@types/fs-extra": "catalog:types",
+		"@types/js-yaml": "catalog:types",
+		"@types/mocha": "catalog:types",
+		"@types/node": "catalog:types",
+		"ansis": "catalog:prod",
+		"chai": "catalog:testing",
+		"debug": "catalog:prod",
+		"fs-extra": "catalog:utils",
+		"mocha": "catalog:testing",
+		"pathe": "catalog:prod",
+		"rollup": "catalog:cli",
+		"ts-node": "catalog:cli",
+		"tsconfig-paths": "catalog:cli",
+		"tsx": "catalog:cli",
+		"typescript": "catalog:cli",
+		"unbuild": "catalog:cli",
+		"zod": "catalog:prod"
+	},
+	"packageManager": "pnpm@10.6.3"
 }

@@ -1,102 +1,99 @@
 {
-  "name": "mcpn",
-  "version": "0.1.0",
-  "description": "MCP workflow orchestration and registry tool with presets for thinking, coding and more",
-  "type": "module",
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "workflows",
-    "prompts",
-    "prompt engineering",
-    "ai",
-    "mcpn",
-    "mcp network"
-  ],
-  "contributors": [
-    {
-      "name": "Ted Werbel",
-      "email": "ted@agentdesk.ai"
-    },
-    {
-      "name": "Kevin Kern",
-      "email": "kevin@instructa.org"
-    }
-  ],
-  "bugs": "https://github.com/dx-zero/mcpn/issues",
-  "license": "MIT",
-  "exports": {
-    ".": "./dist/index.mjs",
-    "./cli": "./bin/mcpn.mjs"
-  },
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "mcpn": "bin/mcpn.mjs"
-  },
-  "files": [
-    "dist",
-    "bin"
-  ],
-  "scripts": {
-    "build": "unbuild",
-    "dev": "unbuild --stub",
-    "prepublishOnly": "npm run build",
-    "release": "npm publish",
-    "release:alpha": "npm publish --tag alpha",
-    "mcpn": "node ./bin/mcpn.mjs",
-    "mcpn-bun": "bun --bun ./dist/mcpn.mjs",
-    "test:dist": "node ./bin/mcpn.mjs info ./playground"
-  },
-  "devDependencies": {
-    "@modyfi/vite-plugin-yaml": "^1.1.1",
-    "@rollup/plugin-yaml": "^4.1.2",
-    "@types/semver": "^7.7.0",
-    "c12": "^3.0.2",
-    "chokidar": "^4.0.3",
-    "citty": "^0.1.6",
-    "clipboardy": "^4.0.0",
-    "consola": "^3.4.2",
-    "defu": "^6.1.4",
-    "fuse.js": "^7.1.0",
-    "giget": "^2.0.0",
-    "httpxy": "^0.1.7",
-    "jiti": "^2.4.2",
-    "listhen": "^1.9.0",
-    "magicast": "^0.3.5",
-    "mri": "^1.2.0",
-    "nitropack": "npm:nitropack-nightly",
-    "nypm": "^0.6.0",
-    "ofetch": "^1.4.1",
-    "ohash": "^2.0.11",
-    "perfect-debounce": "^1.0.0",
-    "pkg-types": "^2.1.0",
-    "rollup": "^4.38.0",
-    "rollup-plugin-visualizer": "^5.14.0",
-    "scule": "^1.3.0",
-    "std-env": "^3.8.1",
-    "ufo": "^1.5.4",
-    "unplugin-purge-polyfills": "^0.0.7",
-    "youch": "^4.1.0-beta.6",
-    "@types/chai": "^4.3.5",
-    "@types/js-yaml": "^4.0.9",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^18.0.0",
-    "chai": "^4.3.7",
-    "mocha": "^10.2.0",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
-    "tsx": "^4.6.0",
-    "typescript": "^5.7.3",
-    "@modelcontextprotocol/sdk": "catalog:prod",
-    "ansis": "catalog:prod",
-    "debug": "catalog:prod",
-    "pathe": "catalog:prod",
-    "zod": "catalog:prod"
-  },
-  "packageManager": "pnpm@10.6.3",
-  "dependencies": {
-    "@mcpn/core": "workspace:*",
-    "@types/js-yaml": "^4.0.9",
-    "js-yaml": "^4.1.0"
-  }
+	"name": "mcpn",
+	"version": "0.1.0",
+	"description": "MCP workflow orchestration and registry tool with presets for thinking, coding and more",
+	"type": "module",
+	"keywords": [
+		"mcp",
+		"model-context-protocol",
+		"workflows",
+		"prompts",
+		"prompt engineering",
+		"ai",
+		"mcpn",
+		"mcp network"
+	],
+	"contributors": [
+		{
+			"name": "Ted Werbel",
+			"email": "ted@agentdesk.ai"
+		},
+		{
+			"name": "Kevin Kern",
+			"email": "kevin@instructa.org"
+		}
+	],
+	"bugs": "https://github.com/dx-zero/mcpn/issues",
+	"license": "MIT",
+	"exports": {
+		".": "./dist/index.mjs",
+		"./cli": "./bin/mcpn.mjs"
+	},
+	"types": "./dist/index.d.ts",
+	"bin": {
+		"mcpn": "bin/mcpn.mjs"
+	},
+	"files": ["dist", "bin"],
+	"scripts": {
+		"build": "unbuild",
+		"dev": "unbuild --stub",
+		"prepublishOnly": "npm run build",
+		"release": "npm publish",
+		"release:alpha": "npm publish --tag alpha",
+		"mcpn": "node ./bin/mcpn.mjs",
+		"mcpn-bun": "bun --bun ./dist/mcpn.mjs",
+		"test:dist": "node ./bin/mcpn.mjs info ./playground"
+	},
+	"devDependencies": {
+		"@modyfi/vite-plugin-yaml": "^1.1.1",
+		"@rollup/plugin-yaml": "catalog:cli",
+		"@types/semver": "catalog:types",
+		"c12": "catalog:utils",
+		"chokidar": "catalog:utils",
+		"citty": "catalog:prod",
+		"clipboardy": "catalog:cli",
+		"consola": "catalog:cli",
+		"defu": "catalog:utils",
+		"fuse.js": "catalog:utils",
+		"giget": "catalog:cli",
+		"httpxy": "catalog:utils",
+		"jiti": "catalog:cli",
+		"listhen": "catalog:prod",
+		"magicast": "catalog:utils",
+		"mri": "catalog:cli",
+		"nitropack": "npm:nitropack-nightly",
+		"nypm": "catalog:cli",
+		"ofetch": "catalog:prod",
+		"ohash": "catalog:utils",
+		"perfect-debounce": "catalog:utils",
+		"pkg-types": "catalog:utils",
+		"rollup": "catalog:cli",
+		"rollup-plugin-visualizer": "^5.14.0",
+		"scule": "catalog:utils",
+		"std-env": "catalog:utils",
+		"ufo": "catalog:utils",
+		"unplugin-purge-polyfills": "^0.0.7",
+		"youch": "catalog:cli",
+		"@types/chai": "catalog:types",
+		"@types/js-yaml": "catalog:types",
+		"@types/mocha": "catalog:types",
+		"@types/node": "catalog:types",
+		"chai": "catalog:testing",
+		"mocha": "catalog:testing",
+		"ts-node": "catalog:cli",
+		"tsconfig-paths": "catalog:cli",
+		"tsx": "catalog:cli",
+		"typescript": "catalog:cli",
+		"@modelcontextprotocol/sdk": "catalog:prod",
+		"ansis": "catalog:prod",
+		"debug": "catalog:prod",
+		"pathe": "catalog:prod",
+		"zod": "catalog:prod"
+	},
+	"packageManager": "pnpm@10.6.3",
+	"dependencies": {
+		"@mcpn/core": "workspace:*",
+		"@types/js-yaml": "catalog:types",
+		"js-yaml": "catalog:prod"
+	}
 }

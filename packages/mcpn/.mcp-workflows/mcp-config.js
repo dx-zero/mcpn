@@ -1,3 +1,3 @@
 module.exports = {
-  ide: 'cursor'
+	ide: "cursor",
 };

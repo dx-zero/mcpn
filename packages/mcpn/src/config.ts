@@ -1,8 +1,8 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import { z } from "zod";
 
 // In ES modules, __dirname is not available directly
@@ -15,20 +15,20 @@ const __dirname = dirname(__filename);
  * @interface ParameterConfig
  */
 export interface ParameterConfig {
-  /** Type of the parameter */
-  type: "string" | "number" | "boolean" | "array" | "object" | "enum";
-  /** Description of what the parameter does */
-  description?: string;
-  /** Whether the parameter is required */
-  required?: boolean;
-  /** Default value for the parameter */
-  default?: any;
-  /** Possible values for enum type parameters */
-  enum?: (string | number)[];
-  /** For array types, defines the type of items in the array */
-  items?: ParameterConfig;
-  /** For object types, defines the properties of the object */
-  properties?: Record<string, ParameterConfig>;
+	/** Type of the parameter */
+	type: "string" | "number" | "boolean" | "array" | "object" | "enum";
+	/** Description of what the parameter does */
+	description?: string;
+	/** Whether the parameter is required */
+	required?: boolean;
+	/** Default value for the parameter */
+	default?: any;
+	/** Possible values for enum type parameters */
+	enum?: (string | number)[];
+	/** For array types, defines the type of items in the array */
+	items?: ParameterConfig;
+	/** For object types, defines the properties of the object */
+	properties?: Record<string, ParameterConfig>;
 }
 
 /**
@@ -37,16 +37,16 @@ export interface ParameterConfig {
  * @interface ToolConfig
  */
 export interface ToolConfig {
-  /** Name of the tool */
-  name: string;
-  /** Description of what the tool does */
-  description?: string;
-  /** Specific prompt text for this tool */
-  prompt?: string;
-  /** Whether this tool is optional to use */
-  optional?: boolean;
-  /** Parameters that the tool accepts */
-  parameters?: Record<string, ParameterConfig>;
+	/** Name of the tool */
+	name: string;
+	/** Description of what the tool does */
+	description?: string;
+	/** Specific prompt text for this tool */
+	prompt?: string;
+	/** Whether this tool is optional to use */
+	optional?: boolean;
+	/** Parameters that the tool accepts */
+	parameters?: Record<string, ParameterConfig>;
 }
 
 /**
@@ -55,26 +55,26 @@ export interface ToolConfig {
  * @interface PromptConfig
  */
 export interface PromptConfig {
-  /** If provided, completely replaces the default prompt */
-  prompt?: string;
-  /** Additional context to append to the prompt (either default or custom) */
-  context?: string;
-  /**
-   * Available tools for this prompt. Can be:
-   * - A Record of tool names to either description strings or ToolConfig objects
-   * - A comma-separated string of tool names
-   */
-  tools?: Record<string, string | ToolConfig> | string;
-  /** Whether tools should be executed sequentially or situationally */
-  toolMode?: "sequential" | "situational";
-  /** Description for the tool (used as second parameter in server.tool) */
-  description?: string;
-  /** Whether this tool is disabled */
-  disabled?: boolean;
-  /** Optional name override for the registered tool (default is the config key) */
-  name?: string;
-  /** Parameters that the tool accepts */
-  parameters?: Record<string, ParameterConfig>;
+	/** If provided, completely replaces the default prompt */
+	prompt?: string;
+	/** Additional context to append to the prompt (either default or custom) */
+	context?: string;
+	/**
+	 * Available tools for this prompt. Can be:
+	 * - A Record of tool names to either description strings or ToolConfig objects
+	 * - A comma-separated string of tool names
+	 */
+	tools?: Record<string, string | ToolConfig> | string;
+	/** Whether tools should be executed sequentially or situationally */
+	toolMode?: "sequential" | "situational";
+	/** Description for the tool (used as second parameter in server.tool) */
+	description?: string;
+	/** Whether this tool is disabled */
+	disabled?: boolean;
+	/** Optional name override for the registered tool (default is the config key) */
+	name?: string;
+	/** Parameters that the tool accepts */
+	parameters?: Record<string, ParameterConfig>;
 }
 
 /**
@@ -84,11 +84,11 @@ export interface PromptConfig {
  * @interface DevToolsConfig
  */
 export interface DevToolsConfig {
-  /**
-   * Dynamic mapping of tool names to their configurations
-   * Tool names are determined by the keys in the YAML preset files
-   */
-  [key: string]: PromptConfig | undefined;
+	/**
+	 * Dynamic mapping of tool names to their configurations
+	 * Tool names are determined by the keys in the YAML preset files
+	 */
+	[key: string]: PromptConfig | undefined;
 }
 
 // Default empty configuration
@@ -102,25 +102,25 @@ const defaultConfig: DevToolsConfig = {};
  * @returns {DevToolsConfig} The merged configuration object
  */
 export function mergeConfigs(
-  target: DevToolsConfig,
-  source: DevToolsConfig
+	target: DevToolsConfig,
+	source: DevToolsConfig,
 ): DevToolsConfig {
-  Object.entries(source).forEach(([key, value]) => {
-    if (target[key]) {
-      // If the property already exists, merge with the existing one
-      target[key] = {
-        ...target[key],
-        ...value,
-        // Special handling for tools array - concatenate rather than replace
-        tools: mergeTools(target[key]?.tools, value?.tools),
-      };
-    } else {
-      // Otherwise, just set it
-      target[key] = value;
-    }
-  });
+	for (const [key, value] of Object.entries(source)) {
+		if (target[key]) {
+			// If the property already exists, merge with the existing one
+			target[key] = {
+				...target[key],
+				...value,
+				// Special handling for tools array - concatenate rather than replace
+				tools: mergeTools(target[key]?.tools, value?.tools),
+			};
+		} else {
+			// Otherwise, just set it
+			target[key] = value;
+		}
+	}
 
-  return target;
+	return target;
 }
 
 /**
@@ -131,55 +131,55 @@ export function mergeConfigs(
  * @returns {any} The merged tools or undefined if both inputs are undefined
  */
 function mergeTools(targetTools?: any, sourceTools?: any): any {
-  if (!targetTools && !sourceTools) {
-    return undefined;
-  }
-  if (!targetTools) {
-    return sourceTools;
-  }
-  if (!sourceTools) {
-    return targetTools;
-  }
+	if (!targetTools && !sourceTools) {
+		return undefined;
+	}
+	if (!targetTools) {
+		return sourceTools;
+	}
+	if (!sourceTools) {
+		return targetTools;
+	}
 
-  // Handle string format
-  if (typeof targetTools === "string" && typeof sourceTools === "string") {
-    // Merge comma-separated strings
-    const toolsSet = new Set([
-      ...targetTools.split(",").map((t) => t.trim()),
-      ...sourceTools.split(",").map((t) => t.trim()),
-    ]);
-    return Array.from(toolsSet).join(", ");
-  }
+	// Handle string format
+	if (typeof targetTools === "string" && typeof sourceTools === "string") {
+		// Merge comma-separated strings
+		const toolsSet = new Set([
+			...targetTools.split(",").map((t) => t.trim()),
+			...sourceTools.split(",").map((t) => t.trim()),
+		]);
+		return [...toolsSet].join(", ");
+	}
 
-  // Convert string to object format if needed
-  const targetObj =
-    typeof targetTools === "string"
-      ? Object.fromEntries(targetTools.split(",").map((t) => [t.trim(), ""]))
-      : targetTools;
+	// Convert string to object format if needed
+	const targetObj =
+		typeof targetTools === "string"
+			? Object.fromEntries(targetTools.split(",").map((t) => [t.trim(), ""]))
+			: targetTools;
 
-  const sourceObj =
-    typeof sourceTools === "string"
-      ? Object.fromEntries(sourceTools.split(",").map((t) => [t.trim(), ""]))
-      : sourceTools;
+	const sourceObj =
+		typeof sourceTools === "string"
+			? Object.fromEntries(sourceTools.split(",").map((t) => [t.trim(), ""]))
+			: sourceTools;
 
-  // Merge objects with deep merge for tool properties
-  const result = { ...targetObj };
+	// Merge objects with deep merge for tool properties
+	const result = { ...targetObj };
 
-  for (const [key, value] of Object.entries(sourceObj)) {
-    if (
-      key in result &&
-      typeof result[key] === "object" &&
-      typeof value === "object"
-    ) {
-      // Deep merge for object values (preserving properties like prompt and optional)
-      result[key] = { ...result[key], ...value };
-    } else {
-      // Replace or add the source value
-      result[key] = value;
-    }
-  }
+	for (const [key, value] of Object.entries(sourceObj)) {
+		if (
+			key in result &&
+			typeof result[key] === "object" &&
+			typeof value === "object"
+		) {
+			// Deep merge for object values (preserving properties like prompt and optional)
+			result[key] = { ...result[key], ...value };
+		} else {
+			// Replace or add the source value
+			result[key] = value;
+		}
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -190,88 +190,89 @@ function mergeTools(targetTools?: any, sourceTools?: any): any {
  * @returns {Promise<DevToolsConfig>} Promise resolving to the loaded and merged configuration
  */
 export async function loadConfig(
-  directoryPath?: string
+	directoryPath?: string,
 ): Promise<DevToolsConfig> {
-  if (!directoryPath) {
-    console.error(
-      "No config directory path provided, using default configuration"
-    );
-    return defaultConfig;
-  }
+	if (!directoryPath) {
+		console.error(
+			"No config directory path provided, using default configuration",
+		);
+		return defaultConfig;
+	}
 
-  try {
-    // Resolve absolute path
-    const absolutePath = path.resolve(directoryPath);
+	try {
+		// Resolve absolute path
+		const absolutePath = path.resolve(directoryPath);
 
-    // Check if directory exists and is a directory
-    if (
-      !fs.existsSync(absolutePath) ||
-      !fs.statSync(absolutePath).isDirectory()
-    ) {
-      console.error(
-        `Config directory not found or is not a directory at ${absolutePath}, using default configuration`
-      );
-      return defaultConfig;
-    }
+		// Check if directory exists and is a directory
+		if (
+			!fs.existsSync(absolutePath) ||
+			!fs.statSync(absolutePath).isDirectory()
+		) {
+			console.error(
+				`Config directory not found or is not a directory at ${absolutePath}, using default configuration`,
+			);
+			return defaultConfig;
+		}
 
-    // Check if directory name is either .workflows or .mcp-workflows
-    const validDirNames = [".workflows", ".mcp-workflows"];
-    const dirName = path.basename(absolutePath);
-    if (!validDirNames.includes(dirName)) {
-      console.error(
-        `Config directory must be named either .workflows or .mcp-workflows, found ${dirName}, using default configuration`
-      );
-      return defaultConfig;
-    }
+		// Check if directory name is either .workflows or .mcp-workflows
+		const validDirNames = [".workflows", ".mcp-workflows"];
+		const dirName = path.basename(absolutePath);
+		if (!validDirNames.includes(dirName)) {
+			console.error(
+				`Config directory must be named either .workflows or .mcp-workflows, found ${dirName}, using default configuration`,
+			);
+			return defaultConfig;
+		}
 
-    // Read all YAML files in the directory
-    const files = fs
-      .readdirSync(absolutePath)
-      .filter(
-        (file) =>
-          file.toLowerCase().endsWith(".yaml") ||
-          file.toLowerCase().endsWith(".yml")
-      );
+		// Read all YAML files in the directory
+		const files = fs
+			.readdirSync(absolutePath)
+			.filter(
+				(file) =>
+					file.toLowerCase().endsWith(".yaml") ||
+					file.toLowerCase().endsWith(".yml"),
+			);
 
-    if (files.length === 0) {
-      console.error(
-        `No YAML files found in ${absolutePath}, using default configuration`
-      );
-      return defaultConfig;
-    }
+		if (files.length === 0) {
+			console.error(
+				`No YAML files found in ${absolutePath}, using default configuration`,
+			);
+			return defaultConfig;
+		}
 
-    // Merge all configurations
-    const mergedConfig: DevToolsConfig = {};
+		// Merge all configurations
+		const mergedConfig: DevToolsConfig = {};
 
-    for (const file of files) {
-      const filePath = path.join(absolutePath, file);
-      console.error(`Loading config from: ${filePath}`);
+		for (const file of files) {
+			const filePath = path.join(absolutePath, file);
+			console.error(`Loading config from: ${filePath}`);
 
-      try {
-        const content = fs.readFileSync(filePath, "utf-8");
-        const fileConfig = yaml.load(content) as DevToolsConfig;
+			try {
+				const content = fs.readFileSync(filePath, "utf8");
+				const fileConfig = yaml.load(content) as DevToolsConfig;
 
-        if (typeof fileConfig !== "object") {
-          console.error(`Config in ${filePath} must be an object, skipping`);
-          continue;
-        }
+				if (typeof fileConfig !== "object") {
+					console.error(`Config in ${filePath} must be an object, skipping`);
+					continue;
+				}
 
-        // Merge this file's config into the overall config
-        mergeConfigs(mergedConfig, fileConfig);
-      } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        console.error(
-          `Error loading config from ${filePath}: ${errorMessage}, skipping`
-        );
-      }
-    }
+				// Merge this file's config into the overall config
+				mergeConfigs(mergedConfig, fileConfig);
+			} catch (error_: unknown) {
+				const errorMessage =
+					error_ instanceof Error ? error_.message : String(error_);
+				console.error(
+					`Error loading config from ${filePath}: ${errorMessage}, skipping`,
+				);
+			}
+		}
 
-    return mergedConfig;
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`Error loading configs from directory: ${errorMessage}`);
-    return defaultConfig;
-  }
+		return mergedConfig;
+	} catch (error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		console.error(`Error loading configs from directory: ${errorMessage}`);
+		return defaultConfig;
+	}
 }
 
 /**
@@ -281,86 +282,87 @@ export async function loadConfig(
  * @returns {DevToolsConfig} The loaded and merged configuration
  */
 export function loadConfigSync(directoryPath?: string): DevToolsConfig {
-  if (!directoryPath) {
-    console.error(
-      "No config directory path provided, using default configuration"
-    );
-    return defaultConfig;
-  }
+	if (!directoryPath) {
+		console.error(
+			"No config directory path provided, using default configuration",
+		);
+		return defaultConfig;
+	}
 
-  try {
-    // Resolve absolute path
-    const absolutePath = path.resolve(directoryPath);
+	try {
+		// Resolve absolute path
+		const absolutePath = path.resolve(directoryPath);
 
-    // Check if directory exists and is a directory
-    if (
-      !fs.existsSync(absolutePath) ||
-      !fs.statSync(absolutePath).isDirectory()
-    ) {
-      console.error(
-        `Config directory not found or is not a directory at ${absolutePath}, using default configuration`
-      );
-      return defaultConfig;
-    }
+		// Check if directory exists and is a directory
+		if (
+			!fs.existsSync(absolutePath) ||
+			!fs.statSync(absolutePath).isDirectory()
+		) {
+			console.error(
+				`Config directory not found or is not a directory at ${absolutePath}, using default configuration`,
+			);
+			return defaultConfig;
+		}
 
-    // Check if directory name is either .workflows or .mcp-workflows
-    const validDirNames = [".workflows", ".mcp-workflows"];
-    const dirName = path.basename(absolutePath);
-    if (!validDirNames.includes(dirName)) {
-      console.error(
-        `Config directory must be named either .workflows or .mcp-workflows, found ${dirName}, using default configuration`
-      );
-      return defaultConfig;
-    }
+		// Check if directory name is either .workflows or .mcp-workflows
+		const validDirNames = [".workflows", ".mcp-workflows"];
+		const dirName = path.basename(absolutePath);
+		if (!validDirNames.includes(dirName)) {
+			console.error(
+				`Config directory must be named either .workflows or .mcp-workflows, found ${dirName}, using default configuration`,
+			);
+			return defaultConfig;
+		}
 
-    // Read all YAML files in the directory
-    const files = fs
-      .readdirSync(absolutePath)
-      .filter(
-        (file) =>
-          file.toLowerCase().endsWith(".yaml") ||
-          file.toLowerCase().endsWith(".yml")
-      );
+		// Read all YAML files in the directory
+		const files = fs
+			.readdirSync(absolutePath)
+			.filter(
+				(file) =>
+					file.toLowerCase().endsWith(".yaml") ||
+					file.toLowerCase().endsWith(".yml"),
+			);
 
-    if (files.length === 0) {
-      console.error(
-        `No YAML files found in ${absolutePath}, using default configuration`
-      );
-      return defaultConfig;
-    }
+		if (files.length === 0) {
+			console.error(
+				`No YAML files found in ${absolutePath}, using default configuration`,
+			);
+			return defaultConfig;
+		}
 
-    // Merge all configurations
-    const mergedConfig: DevToolsConfig = {};
+		// Merge all configurations
+		const mergedConfig: DevToolsConfig = {};
 
-    for (const file of files) {
-      const filePath = path.join(absolutePath, file);
-      console.error(`Loading config from: ${filePath}`);
+		for (const file of files) {
+			const filePath = path.join(absolutePath, file);
+			console.error(`Loading config from: ${filePath}`);
 
-      try {
-        const content = fs.readFileSync(filePath, "utf-8");
-        const fileConfig = yaml.load(content) as DevToolsConfig;
+			try {
+				const content = fs.readFileSync(filePath, "utf8");
+				const fileConfig = yaml.load(content) as DevToolsConfig;
 
-        if (typeof fileConfig !== "object") {
-          console.error(`Config in ${filePath} must be an object, skipping`);
-          continue;
-        }
+				if (typeof fileConfig !== "object") {
+					console.error(`Config in ${filePath} must be an object, skipping`);
+					continue;
+				}
 
-        // Merge this file's config into the overall config
-        mergeConfigs(mergedConfig, fileConfig);
-      } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        console.error(
-          `Error loading config from ${filePath}: ${errorMessage}, skipping`
-        );
-      }
-    }
+				// Merge this file's config into the overall config
+				mergeConfigs(mergedConfig, fileConfig);
+			} catch (error_: unknown) {
+				const errorMessage =
+					error_ instanceof Error ? error_.message : String(error_);
+				console.error(
+					`Error loading config from ${filePath}: ${errorMessage}, skipping`,
+				);
+			}
+		}
 
-    return mergedConfig;
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`Error loading configs from directory: ${errorMessage}`);
-    return defaultConfig;
-  }
+		return mergedConfig;
+	} catch (error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		console.error(`Error loading configs from directory: ${errorMessage}`);
+		return defaultConfig;
+	}
 }
 
 /**
@@ -373,98 +375,95 @@ export function loadConfigSync(directoryPath?: string): DevToolsConfig {
  * @returns {string|null} Error message if invalid, null if valid
  */
 export function validateToolConfig(
-  config: DevToolsConfig,
-  toolName: string
+	config: DevToolsConfig,
+	toolName: string,
 ): string | null {
-  try {
-    // Get the tool configuration
-    const toolConfig = config[toolName];
-    if (!toolConfig) {
-      return `Tool "${toolName}" not found in configuration`;
-    }
+	try {
+		// Get the tool configuration
+		const toolConfig = config[toolName];
+		if (!toolConfig) {
+			return `Tool "${toolName}" not found in configuration`;
+		}
 
-    // If the tool has parameters, validate them
-    if (toolConfig.parameters) {
-      for (const [paramName, param] of Object.entries(toolConfig.parameters)) {
-        // Check parameter type
-        if (!param.type) {
-          return `Parameter "${paramName}" is missing type property`;
-        }
+		// If the tool has parameters, validate them
+		if (toolConfig.parameters) {
+			for (const [paramName, param] of Object.entries(toolConfig.parameters)) {
+				// Check parameter type
+				if (!param.type) {
+					return `Parameter "${paramName}" is missing type property`;
+				}
 
-        const validTypes = [
-          "string",
-          "number",
-          "boolean",
-          "array",
-          "object",
-          "enum",
-        ];
-        if (!validTypes.includes(param.type)) {
-          return `Parameter "${paramName}" has invalid type "${param.type}"`;
-        }
+				const validTypes = new Set([
+					"string",
+					"number",
+					"boolean",
+					"array",
+					"object",
+					"enum",
+				]);
+				if (!validTypes.has(param.type)) {
+					return `Parameter "${paramName}" has invalid type "${param.type}"`;
+				}
 
-        // For enum types, check that enum values are provided
-        if (param.type === "enum") {
-          if (
-            !param.enum ||
-            !Array.isArray(param.enum) ||
-            param.enum.length === 0
-          ) {
-            return `Parameter "${paramName}" of type "enum" must have a non-empty enum array`;
-          }
-        }
+				// For enum types, check that enum values are provided
+				if (
+					param.type === "enum" &&
+					(!param.enum || !Array.isArray(param.enum) || param.enum.length === 0)
+				) {
+					return `Parameter "${paramName}" of type "enum" must have a non-empty enum array`;
+				}
 
-        // Recursively validate nested parameters
-        if (param.type === "object" && param.properties) {
-          for (const [nestedName, nestedParam] of Object.entries(
-            param.properties
-          )) {
-            if (!nestedParam.type) {
-              return `Nested parameter "${nestedName}" in "${paramName}" is missing type property`;
-            }
+				// Recursively validate nested parameters
+				if (param.type === "object" && param.properties) {
+					for (const [nestedName, nestedParam] of Object.entries(
+						param.properties,
+					)) {
+						if (!nestedParam.type) {
+							return `Nested parameter "${nestedName}" in "${paramName}" is missing type property`;
+						}
 
-            if (!validTypes.includes(nestedParam.type)) {
-              return `Nested parameter "${nestedName}" in "${paramName}" has invalid type "${nestedParam.type}"`;
-            }
+						if (!validTypes.has(nestedParam.type)) {
+							return `Nested parameter "${nestedName}" in "${paramName}" has invalid type "${nestedParam.type}"`;
+						}
 
-            // Recursively validate deeper nested structures
-            const nestedValidation = validateNestedParameter(
-              nestedParam,
-              `${paramName}.${nestedName}`
-            );
-            if (nestedValidation) {
-              return nestedValidation;
-            }
-          }
-        }
+						// Recursively validate deeper nested structures
+						const nestedValidation = validateNestedParameter(
+							nestedParam,
+							`${paramName}.${nestedName}`,
+						);
+						if (nestedValidation) {
+							return nestedValidation;
+						}
+					}
+				}
 
-        // Validate array item types
-        if (param.type === "array" && param.items) {
-          if (!param.items.type) {
-            return `Items in array parameter "${paramName}" must specify a type`;
-          }
+				// Validate array item types
+				if (param.type === "array" && param.items) {
+					if (!param.items.type) {
+						return `Items in array parameter "${paramName}" must specify a type`;
+					}
 
-          if (!validTypes.includes(param.items.type)) {
-            return `Items in array parameter "${paramName}" have invalid type "${param.items.type}"`;
-          }
+					if (!validTypes.has(param.items.type)) {
+						return `Items in array parameter "${paramName}" have invalid type "${param.items.type}"`;
+					}
 
-          // Recursively validate array item if it's a complex type
-          const itemValidation = validateNestedParameter(
-            param.items,
-            `${paramName} items`
-          );
-          if (itemValidation) {
-            return itemValidation;
-          }
-        }
-      }
-    }
+					// Recursively validate array item if it's a complex type
+					const itemValidation = validateNestedParameter(
+						param.items,
+						`${paramName} items`,
+					);
+					if (itemValidation) {
+						return itemValidation;
+					}
+				}
+			}
+		}
 
-    return null;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return `Error validating tool configuration: ${errorMessage}`;
-  }
+		return null;
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		return `Error validating tool configuration: ${errorMessage}`;
+	}
 }
 
 /**
@@ -474,59 +473,67 @@ export function validateToolConfig(
  * @returns {string|null} Error message if invalid, null if valid
  */
 function validateNestedParameter(
-  param: ParameterConfig,
-  path: string
+	param: ParameterConfig,
+	path: string,
 ): string | null {
-  const validTypes = ["string", "number", "boolean", "array", "object", "enum"];
+	const validTypes = new Set([
+		"string",
+		"number",
+		"boolean",
+		"array",
+		"object",
+		"enum",
+	]);
 
-  // For enum types, check that enum values are provided
-  if (param.type === "enum") {
-    if (!param.enum || !Array.isArray(param.enum) || param.enum.length === 0) {
-      return `Parameter "${path}" of type "enum" must have a non-empty enum array`;
-    }
-  }
+	// For enum types, check that enum values are provided
+	if (
+		param.type === "enum" &&
+		(!param.enum || !Array.isArray(param.enum) || param.enum.length === 0)
+	) {
+		return `Parameter "${path}" of type "enum" must have a non-empty enum array`;
+	}
 
-  // Recursively validate nested objects
-  if (param.type === "object" && param.properties) {
-    for (const [nestedName, nestedParam] of Object.entries(param.properties)) {
-      if (!nestedParam.type) {
-        return `Nested parameter "${nestedName}" in "${path}" is missing type property`;
-      }
+	// Recursively validate nested objects
+	if (param.type === "object" && param.properties) {
+		for (const [nestedName, nestedParam] of Object.entries(param.properties)) {
+			if (!nestedParam.type) {
+				return `Nested parameter "${nestedName}" in "${path}" is missing type property`;
+			}
 
-      if (!validTypes.includes(nestedParam.type)) {
-        return `Nested parameter "${nestedName}" in "${path}" has invalid type "${nestedParam.type}"`;
-      }
+			if (!validTypes.has(nestedParam.type)) {
+				return `Nested parameter "${nestedName}" in "${path}" has invalid type "${nestedParam.type}"`;
+			}
 
-      const nestedValidation = validateNestedParameter(
-        nestedParam,
-        `${path}.${nestedName}`
-      );
-      if (nestedValidation) {
-        return nestedValidation;
-      }
-    }
-  }
+			const nestedValidation = validateNestedParameter(
+				nestedParam,
+				`${path}.${nestedName}`,
+			);
+			if (nestedValidation) {
+				return nestedValidation;
+			}
+		}
+	}
 
-  // Validate array item types
-  if (param.type === "array" && param.items) {
-    if (!param.items.type) {
-      return `Items in array parameter "${path}" must specify a type`;
-    }
+	// Validate array item types
+	if (param.type === "array" && param.items) {
+		if (!param.items.type) {
+			return `Items in array parameter "${path}" must specify a type`;
+		}
 
-    if (!validTypes.includes(param.items.type)) {
-      return `Items in array parameter "${path}" have invalid type "${param.items.type}"`;
-    }
+		if (!validTypes.has(param.items.type)) {
+			return `Items in array parameter "${path}" have invalid type "${param.items.type}"`;
+		}
 
-    const itemValidation = validateNestedParameter(
-      param.items,
-      `${path} items`
-    );
-    if (itemValidation) {
-      return itemValidation;
-    }
-  }
+		const itemValidation = validateNestedParameter(
+			param.items,
+			`${path} items`,
+		);
+		if (itemValidation) {
+			return itemValidation;
+		}
+	}
 
-  return null;
+	return null;
 }
 
 /**
@@ -535,27 +542,27 @@ function validateNestedParameter(
  * @returns {object} JSON Schema object
  */
 export function convertParametersToJsonSchema(
-  parameters: Record<string, ParameterConfig>
+	parameters: Record<string, ParameterConfig>,
 ): any {
-  const properties: Record<string, any> = {};
-  const required: string[] = [];
+	const properties: Record<string, any> = {};
+	const required: string[] = [];
 
-  for (const [name, param] of Object.entries(parameters)) {
-    if (param.required) {
-      required.push(name);
-    }
+	for (const [name, param] of Object.entries(parameters)) {
+		if (param.required) {
+			required.push(name);
+		}
 
-    properties[name] = convertParameterToJsonSchema(param);
-  }
+		properties[name] = convertParameterToJsonSchema(param);
+	}
 
-  // Fix the schema format to be compatible with MCP SDK
-  const schema = {
-    type: "object",
-    properties,
-    ...(required.length > 0 ? { required } : {}),
-  };
+	// Fix the schema format to be compatible with MCP SDK
+	const schema = {
+		type: "object",
+		properties,
+		...(required.length > 0 ? { required } : {}),
+	};
 
-  return schema;
+	return schema;
 }
 
 /**
@@ -564,63 +571,63 @@ export function convertParametersToJsonSchema(
  * @returns {object} JSON Schema for the parameter
  */
 export function convertParameterToJsonSchema(param: ParameterConfig): any {
-  const schema: any = {};
+	const schema: any = {};
 
-  switch (param.type) {
-    case "string":
-      schema.type = "string";
-      break;
-    case "number":
-      schema.type = "number";
-      break;
-    case "boolean":
-      schema.type = "boolean";
-      break;
-    case "array":
-      schema.type = "array";
-      if (param.items) {
-        schema.items = convertParameterToJsonSchema(param.items);
-      } else {
-        schema.items = { type: "string" };
-      }
-      break;
-    case "object":
-      schema.type = "object";
-      if (param.properties) {
-        const nestedSchema = convertParametersToJsonSchema(param.properties);
-        schema.properties = nestedSchema.properties;
-        if (nestedSchema.required && nestedSchema.required.length > 0) {
-          schema.required = nestedSchema.required;
-        }
-      } else {
-        schema.additionalProperties = true;
-      }
-      break;
-    case "enum":
-      if (param.enum && param.enum.length > 0) {
-        const firstValue = param.enum[0];
-        if (typeof firstValue === "number") {
-          schema.type = "number";
-        } else {
-          schema.type = "string";
-        }
-        schema.enum = param.enum;
-      } else {
-        schema.type = "string";
-        schema.enum = [];
-      }
-      break;
-  }
+	switch (param.type) {
+		case "string": {
+			schema.type = "string";
+			break;
+		}
+		case "number": {
+			schema.type = "number";
+			break;
+		}
+		case "boolean": {
+			schema.type = "boolean";
+			break;
+		}
+		case "array": {
+			schema.type = "array";
+			schema.items = param.items
+				? convertParameterToJsonSchema(param.items)
+				: { type: "string" };
+			break;
+		}
+		case "object": {
+			schema.type = "object";
+			if (param.properties) {
+				const nestedSchema = convertParametersToJsonSchema(param.properties);
+				schema.properties = nestedSchema.properties;
+				if (nestedSchema.required && nestedSchema.required.length > 0) {
+					schema.required = nestedSchema.required;
+				}
+			} else {
+				schema.additionalProperties = true;
+			}
+			break;
+		}
+		case "enum": {
+			if (param.enum && param.enum.length > 0) {
+				const firstValue = param.enum[0];
+				schema.type = typeof firstValue === "number" ? "number" : "string";
+				schema.enum = param.enum;
+			} else {
+				schema.type = "string";
+				schema.enum = [];
+			}
+			break;
+		}
+	}
 
-  if (param.description) {
-    schema.description = param.description;
-  }
+	if (param.description) {
+		schema.description = param.description;
+	}
 
-  if (param.default !== undefined) {
-    schema.default = param.default;
-  }
+	if (param.default !== undefined) {
+		schema.default = param.default;
+	}
 
-  return schema;
+	return schema;
 }
 
 /**
@@ -629,22 +636,22 @@ export function convertParameterToJsonSchema(param: ParameterConfig): any {
  * @returns {object} Zod schema object for use with MCP SDK
  */
 export function convertParametersToZodSchema(
-  parameters: Record<string, ParameterConfig>
+	parameters: Record<string, ParameterConfig>,
 ): Record<string, z.ZodTypeAny> {
-  const schemaObj: Record<string, z.ZodTypeAny> = {};
+	const schemaObj: Record<string, z.ZodTypeAny> = {};
 
-  for (const [name, param] of Object.entries(parameters)) {
-    let schema = convertParameterToZodSchema(param);
+	for (const [name, param] of Object.entries(parameters)) {
+		let schema = convertParameterToZodSchema(param);
 
-    // If parameter is required, don't add .optional()
-    if (!param.required) {
-      schema = schema.optional();
-    }
+		// If parameter is required, don't add .optional()
+		if (!param.required) {
+			schema = schema.optional();
+		}
 
-    schemaObj[name] = schema;
-  }
+		schemaObj[name] = schema;
+	}
 
-  return schemaObj;
+	return schemaObj;
 }
 
 /**
@@ -653,76 +660,83 @@ export function convertParametersToZodSchema(
  * @returns {z.ZodTypeAny} Zod schema for the parameter
  */
 export function convertParameterToZodSchema(
-  param: ParameterConfig
+	param: ParameterConfig,
 ): z.ZodTypeAny {
-  let schema: z.ZodTypeAny;
+	let schema: z.ZodTypeAny;
 
-  switch (param.type) {
-    case "string":
-      schema = z.string();
-      break;
-    case "number":
-      schema = z.number();
-      break;
-    case "boolean":
-      schema = z.boolean();
-      break;
-    case "array":
-      if (param.items) {
-        // Create array with the specific item type
-        schema = z.array(convertParameterToZodSchema(param.items));
-      } else {
-        // Default to array of strings if item type not specified
-        schema = z.array(z.string());
-      }
-      break;
-    case "object":
-      if (param.properties) {
-        // Create object with specific properties
-        const propertySchemas = convertParametersToZodSchema(param.properties);
-        schema = z.object(propertySchemas);
-      } else {
-        // Default to record of unknown if properties not specified
-        schema = z.record(z.unknown());
-      }
-      break;
-    case "enum":
-      if (param.enum && param.enum.length > 0) {
-        const firstValue = param.enum[0];
-        if (typeof firstValue === "number") {
-          // For numeric enums, we need to handle them differently
-          // Since z.nativeEnum expects an actual TypeScript enum,
-          // we'll use z.union of z.literal values
-          schema = z.union(
-            param.enum.map((value) => z.literal(value)) as [
-              z.ZodLiteral<any>,
-              z.ZodLiteral<any>,
-              ...z.ZodLiteral<any>[]
-            ]
-          );
-        } else {
-          // For string enums, use regular enum
-          schema = z.enum(param.enum as [string, ...string[]]);
-        }
-      } else {
-        // Default to empty string enum if enum values not provided
-        schema = z.enum([""] as [string, ...string[]]);
-      }
-      break;
-    default:
-      // Default to string for unknown types
-      schema = z.string();
-  }
+	switch (param.type) {
+		case "string": {
+			schema = z.string();
+			break;
+		}
+		case "number": {
+			schema = z.number();
+			break;
+		}
+		case "boolean": {
+			schema = z.boolean();
+			break;
+		}
+		case "array": {
+			if (param.items) {
+				// Create array with the specific item type
+				schema = z.array(convertParameterToZodSchema(param.items));
+			} else {
+				// Default to array of strings if item type not specified
+				schema = z.array(z.string());
+			}
+			break;
+		}
+		case "object": {
+			if (param.properties) {
+				// Create object with specific properties
+				const propertySchemas = convertParametersToZodSchema(param.properties);
+				schema = z.object(propertySchemas);
+			} else {
+				// Default to record of unknown if properties not specified
+				schema = z.record(z.unknown());
+			}
+			break;
+		}
+		case "enum": {
+			if (param.enum && param.enum.length > 0) {
+				const firstValue = param.enum[0];
+				if (typeof firstValue === "number") {
+					// For numeric enums, we need to handle them differently
+					// Since z.nativeEnum expects an actual TypeScript enum,
+					// we'll use z.union of z.literal values
+					schema = z.union(
+						param.enum.map((value) => z.literal(value)) as [
+							z.ZodLiteral<any>,
+							z.ZodLiteral<any>,
+							...z.ZodLiteral<any>[],
+						],
+					);
+				} else {
+					// For string enums, use regular enum
+					schema = z.enum(param.enum as [string, ...string[]]);
+				}
+			} else {
+				// Default to empty string enum if enum values not provided
+				schema = z.enum([""] as [string, ...string[]]);
+			}
+			break;
+		}
+		default: {
+			// Default to string for unknown types
+			schema = z.string();
+		}
+	}
 
-  // Add description if available
-  if (param.description) {
-    schema = schema.describe(param.description);
-  }
+	// Add description if available
+	if (param.description) {
+		schema = schema.describe(param.description);
+	}
 
-  // Add default value if specified
-  if (param.default !== undefined) {
-    schema = schema.default(param.default);
-  }
+	// Add default value if specified
+	if (param.default !== undefined) {
+		schema = schema.default(param.default);
+	}
 
-  return schema;
+	return schema;
 }
