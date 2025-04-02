@@ -1,24 +1,16 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
 import type { TemplateParams } from "./@types/common";
 import type { DevToolsConfig, PromptConfig } from "./@types/config";
 import type { PresetConfigs } from "./@types/preset";
 import type { PromptFunction, PromptFunctionsMap } from "./@types/prompts";
 import {
+	SOURCE_PRESETS_DIR,
 	appendFormattedTools,
 	formatToolsList,
 	processTemplate,
 } from "./utils";
-
-// In ES modules, __dirname is not available directly
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Directory where preset YAML files are stored
-const PRESETS_DIR = path.join(__dirname, "presets");
 
 /**
  * Applies configuration to a default prompt
@@ -68,14 +60,14 @@ function discoverPresetConfigs(): PresetConfigs {
 	const presetConfigs: PresetConfigs = {};
 
 	try {
-		// Get all YAML files in the presets directory
+		// Get all YAML files in the source presets directory using the constant
 		const presetFiles = fs
-			.readdirSync(PRESETS_DIR)
+			.readdirSync(SOURCE_PRESETS_DIR)
 			.filter((file) => file.endsWith(".yaml") || file.endsWith(".yml"));
 
 		// Load each preset file
 		for (const presetFile of presetFiles) {
-			const presetPath = path.join(PRESETS_DIR, presetFile);
+			const presetPath = path.join(SOURCE_PRESETS_DIR, presetFile);
 			const presetName = path.basename(presetFile, path.extname(presetFile));
 
 			try {

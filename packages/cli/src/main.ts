@@ -3,8 +3,6 @@ import { description, name, version } from "../package.json";
 import { commands } from "./commands";
 import { cwdArgs } from "./commands/_shared";
 import { parseArgs } from "./utils/args";
-import { logger } from "./utils/logger";
-import { loadPreset } from "./utils/presets";
 
 export const main = defineCommand({
 	meta: {

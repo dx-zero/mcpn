@@ -28,7 +28,9 @@
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -44,11 +46,14 @@
 		"build": "unbuild",
 		"prepublishOnly": "npm run build",
 		"update": "npm version patch && npm publish",
-		"test": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts"
+		"test": "pnpm run build && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts",
+		"cli:dist": "node dist/cli-entry.mjs --preset thinking"
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "catalog:prod",
 		"js-yaml": "catalog:prod",
+		"mri": "^1.2.0",
+		"pathe": "^2.0.3",
 		"zod": "catalog:prod"
 	},
 	"devDependencies": {
@@ -59,6 +64,7 @@
 		"chai": "catalog:testing",
 		"mocha": "catalog:testing",
 		"sinon": "catalog:testing",
+		"ts-node": "^10.9.2",
 		"tsx": "catalog:cli",
 		"typescript": "catalog:cli",
 		"unbuild": "catalog:cli"

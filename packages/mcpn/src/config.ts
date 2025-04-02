@@ -1,103 +1,13 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
 import { z } from "zod";
 import type { JsonSchema, ZodSchemaMap } from "./@types/common";
 import type {
 	DevToolsConfig,
 	ParameterConfig,
-	PromptConfig,
 	PromptTools,
-	ToolConfig,
 } from "./@types/config";
-
-// In ES modules, __dirname is not available directly
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-/**
- * Represents a parameter for a tool
- *
- * @interface ParameterConfig
- */
-// export interface ParameterConfig {
-// 	/** Type of the parameter */
-// 	type: "string" | "number" | "boolean" | "array" | "object" | "enum";
-// 	/** Description of what the parameter does */
-// 	description?: string;
-// 	/** Whether the parameter is required */
-// 	required?: boolean;
-// 	/** Default value for the parameter */
-// 	default?: any;
-// 	/** Possible values for enum type parameters */
-// 	enum?: (string | number)[];
-// 	/** For array types, defines the type of items in the array */
-// 	items?: ParameterConfig;
-// 	/** For object types, defines the properties of the object */
-// 	properties?: Record<string, ParameterConfig>;
-// }
-
-/**
- * Represents a tool that can be used in a prompt
- *
- * @interface ToolConfig
- */
-// export interface ToolConfig {
-// 	/** Name of the tool */
-// 	name: string;
-// 	/** Description of what the tool does */
-// 	description?: string;
-// 	/** Specific prompt text for this tool */
-// 	prompt?: string;
-// 	/** Whether this tool is optional to use */
-// 	optional?: boolean;
-// 	/** Parameters that the tool accepts */
-// 	parameters?: Record<string, ParameterConfig>;
-// }
-
-/**
- * Configuration for a specific prompt
- *
- * @interface PromptConfig
- */
-// export interface PromptConfig {
-// 	/** If provided, completely replaces the default prompt */
-// 	prompt?: string;
-// 	/** Additional context to append to the prompt (either default or custom) */
-// 	context?: string;
-// 	/**
-// 	 * Available tools for this prompt. Can be:
-// 	 * - A Record of tool names to either description strings or ToolConfig objects
-// 	 * - A comma-separated string of tool names
-// 	 */
-// 	tools?: Record<string, string | ToolConfig> | string;
-// 	/** Whether tools should be executed sequentially or situationally */
-// 	toolMode?: "sequential" | "situational";
-// 	/** Description for the tool (used as second parameter in server.tool) */
-// 	description?: string;
-// 	/** Whether this tool is disabled */
-// 	disabled?: boolean;
-// 	/** Optional name override for the registered tool (default is the config key) */
-// 	name?: string;
-// 	/** Parameters that the tool accepts */
-// 	parameters?: Record<string, ParameterConfig>;
-// }
-
-/**
- * Main configuration interface for all developer tools
- * All tool configurations are dynamically loaded from YAML files in the presets directory
- *
- * @interface DevToolsConfig
- */
-// export interface DevToolsConfig {
-// 	/**
-// 	 * Dynamic mapping of tool names to their configurations
-// 	 * Tool names are determined by the keys in the YAML preset files
-// 	 */
-// 	[key: string]: PromptConfig | undefined;
-// }
 
 // Default empty configuration
 const defaultConfig: DevToolsConfig = {};
@@ -557,11 +467,12 @@ export function convertParametersToJsonSchema(
 ): JsonSchema {
 	const schema: JsonSchema = {
 		type: "object",
-		properties: {},
+		properties: {} as Record<string, JsonSchema>,
 	};
 
 	for (const [name, param] of Object.entries(parameters)) {
-		schema.properties[name] = convertParameterToJsonSchema(param);
+		(schema.properties as Record<string, JsonSchema>)[name] =
+			convertParameterToJsonSchema(param);
 	}
 
 	return schema;
@@ -732,6 +643,11 @@ export function convertParameterToZodSchema(
 	// Add default value if specified
 	if (param.default !== undefined) {
 		schema = schema.default(param.default);
+	}
+
+	// Make schema optional if required is explicitly false
+	if (param.required === false) {
+		schema = schema.optional();
 	}
 
 	return schema;

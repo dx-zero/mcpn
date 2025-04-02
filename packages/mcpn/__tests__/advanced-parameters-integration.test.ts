@@ -18,6 +18,15 @@ describe("Advanced Parameters Integration", function () {
 	let client: McpTestClient;
 
 	beforeEach(async () => {
+		// Start the server process using the dedicated CLI entry point
+		const serverPath = path.join(__dirname, "..", "dist", "cli-entry.js");
+		serverProcess = spawn("node", [serverPath, "--preset", "examples"], {
+			stdio: ["pipe", "pipe", "pipe"],
+		});
+
+		// Allow some time for the server to start
+		await new Promise((resolve) => setTimeout(resolve, 1000)); // Adjust timeout if needed
+
 		// Create test client
 		client = new McpTestClient();
 
@@ -29,6 +38,10 @@ describe("Advanced Parameters Integration", function () {
 		// Clean up
 		if (client) {
 			await client.close();
+		}
+		// Stop the server process
+		if (serverProcess?.kill) {
+			serverProcess.kill();
 		}
 	});
 

@@ -2,22 +2,8 @@ import { existsSync, promises as fsp } from "node:fs";
 import { fileURLToPath } from "node:url";
 import yaml from "js-yaml";
 import { dirname, join, resolve } from "pathe";
+import type { LoadedPreset, PresetConfig } from "../@types/presets";
 import { logger } from "./logger";
-
-export interface PresetConfig {
-	// Define the structure of your preset YAML
-	// Example:
-	description?: string;
-	prompt?: string;
-	// Add other expected fields from your YAML structure
-	[key: string]: any; // Allow other top-level keys
-}
-
-export interface LoadedPreset {
-	name: string;
-	config: PresetConfig;
-	filePath: string;
-}
 
 // Helper function to get the path to the built-in presets directory
 function getBuiltInPresetsDir(): string {
@@ -54,10 +40,9 @@ export async function loadPreset(
 			const content = await fsp.readFile(localFilePath, "utf8");
 			const config = yaml.load(content) as PresetConfig;
 			return { name: presetName, config, filePath: localFilePath };
-		} catch (error: any) {
-			logger.warn(
-				`Failed to load local preset ${localFilePath}: ${error.message}`,
-			);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
+			logger.warn(`Failed to load local preset ${localFilePath}: ${message}`);
 			// Continue to check built-in presets
 		}
 	}
@@ -72,9 +57,10 @@ export async function loadPreset(
 			const content = await fsp.readFile(builtInFilePath, "utf8");
 			const config = yaml.load(content) as PresetConfig;
 			return { name: presetName, config, filePath: builtInFilePath };
-		} catch (error: any) {
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : String(error);
 			logger.error(
-				`Failed to load built-in preset ${builtInFilePath}: ${error.message}`,
+				`Failed to load built-in preset ${builtInFilePath}: ${message}`,
 			);
 			return null; // Critical failure if built-in fails
 		}

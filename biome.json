@@ -40,14 +40,14 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": {
-				"noExplicitAny": "warn"
+				"noExplicitAny": "off"
 			},
 			"style": {
 				"useNodejsImportProtocol": "error"
 			},
 			"correctness": {
-        "useImportExtensions": "off"
-      }
+				"useImportExtensions": "off"
+			}
 		}
 	},
 	"javascript": {

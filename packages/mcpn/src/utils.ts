@@ -3,7 +3,7 @@
  */
 
 import fs from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { TemplateParams } from "./@types/common";
 import type { PackageInfo } from "./@types/common";
@@ -15,14 +15,61 @@ import type { ToolItem } from "./@types/prompts";
  */
 
 /**
- * Gets the package version from package.json
- * @returns {Object} The parsed package.json content
+ * Finds the project root directory by searching upwards from the current module's location
+ * for a directory containing 'package.json'.
+ * @returns {string} The absolute path to the project root.
+ * @throws {Error} If package.json cannot be found.
+ */
+function findProjectRoot(): string {
+	let currentDir = dirname(fileURLToPath(import.meta.url));
+	while (true) {
+		const packageJsonPath = join(currentDir, "package.json");
+		if (fs.existsSync(packageJsonPath)) {
+			// Check if it's the monorepo root or the package root
+			// A simple check: does it have a 'packages' directory or is the name '@mcpn/core'?
+			// You might need a more robust check depending on your monorepo structure
+			const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+			if (pkg.name === "@mcpn/core") {
+				return currentDir;
+			}
+		}
+		const parentDir = resolve(currentDir, "..");
+		if (parentDir === currentDir) {
+			// Reached the filesystem root
+			throw new Error(
+				"Could not find project root containing package.json for '@mcpn/core'.",
+			);
+		}
+		currentDir = parentDir;
+	}
+}
+
+// Store the project root path
+const PROJECT_ROOT = findProjectRoot();
+
+// Define paths relative to the project root
+const SOURCE_PRESETS_DIR = join(PROJECT_ROOT, "src", "presets");
+const BUILT_PRESETS_DIR = join(PROJECT_ROOT, "dist", "presets");
+
+// Export the constants
+export { PROJECT_ROOT, SOURCE_PRESETS_DIR, BUILT_PRESETS_DIR };
+
+/**
+ * Gets the package version from package.json located at the project root.
+ * @returns {Object} The parsed package.json content.
  */
 export function getPackageInfo(): PackageInfo {
-	const __filename = fileURLToPath(import.meta.url);
-	const __dirname = dirname(__filename);
-	const packageJsonPath = join(__dirname, "..", "package.json");
-	return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+	const packageJsonPath = join(PROJECT_ROOT, "package.json");
+	try {
+		return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+	} catch (error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		console.error(
+			`Error reading package.json at ${packageJsonPath}: ${errorMessage}`,
+		);
+		// Provide a default or re-throw, depending on desired behavior
+		throw new Error(`Failed to get package info: ${errorMessage}`);
+	}
 }
 
 /**

@@ -6,16 +6,13 @@ import { defineCommand } from "citty";
 import { colors } from "consola/utils";
 import { relative, resolve } from "pathe";
 
+import type { McpnConfig } from "../@types/config";
 import { detectIDE } from "../utils/detectIde";
 //4import { dxLogo, themeColor } from '../utils/ascii'
 import { logger } from "../utils/logger";
 import { cwdArgs, logLevelArgs } from "./_shared";
 
 // Define a basic structure for the config file
-interface McpnConfig {
-	ide?: string;
-	// Add other future config options here
-}
 
 // Updated function to create the config file
 async function createConfigFile(

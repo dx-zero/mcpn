@@ -1,14 +1,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
 import type { DevToolsConfig } from "./@types/config";
 import { mergeConfigs } from "./config";
-
-// In ES modules, __dirname is not available directly
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { BUILT_PRESETS_DIR } from "./utils";
 
 /**
  * Loads preset configuration from a YAML file
@@ -44,10 +39,12 @@ export function loadPresetConfig(filePath: string): DevToolsConfig {
  * @returns {string[]} Array of available preset names (without file extensions)
  */
 export function listAvailablePresets(): string[] {
+	const presetsDir = BUILT_PRESETS_DIR;
 	try {
-		const presetsDir = path.join(__dirname, "presets");
 		if (!fs.existsSync(presetsDir)) {
-			console.error(`Presets directory not found at ${presetsDir}`);
+			console.warn(
+				`Presets directory not found at ${presetsDir}. This might be expected if running before the first build.`,
+			);
 			return [];
 		}
 
@@ -78,7 +75,7 @@ export function getPresetContent(presetName: string): string {
 	}
 
 	try {
-		const presetsDir = path.join(__dirname, "presets");
+		const presetsDir = BUILT_PRESETS_DIR;
 		// Attempt both .yaml and .yml extensions
 		let presetPath = path.join(presetsDir, `${presetName}.yaml`);
 		if (!fs.existsSync(presetPath)) {
@@ -121,8 +118,18 @@ export function loadPresetConfigs(presets: string[]): DevToolsConfig {
 				continue;
 			}
 
-			// Load preset from the internal presets directory
-			const presetPath = path.join(__dirname, "presets", `${preset}.yaml`);
+			// Load preset using the correct path from BUILT_PRESETS_DIR
+			let presetPath = path.join(BUILT_PRESETS_DIR, `${preset}.yaml`);
+			if (!fs.existsSync(presetPath)) {
+				presetPath = path.join(BUILT_PRESETS_DIR, `${preset}.yml`);
+				if (!fs.existsSync(presetPath)) {
+					console.error(
+						`Preset file for "${preset}" not found in ${BUILT_PRESETS_DIR} with .yaml or .yml extension. Skipping.`,
+					);
+					continue;
+				}
+			}
+
 			const presetConfig = loadPresetConfig(presetPath);
 			mergeConfigs(mergedConfig, presetConfig);
 		} catch (error) {

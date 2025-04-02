@@ -1,7 +1,6 @@
 import { existsSync, promises as fsp } from "node:fs";
 import { tmpdir } from "node:os";
 import process from "node:process";
-import { fileURLToPath } from "node:url";
 
 import { getPresetContent, listAvailablePresets } from "@mcpn/core";
 import { type CommandContext, defineCommand } from "citty";
@@ -35,9 +34,15 @@ export default defineCommand({
 		},
 	},
 	async run(ctx: CommandContext) {
-		const cwd = resolve(ctx.args.cwd);
+		const cwd = resolve(String(ctx.args.cwd ?? process.cwd()));
 		const sourceArg = ctx.args.source;
 		const force = ctx.args.force;
+
+		// Ensure sourceArg is a string before proceeding
+		if (typeof sourceArg !== "string") {
+			logger.error("Source argument must be a string.");
+			process.exit(1);
+		}
 
 		// --- 1. Check for .mcp-workflows directory ---
 		const workflowsDir = join(cwd, ".mcp-workflows");

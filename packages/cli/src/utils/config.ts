@@ -2,23 +2,8 @@ import process from "node:process";
 import { type LoadConfigOptions, loadConfig as loadC12Config } from "c12";
 import { createJiti } from "jiti";
 import { resolve } from "pathe";
+import type { McpnConfig, ResolvedMcpnConfig } from "../@types/config";
 import { logger } from "./logger";
-
-// Define the structure of your configuration object
-export interface McpnConfig {
-	ide?: string;
-	// Add other configuration options here
-	[key: string]: unknown; // Allow other keys potentially
-}
-
-// Define the structure of the resolved configuration manually
-// based on what c12 actually returns plus our additions
-export interface ResolvedMcpnConfig {
-	config?: McpnConfig | null; // Config object (or null/undefined if not found)
-	configFile?: string; // Path to the loaded config file
-	layers?: any[]; // Layers used by c12 (if any)
-	cwd: string; // The resolved working directory
-}
 
 const defaults: LoadConfigOptions<McpnConfig> = {
 	name: "mcpn", // Name of the config file (mcpn.config.ts, mcpn.config.js, etc.)

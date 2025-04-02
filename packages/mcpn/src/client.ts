@@ -4,13 +4,11 @@
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-// import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import type { TemplateParams } from "./@types/common";
 
 export class McpTestClient {
 	private client: Client;
 	private transport: StdioClientTransport;
-	// private serverProcess: ChildProcessWithoutNullStreams | null = null;
 
 	constructor() {
 		this.transport = new StdioClientTransport({

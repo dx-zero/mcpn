@@ -60,8 +60,8 @@ describe("Parameterized Tool Integration Tests", function () {
 			fs.writeFileSync(EXAMPLES_YAML_PATH, yaml.dump(examplesYaml));
 		}
 
-		// Start the server process with examples preset
-		const serverPath = path.join(__dirname, "..", "dist", "server.js");
+		// Start the server process using the dedicated CLI entry point
+		const serverPath = path.join(__dirname, "..", "dist", "cli-entry.js");
 		serverProcess = spawn("node", [serverPath, "--preset", "examples"], {
 			stdio: ["pipe", "pipe", "pipe"],
 		});
@@ -155,7 +155,7 @@ describe("Generate Thought Parameter Tests", function () {
 
 	before(async () => {
 		// Start the server process with thinking preset
-		const serverPath = path.join(__dirname, "..", "dist", "server.js");
+		const serverPath = path.join(__dirname, "..", "dist", "cli-entry.js");
 		serverProcess = spawn("node", [serverPath, "--preset", "thinking"], {
 			stdio: ["pipe", "pipe", "pipe"],
 		});
@@ -277,8 +277,8 @@ describe("Template Parameter Integration Tests", function () {
 			fs.writeFileSync(distTemplatePath, yaml.dump(templateToolsYaml));
 		}
 
-		// Start the server with the template tools preset
-		const serverPath = path.join(__dirname, "..", "dist", "server.js");
+		// Start the server with the template tools preset using the dedicated CLI entry point
+		const serverPath = path.join(__dirname, "..", "dist", "cli-entry.js");
 		serverProcess = spawn("node", [serverPath, "--preset", "template-tools"], {
 			stdio: ["pipe", "pipe", "pipe"],
 		});

@@ -1,12 +1,9 @@
-import { existsSync, promises as fsp } from "node:fs";
-import { tmpdir } from "node:os";
+import { promises as fsp } from "node:fs";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { dirname, join, resolve } from "pathe";
+import { dirname, join } from "pathe";
 
 import { defineCommand } from "citty";
-import { colors } from "consola/utils";
-import { downloadTemplate } from "giget";
 
 import { createMcpServer, loadAndMergeConfig, startServer } from "@mcpn/core";
 

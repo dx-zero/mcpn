@@ -1,15 +1,10 @@
 import mri from "mri";
 import { resolve } from "pathe";
-
-export interface CommandLineArgs {
-	configPath?: string;
-	presets: string[];
-	_: string[];
-}
+import type { CommandLineArgs } from "../@types/args";
 
 export function parseArgs(argv = process.argv.slice(2)): CommandLineArgs {
 	// Parse command-line flags via mri
-	const { preset, config, _, ...rest } = mri(argv, {
+	const { preset, config, _ } = mri(argv, {
 		alias: {
 			c: "config",
 		},

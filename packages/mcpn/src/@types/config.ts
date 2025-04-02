@@ -1,7 +1,3 @@
-import type { JsonSchema, ZodSchemaMap } from "./common";
-
-// --- Configuration Types ---
-
 /** Represents a parameter for a tool */
 export interface ParameterConfig {
 	/** Type of the parameter */
@@ -11,7 +7,7 @@ export interface ParameterConfig {
 	/** Whether the parameter is required */
 	required?: boolean;
 	/** Default value for the parameter */
-	default?: any; // Keeping 'any' for flexibility with default values
+	default?: string | number | boolean | unknown[] | Record<string, unknown>;
 	/** Possible values for enum type parameters */
 	enum?: (string | number)[];
 	/** For array types, defines the type of items in the array */

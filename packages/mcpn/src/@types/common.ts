@@ -9,7 +9,7 @@ export type TemplateParams = Record<string, unknown>;
 export type PackageInfo = Record<string, unknown>;
 
 /** Basic representation of a JSON Schema object */
-export type JsonSchema = Record<string, any>; // Keeping 'any' for flexibility
+export type JsonSchema = Record<string, unknown>; // Using unknown for better type safety
 
 /** Type for a map of parameter names to Zod schema types */
 export type ZodSchemaMap = Record<string, z.ZodTypeAny>;

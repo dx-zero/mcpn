@@ -378,6 +378,9 @@ importers:
       '@types/semver':
         specifier: catalog:types
         version: 7.7.0
+      '@types/sinon':
+        specifier: ^17.0.4
+        version: 17.0.4
       c12:
         specifier: catalog:utils
         version: 3.0.2(magicast@0.3.5)
@@ -423,6 +426,12 @@ importers:
       js-yaml:
         specifier: catalog:prod
         version: 4.1.0
+      mri:
+        specifier: ^1.2.0
+        version: 1.2.0
+      pathe:
+        specifier: ^2.0.3
+        version: 2.0.3
       zod:
         specifier: catalog:prod
         version: 3.24.2
@@ -448,6 +457,9 @@ importers:
       sinon:
         specifier: catalog:testing
         version: 20.0.0
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@22.14.0)(typescript@5.8.2)
       tsx:
         specifier: catalog:cli
         version: 4.19.3
@@ -3034,6 +3046,12 @@ packages:
 
   '@types/semver@7.7.0':
     resolution: {integrity: sha512-k107IF4+Xr7UHjwDc7Cfd6PRQfbdkiRabXGRjo07b4WyPahFBZCZ1sE+BNxYIJPPg73UkfOsVOLwqVc/6ETrIA==}
+
+  '@types/sinon@17.0.4':
+    resolution: {integrity: sha512-RHnIrhfPO3+tJT0s7cFaXGZvsL4bbR3/k7z3P312qMS4JaS2Tk+KiwiLx1S0rQ56ERj00u1/BtdyVd0FY+Pdew==}
+
+  '@types/sinonjs__fake-timers@8.1.5':
+    resolution: {integrity: sha512-mQkU2jY8jJEF7YHjHvsQO8+3ughTL1mcnn96igfhONmR+fUPSKIkefQYpSe8bsly2Ep7oQbn/6VG5/9/0qcArQ==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -11918,6 +11936,12 @@ snapshots:
   '@types/resolve@1.20.2': {}
 
   '@types/semver@7.7.0': {}
+
+  '@types/sinon@17.0.4':
+    dependencies:
+      '@types/sinonjs__fake-timers': 8.1.5
+
+  '@types/sinonjs__fake-timers@8.1.5': {}
 
   '@types/unist@2.0.11': {}
 

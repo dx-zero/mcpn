@@ -1,12 +1,7 @@
 // detectIDE.ts
 import { execSync } from "node:child_process";
 import process from "node:process";
-
-interface ProcessInfo {
-	pid: number;
-	ppid: number;
-	comm: string;
-}
+import type { ProcessInfo } from "../@types/detectIde";
 
 /**
  * Retrieves (pid, ppid, comm) for a process on macOS/Linux.
