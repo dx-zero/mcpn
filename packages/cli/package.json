@@ -44,7 +44,8 @@
     "release": "npm publish",
     "release:alpha": "npm publish --tag alpha",
     "mcpn": "node ./bin/mcpn.mjs",
-    "mcpn-bun": "bun --bun ./dist/mcpn.mjs"
+    "mcpn-bun": "bun --bun ./dist/mcpn.mjs",
+    "test:dist": "node ./bin/mcpn.mjs info ./playground"
   },
   "devDependencies": {
     "@modyfi/vite-plugin-yaml": "^1.1.1",

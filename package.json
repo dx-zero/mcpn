@@ -20,11 +20,13 @@
     "build:templates": "pnpm -r --filter './templates/**' build",
     "build:docs": "pnpm -r --filter './docs/**' build",
     "dev:docs": "pnpm -r --filter './docs/**' dev",
-    "lint": "eslint --cache .",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "typecheck": "tsc -p scripts --noEmit && pnpm -r --parallel run typecheck",
     "publish-npm": "pnpm -r --filter='./packages/mcpn' run build && tsx scripts/release.ts",
     "link-create": "cd packages/create-mcpn && pnpm link --global",
-    "llms": "npx repomix docs/mcpn-docs/content --include '**/*.md' --ignore '**/1.index.md,index.md,*credits*.md,*mcpn*' --output docs/mcpn-docs/public/llms_full.txt"
+    "llms": "npx repomix docs/mcpn-docs/content --include '**/*.md' --ignore '**/1.index.md,index.md,*credits*.md,*mcpn*' --output docs/mcpn-docs/public/llms_full.txt",
+    "test:dist": "pnpm -r test:dist"
   },
   "keywords": [
     "mcpn",

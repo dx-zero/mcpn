@@ -1,0 +1,102 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+      - run: npm i -g --force corepack && corepack enable
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🔠 Lint project
+        run: pnpm lint
+
+      #- name: ✂️ Knip project
+      #  run: pnpm test:knip
+
+      # - name: ⚙️ Check package engines
+      #   run: pnpm test:engines
+
+  ci:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+      - run: npm i -g --force corepack && corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 💪 Test types
+        run: pnpm test:types
+
+      - name: 🛠 Build project
+        run: pnpm build
+
+      - name: 🧪 Test build
+        run: pnpm test:dist
+
+      - name: 🧪 Test (unit)
+        run: pnpm test:unit
+
+      - if: matrix.os != 'windows-latest'
+        uses: codecov/codecov-action@v5
+
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    if: github.repository_owner == 'dx0'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+      - run: npm i -g --force corepack && corepack enable
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🛠 Build project
+        run: pnpm build
+
+      # - name: 📦 release pkg.pr.new
+      #   if: github.event_name != 'push'
+      #   run: pnpm pkg-pr-new publish --compact --template './playground' ./mcpn
+
+      - name: 📦 release nightly
+        if: github.event_name == 'push'
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc &&
+          node ./scripts/release.mjs
+        env:
+          RELEASE_TYPE: nightly
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
