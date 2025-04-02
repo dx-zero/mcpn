@@ -3,7 +3,10 @@ import * as path from "node:path";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
-import type { DevToolsConfig, PromptConfig } from "./config";
+import type { TemplateParams } from "./@types/common";
+import type { DevToolsConfig, PromptConfig } from "./@types/config";
+import type { PresetConfigs } from "./@types/preset";
+import type { PromptFunction, PromptFunctionsMap } from "./@types/prompts";
 import {
 	appendFormattedTools,
 	formatToolsList,
@@ -28,7 +31,7 @@ const PRESETS_DIR = path.join(__dirname, "presets");
 const applyConfig = (
 	defaultPrompt: string,
 	config?: PromptConfig,
-	params?: Record<string, any>,
+	params?: TemplateParams,
 ): string => {
 	if (!config) {
 		// If no config, just process the default prompt with parameters
@@ -61,8 +64,8 @@ const applyConfig = (
  * @returns {Record<string, any>} An object mapping preset names to their configuration objects
  * @throws Will log an error if there are issues reading the directory or parsing YAML files
  */
-function discoverPresetConfigs(): { [key: string]: any } {
-	const presetConfigs: { [key: string]: any } = {};
+function discoverPresetConfigs(): PresetConfigs {
+	const presetConfigs: PresetConfigs = {};
 
 	try {
 		// Get all YAML files in the presets directory
@@ -103,9 +106,9 @@ function discoverPresetConfigs(): { [key: string]: any } {
 function createPromptFunction(
 	modeName: string,
 	presetName: string,
-	presetConfigs: { [key: string]: any },
-): (config?: DevToolsConfig, params?: Record<string, any>) => string {
-	return (config?: DevToolsConfig, params?: Record<string, any>) => {
+	presetConfigs: PresetConfigs,
+): PromptFunction {
+	return (config?: DevToolsConfig, params?: TemplateParams) => {
 		try {
 			const presetConfig = presetConfigs[presetName];
 
@@ -141,19 +144,13 @@ function createPromptFunction(
 const presetConfigs = discoverPresetConfigs();
 
 // Object to store prompt functions for all modes
-const promptFunctions: Record<
-	string,
-	(config?: DevToolsConfig, params?: Record<string, any>) => string
-> = {};
+const promptFunctions: PromptFunctionsMap = {};
 
 /**
  * Initializes prompt functions by processing all discovered preset configurations
  * @returns Record of prompt functions indexed by mode name
  */
-function initializePromptFunctions(): Record<
-	string,
-	(config?: DevToolsConfig, params?: Record<string, any>) => string
-> {
+function initializePromptFunctions(): PromptFunctionsMap {
 	// Process each preset file
 	for (const [presetName, presetConfig] of Object.entries(presetConfigs)) {
 		// Process each mode in the preset

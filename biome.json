@@ -7,7 +7,26 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": ["dist/**", "node_modules/**", "docs/**", "dev-docs/**", "package-lock.json", "pnpm-lock.yaml", "*.md", "*.yaml", "*.js", ".github/**", ".vscode/**", "*.lock", ".hidden/**", ".mcp-workflows/**", "bin/**", "playground/**", ".nvmrc", "__tests__/**"]
+		"ignore": [
+			"dist/**",
+			"node_modules/**",
+			"docs/**",
+			"dev-docs/**",
+			"package-lock.json",
+			"pnpm-lock.yaml",
+			"*.md",
+			"*.yaml",
+			"*.js",
+			".github/**",
+			".vscode/**",
+			"*.lock",
+			".hidden/**",
+			".mcp-workflows/**",
+			"bin/**",
+			"playground/**",
+			".nvmrc",
+			"__tests__/**"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -21,11 +40,14 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": {
-        "noExplicitAny": "warn"
-      },
+				"noExplicitAny": "warn"
+			},
 			"style": {
 				"useNodejsImportProtocol": "error"
-			}
+			},
+			"correctness": {
+        "useImportExtensions": "off"
+      }
 		}
 	},
 	"javascript": {

@@ -5,6 +5,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 // import { spawn, ChildProcessWithoutNullStreams } from "child_process";
+import type { TemplateParams } from "./@types/common";
 
 export class McpTestClient {
 	private client: Client;
@@ -62,7 +63,7 @@ export class McpTestClient {
 	/**
 	 * List all available tools
 	 */
-	async listTools(): Promise<unknown[]> {
+	async listTools(): Promise<unknown> {
 		return await this.client.listTools();
 	}
 
@@ -71,10 +72,7 @@ export class McpTestClient {
 	 * @param name Tool name
 	 * @param args Tool arguments
 	 */
-	async callTool(
-		name: string,
-		args: Record<string, unknown> = {},
-	): Promise<unknown> {
+	async callTool(name: string, args: TemplateParams = {}): Promise<unknown> {
 		return await this.client.callTool({
 			name,
 			arguments: args,

@@ -187,9 +187,10 @@ export default defineCommand({
 				logger.success(
 					`🪄 Added built-in preset '${presetName}' to ${colors.cyan(destFilePath)}`,
 				);
-			} catch (error: any) {
+			} catch (error: unknown) {
+				const message = error instanceof Error ? error.message : String(error);
 				logger.error(
-					`Failed to add built-in preset '${presetName}': ${error.message}`,
+					`Failed to add built-in preset '${presetName}': ${message}`,
 				);
 				if (process.env.DEBUG) {
 					console.error(error);

@@ -1,7 +1,0 @@
-{
-	"extends": "../../tsconfig.json",
-	"compilerOptions": {
-		"types": ["@modyfi/vite-plugin-yaml/modules"]
-	},
-	"include": ["./"]
-}

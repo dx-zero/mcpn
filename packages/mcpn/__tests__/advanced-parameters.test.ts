@@ -2,12 +2,10 @@
 /// <reference types="mocha" />
 
 import { expect } from "chai";
+import type { DevToolsConfig, ParameterConfig } from "../src/@types/config.js";
 import {
-	type DevToolsConfig,
-	type ParameterConfig,
 	convertParameterToJsonSchema,
 	convertParametersToJsonSchema,
-	convertParametersToZodSchema,
 	validateToolConfig,
 } from "../src/config.js";
 

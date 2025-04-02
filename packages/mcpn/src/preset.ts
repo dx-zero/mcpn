@@ -3,9 +3,8 @@ import * as path from "node:path";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
-import type { DevToolsConfig } from "./config";
+import type { DevToolsConfig } from "./@types/config";
 import { mergeConfigs } from "./config";
-import { logger } from "./utils/logger";
 
 // In ES modules, __dirname is not available directly
 const __filename = fileURLToPath(import.meta.url);

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import fs from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import type { ZodSchemaMap } from "./@types/common";
+import type { TemplateParams } from "./@types/common";
+import type { DevToolsConfig, PromptConfig } from "./@types/config";
+import type { ToolCallback, ToolResult } from "./@types/tool";
 import {
-	convertParametersToJsonSchema,
 	convertParametersToZodSchema,
 	loadConfigSync,
 	mergeConfigs,
@@ -20,51 +20,6 @@ import {
 	processTemplate,
 } from "./utils";
 
-// Define TypeScript interfaces for returned types
-interface CommandLineArgs {
-	configPath?: string;
-	presets: string[];
-}
-
-/**
- * Gets the package version from package.json
- * @returns {Object} The parsed package.json content
- */
-function getPackageInfo(): Record<string, any> {
-	const __filename = fileURLToPath(import.meta.url);
-	const __dirname = dirname(__filename);
-	const packageJsonPath = join(__dirname, "..", "package.json");
-	return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-}
-
-/**
- * Parses command line arguments to extract config path and presets
- * @returns {Object} Object containing configPath and presets
- */
-function parseCommandLineArgs(): CommandLineArgs {
-	const args = process.argv.slice(2);
-	let configPath: string | undefined;
-	let presets: string[] = []; // Initialize with empty array
-	let hasPreset = false;
-
-	for (let i = 0; i < args.length; i++) {
-		if (args[i] === "--config" && i + 1 < args.length) {
-			configPath = args[i + 1];
-		} else if (args[i] === "--preset" && i + 1 < args.length) {
-			// Split comma-separated presets
-			presets = args[i + 1].split(",");
-			hasPreset = true;
-		}
-	}
-
-	// Only default to thinking preset if no preset specified AND no config path provided
-	if (presets.length === 0 && !configPath) {
-		presets = ["thinking"];
-	}
-
-	return { configPath, presets };
-}
-
 /**
  * Loads and merges configuration from presets and user config
  * @param presets - Array of preset names to load
@@ -73,7 +28,7 @@ function parseCommandLineArgs(): CommandLineArgs {
 export function loadAndMergeConfig(
 	presets: string[],
 	configPath?: string,
-): Record<string, any> {
+): DevToolsConfig {
 	// Log available presets
 	const availablePresets = listAvailablePresets();
 	console.error(`Available presets: ${availablePresets.join(", ")}`);
@@ -110,7 +65,7 @@ export function loadAndMergeConfig(
  * @param version - Server version
  */
 export function createMcpServer(
-	config: Record<string, any>,
+	config: DevToolsConfig,
 	version: string,
 ): McpServer {
 	// Create an MCP server
@@ -160,20 +115,20 @@ export function createMcpServer(
  */
 export function registerToolsFromConfig(
 	server: McpServer,
-	config: Record<string, any>,
+	config: DevToolsConfig,
 ): void {
 	// Function to add a tool if it's not disabled
 	const addTool = (
 		name: string,
 		description: string,
-		inputSchema: any | undefined,
-		callback: (params?: Record<string, any>) => Promise<any>,
+		inputSchema: ZodSchemaMap | undefined,
+		callback: ToolCallback,
 	) => {
 		server.tool(
 			name,
 			description,
-			inputSchema,
-			async (params: Record<string, any>) => {
+			inputSchema || {},
+			async (params: TemplateParams): Promise<ToolResult> => {
 				try {
 					// Log parameters for debugging
 					console.error(`Tool ${name} called with params:`, params);
@@ -209,10 +164,10 @@ export function registerToolsFromConfig(
 	};
 
 	// Dynamically register all tools from the config
-	Object.entries(config).forEach(([key, toolConfig]: [string, any]) => {
+	for (const [key, toolConfig] of Object.entries(config)) {
 		// Skip if toolConfig is undefined or disabled
 		if (!toolConfig || toolConfig.disabled) {
-			return;
+			continue;
 		}
 
 		// Find corresponding prompt function if available
@@ -240,7 +195,7 @@ export function registerToolsFromConfig(
 			toolName,
 			toolConfig.description || `${key.replace(/_/g, " ")} tool`,
 			inputSchema,
-			async (params?: Record<string, any>) => {
+			async (params?: TemplateParams): Promise<ToolResult> => {
 				// Generate the tool prompt with template processing
 				const { text, usedParams } = generateToolPrompt(
 					key,
@@ -254,7 +209,7 @@ export function registerToolsFromConfig(
 				let finalText = text;
 				if (params && Object.keys(params).length > 0) {
 					// Filter out used parameters
-					const unusedParams: Record<string, any> = {};
+					const unusedParams: Record<string, unknown> = {};
 					for (const [paramKey, value] of Object.entries(params)) {
 						if (!usedParams.has(paramKey)) {
 							unusedParams[paramKey] = value;
@@ -274,7 +229,7 @@ export function registerToolsFromConfig(
 				return { content: [{ type: "text", text: finalText }] };
 			},
 		);
-	});
+	}
 }
 
 /**
@@ -283,12 +238,12 @@ export function registerToolsFromConfig(
  */
 function generateToolPrompt(
 	key: string,
-	toolConfig: Record<string, any>,
+	toolConfig: PromptConfig,
 	promptFunction:
-		| ((config: Record<string, any>, params?: Record<string, any>) => string)
+		| ((config: DevToolsConfig, params?: TemplateParams) => string)
 		| undefined,
-	fullConfig: Record<string, any>,
-	params?: Record<string, any>,
+	fullConfig: DevToolsConfig,
+	params?: TemplateParams,
 ): { text: string; usedParams: Set<string> } {
 	let basePrompt = "";
 

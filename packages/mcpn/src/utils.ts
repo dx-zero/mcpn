@@ -5,23 +5,20 @@
 import fs from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { ToolConfig } from "./config";
+import type { TemplateParams } from "./@types/common";
+import type { PackageInfo } from "./@types/common";
+import type { PromptTools, ToolConfig } from "./@types/config";
+import type { ToolItem } from "./@types/prompts";
 
 /**
  * Interface for a tool in the tools list
  */
-export interface ToolItem {
-	name: string;
-	description?: string;
-	prompt?: string;
-	optional?: boolean;
-}
 
 /**
  * Gets the package version from package.json
  * @returns {Object} The parsed package.json content
  */
-export function getPackageInfo(): Record<string, unknown> {
+export function getPackageInfo(): PackageInfo {
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = dirname(__filename);
 	const packageJsonPath = join(__dirname, "..", "package.json");
@@ -34,9 +31,7 @@ export function getPackageInfo(): Record<string, unknown> {
  * @param tools - Tools configuration in either string or object format
  * @returns Array of formatted tool items
  */
-export function formatToolsList(
-	tools: string | Record<string, string | ToolConfig> | undefined,
-): ToolItem[] {
+export function formatToolsList(tools: PromptTools | undefined): ToolItem[] {
 	if (tools === undefined || tools === null) {
 		return [];
 	}
@@ -172,7 +167,7 @@ export function appendFormattedTools(
  */
 export function processTemplate(
 	template: string,
-	params: Record<string, unknown>,
+	params: TemplateParams,
 ): { result: string; usedParams: Set<string> } {
 	const usedParams = new Set<string>();
 

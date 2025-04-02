@@ -4,6 +4,14 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
 import { z } from "zod";
+import type { JsonSchema, ZodSchemaMap } from "./@types/common";
+import type {
+	DevToolsConfig,
+	ParameterConfig,
+	PromptConfig,
+	PromptTools,
+	ToolConfig,
+} from "./@types/config";
 
 // In ES modules, __dirname is not available directly
 const __filename = fileURLToPath(import.meta.url);
@@ -14,68 +22,68 @@ const __dirname = dirname(__filename);
  *
  * @interface ParameterConfig
  */
-export interface ParameterConfig {
-	/** Type of the parameter */
-	type: "string" | "number" | "boolean" | "array" | "object" | "enum";
-	/** Description of what the parameter does */
-	description?: string;
-	/** Whether the parameter is required */
-	required?: boolean;
-	/** Default value for the parameter */
-	default?: any;
-	/** Possible values for enum type parameters */
-	enum?: (string | number)[];
-	/** For array types, defines the type of items in the array */
-	items?: ParameterConfig;
-	/** For object types, defines the properties of the object */
-	properties?: Record<string, ParameterConfig>;
-}
+// export interface ParameterConfig {
+// 	/** Type of the parameter */
+// 	type: "string" | "number" | "boolean" | "array" | "object" | "enum";
+// 	/** Description of what the parameter does */
+// 	description?: string;
+// 	/** Whether the parameter is required */
+// 	required?: boolean;
+// 	/** Default value for the parameter */
+// 	default?: any;
+// 	/** Possible values for enum type parameters */
+// 	enum?: (string | number)[];
+// 	/** For array types, defines the type of items in the array */
+// 	items?: ParameterConfig;
+// 	/** For object types, defines the properties of the object */
+// 	properties?: Record<string, ParameterConfig>;
+// }
 
 /**
  * Represents a tool that can be used in a prompt
  *
  * @interface ToolConfig
  */
-export interface ToolConfig {
-	/** Name of the tool */
-	name: string;
-	/** Description of what the tool does */
-	description?: string;
-	/** Specific prompt text for this tool */
-	prompt?: string;
-	/** Whether this tool is optional to use */
-	optional?: boolean;
-	/** Parameters that the tool accepts */
-	parameters?: Record<string, ParameterConfig>;
-}
+// export interface ToolConfig {
+// 	/** Name of the tool */
+// 	name: string;
+// 	/** Description of what the tool does */
+// 	description?: string;
+// 	/** Specific prompt text for this tool */
+// 	prompt?: string;
+// 	/** Whether this tool is optional to use */
+// 	optional?: boolean;
+// 	/** Parameters that the tool accepts */
+// 	parameters?: Record<string, ParameterConfig>;
+// }
 
 /**
  * Configuration for a specific prompt
  *
  * @interface PromptConfig
  */
-export interface PromptConfig {
-	/** If provided, completely replaces the default prompt */
-	prompt?: string;
-	/** Additional context to append to the prompt (either default or custom) */
-	context?: string;
-	/**
-	 * Available tools for this prompt. Can be:
-	 * - A Record of tool names to either description strings or ToolConfig objects
-	 * - A comma-separated string of tool names
-	 */
-	tools?: Record<string, string | ToolConfig> | string;
-	/** Whether tools should be executed sequentially or situationally */
-	toolMode?: "sequential" | "situational";
-	/** Description for the tool (used as second parameter in server.tool) */
-	description?: string;
-	/** Whether this tool is disabled */
-	disabled?: boolean;
-	/** Optional name override for the registered tool (default is the config key) */
-	name?: string;
-	/** Parameters that the tool accepts */
-	parameters?: Record<string, ParameterConfig>;
-}
+// export interface PromptConfig {
+// 	/** If provided, completely replaces the default prompt */
+// 	prompt?: string;
+// 	/** Additional context to append to the prompt (either default or custom) */
+// 	context?: string;
+// 	/**
+// 	 * Available tools for this prompt. Can be:
+// 	 * - A Record of tool names to either description strings or ToolConfig objects
+// 	 * - A comma-separated string of tool names
+// 	 */
+// 	tools?: Record<string, string | ToolConfig> | string;
+// 	/** Whether tools should be executed sequentially or situationally */
+// 	toolMode?: "sequential" | "situational";
+// 	/** Description for the tool (used as second parameter in server.tool) */
+// 	description?: string;
+// 	/** Whether this tool is disabled */
+// 	disabled?: boolean;
+// 	/** Optional name override for the registered tool (default is the config key) */
+// 	name?: string;
+// 	/** Parameters that the tool accepts */
+// 	parameters?: Record<string, ParameterConfig>;
+// }
 
 /**
  * Main configuration interface for all developer tools
@@ -83,13 +91,13 @@ export interface PromptConfig {
  *
  * @interface DevToolsConfig
  */
-export interface DevToolsConfig {
-	/**
-	 * Dynamic mapping of tool names to their configurations
-	 * Tool names are determined by the keys in the YAML preset files
-	 */
-	[key: string]: PromptConfig | undefined;
-}
+// export interface DevToolsConfig {
+// 	/**
+// 	 * Dynamic mapping of tool names to their configurations
+// 	 * Tool names are determined by the keys in the YAML preset files
+// 	 */
+// 	[key: string]: PromptConfig | undefined;
+// }
 
 // Default empty configuration
 const defaultConfig: DevToolsConfig = {};
@@ -130,7 +138,10 @@ export function mergeConfigs(
  * @param {any} sourceTools - The source tools to merge
  * @returns {any} The merged tools or undefined if both inputs are undefined
  */
-function mergeTools(targetTools?: any, sourceTools?: any): any {
+function mergeTools(
+	targetTools?: PromptTools,
+	sourceTools?: PromptTools,
+): PromptTools | undefined {
 	if (!targetTools && !sourceTools) {
 		return undefined;
 	}
@@ -538,126 +549,111 @@ function validateNestedParameter(
 
 /**
  * Converts parameter configuration to JSON Schema format
- * @param {Record<string, ParameterConfig>} parameters - Parameter configurations
- * @returns {object} JSON Schema object
+ * @param {Record<string, ParameterConfig>} parameters - The parameter definitions
+ * @returns {any} The JSON Schema representation
  */
 export function convertParametersToJsonSchema(
 	parameters: Record<string, ParameterConfig>,
-): any {
-	const properties: Record<string, any> = {};
-	const required: string[] = [];
+): JsonSchema {
+	const schema: JsonSchema = {
+		type: "object",
+		properties: {},
+	};
 
 	for (const [name, param] of Object.entries(parameters)) {
-		if (param.required) {
-			required.push(name);
-		}
-
-		properties[name] = convertParameterToJsonSchema(param);
+		schema.properties[name] = convertParameterToJsonSchema(param);
 	}
-
-	// Fix the schema format to be compatible with MCP SDK
-	const schema = {
-		type: "object",
-		properties,
-		...(required.length > 0 ? { required } : {}),
-	};
 
 	return schema;
 }
 
 /**
- * Converts a single parameter configuration to JSON Schema
- * @param {ParameterConfig} param - Parameter configuration
- * @returns {object} JSON Schema for the parameter
+ * Converts a single ParameterConfig to its JSON Schema representation
+ *
+ * @param {ParameterConfig} param - The parameter configuration
+ * @returns {any} The JSON Schema representation for the parameter
  */
-export function convertParameterToJsonSchema(param: ParameterConfig): any {
-	const schema: any = {};
+export function convertParameterToJsonSchema(
+	param: ParameterConfig,
+): JsonSchema {
+	const schemaPart: JsonSchema = {};
 
 	switch (param.type) {
 		case "string": {
-			schema.type = "string";
+			schemaPart.type = "string";
 			break;
 		}
 		case "number": {
-			schema.type = "number";
+			schemaPart.type = "number";
 			break;
 		}
 		case "boolean": {
-			schema.type = "boolean";
+			schemaPart.type = "boolean";
 			break;
 		}
 		case "array": {
-			schema.type = "array";
-			schema.items = param.items
+			schemaPart.type = "array";
+			schemaPart.items = param.items
 				? convertParameterToJsonSchema(param.items)
 				: { type: "string" };
 			break;
 		}
 		case "object": {
-			schema.type = "object";
+			schemaPart.type = "object";
 			if (param.properties) {
 				const nestedSchema = convertParametersToJsonSchema(param.properties);
-				schema.properties = nestedSchema.properties;
-				if (nestedSchema.required && nestedSchema.required.length > 0) {
-					schema.required = nestedSchema.required;
-				}
+				schemaPart.properties = nestedSchema.properties;
 			} else {
-				schema.additionalProperties = true;
+				schemaPart.additionalProperties = true;
 			}
 			break;
 		}
 		case "enum": {
 			if (param.enum && param.enum.length > 0) {
 				const firstValue = param.enum[0];
-				schema.type = typeof firstValue === "number" ? "number" : "string";
-				schema.enum = param.enum;
+				schemaPart.type = typeof firstValue === "number" ? "number" : "string";
+				schemaPart.enum = param.enum;
 			} else {
-				schema.type = "string";
-				schema.enum = [];
+				schemaPart.type = "string";
+				schemaPart.enum = [];
 			}
 			break;
 		}
 	}
 
 	if (param.description) {
-		schema.description = param.description;
+		schemaPart.description = param.description;
 	}
 
 	if (param.default !== undefined) {
-		schema.default = param.default;
+		schemaPart.default = param.default;
 	}
 
-	return schema;
+	return schemaPart;
 }
 
 /**
  * Converts parameter configuration to Zod schema
- * @param {Record<string, ParameterConfig>} parameters - Parameter configurations
- * @returns {object} Zod schema object for use with MCP SDK
+ * @param {Record<string, ParameterConfig>} parameters - The parameter definitions
+ * @returns {Record<string, z.ZodTypeAny>} The Zod schema representation
  */
 export function convertParametersToZodSchema(
 	parameters: Record<string, ParameterConfig>,
-): Record<string, z.ZodTypeAny> {
-	const schemaObj: Record<string, z.ZodTypeAny> = {};
+): ZodSchemaMap {
+	const zodSchema: ZodSchemaMap = {};
 
 	for (const [name, param] of Object.entries(parameters)) {
-		let schema = convertParameterToZodSchema(param);
-
-		// If parameter is required, don't add .optional()
-		if (!param.required) {
-			schema = schema.optional();
-		}
-
-		schemaObj[name] = schema;
+		zodSchema[name] = convertParameterToZodSchema(param);
 	}
 
-	return schemaObj;
+	return zodSchema;
 }
 
 /**
- * Converts a single parameter configuration to a Zod schema
- * @param {ParameterConfig} param - Parameter configuration
- * @returns {z.ZodTypeAny} Zod schema for the parameter
+ * Converts a single ParameterConfig to its Zod schema representation
+ *
+ * @param {ParameterConfig} param - The parameter configuration
+ * @returns {z.ZodTypeAny} The Zod schema representation for the parameter
  */
 export function convertParameterToZodSchema(
 	param: ParameterConfig,
@@ -706,10 +702,10 @@ export function convertParameterToZodSchema(
 					// Since z.nativeEnum expects an actual TypeScript enum,
 					// we'll use z.union of z.literal values
 					schema = z.union(
-						param.enum.map((value) => z.literal(value)) as [
-							z.ZodLiteral<any>,
-							z.ZodLiteral<any>,
-							...z.ZodLiteral<any>[],
+						param.enum.map((value) => z.literal(value as number)) as [
+							z.ZodLiteral<number>,
+							z.ZodLiteral<number>,
+							...z.ZodLiteral<number>[],
 						],
 					);
 				} else {

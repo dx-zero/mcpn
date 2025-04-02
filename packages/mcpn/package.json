@@ -49,31 +49,19 @@
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "catalog:prod",
 		"js-yaml": "catalog:prod",
-		"mcpn": "workspace:*",
 		"zod": "catalog:prod"
 	},
 	"devDependencies": {
-		"@modelcontextprotocol/sdk": "catalog:prod",
-		"@rollup/plugin-replace": "^6.0.2",
-		"@rollup/plugin-yaml": "catalog:cli",
 		"@types/chai": "catalog:types",
-		"@types/fs-extra": "catalog:types",
 		"@types/js-yaml": "catalog:types",
 		"@types/mocha": "catalog:types",
 		"@types/node": "catalog:types",
-		"ansis": "catalog:prod",
 		"chai": "catalog:testing",
-		"debug": "catalog:prod",
-		"fs-extra": "catalog:utils",
 		"mocha": "catalog:testing",
-		"pathe": "catalog:prod",
-		"rollup": "catalog:cli",
-		"ts-node": "catalog:cli",
-		"tsconfig-paths": "catalog:cli",
+		"sinon": "catalog:testing",
 		"tsx": "catalog:cli",
 		"typescript": "catalog:cli",
-		"unbuild": "catalog:cli",
-		"zod": "catalog:prod"
+		"unbuild": "catalog:cli"
 	},
 	"packageManager": "pnpm@10.6.3"
 }
