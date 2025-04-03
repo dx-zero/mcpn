@@ -4,13 +4,18 @@
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import type { TemplateParams } from "./@types/common";
+
+interface McpTestClientOptions {
+	cliEntryPoint: string; // Path to the cli-entry.mjs file
+}
 
 export class McpTestClient {
 	private client: Client;
 	private transport: StdioClientTransport | undefined;
+	private options: McpTestClientOptions;
 
-	constructor() {
+	constructor(options: McpTestClientOptions) {
+		this.options = options;
 		this.client = new Client(
 			{
 				name: "devtools-mcp-test-client",
@@ -37,7 +42,7 @@ export class McpTestClient {
 		// Create a new transport with the specified args
 		this.transport = new StdioClientTransport({
 			command: "node",
-			args: ["dist/cli-entry.mjs", ...args],
+			args: [this.options.cliEntryPoint, ...args], // Use the provided entry point
 		});
 
 		// Connect the client to the transport
@@ -61,16 +66,16 @@ export class McpTestClient {
 	/**
 	 * List all available tools
 	 */
-	async listTools(): Promise<unknown> {
+	async listTools(): Promise<any> {
 		return await this.client.listTools();
 	}
 
 	/**
 	 * Call a tool by name with the given arguments
 	 * @param name Tool name
-	 * @param args Tool arguments
+	 * @param args Tool arguments (using Record<string, any> for flexibility)
 	 */
-	async callTool(name: string, args: TemplateParams = {}): Promise<unknown> {
+	async callTool(name: string, args: Record<string, any> = {}): Promise<any> {
 		return await this.client.callTool({
 			name,
 			arguments: args,
@@ -82,7 +87,7 @@ export class McpTestClient {
 	 * @param name Name of the tool or configuration to get prompt for
 	 * @returns Promise containing the prompt text
 	 */
-	async getPrompt(name: string): Promise<unknown> {
+	async getPrompt(name: string): Promise<any> {
 		// Call the tool with no arguments to get its prompt
 		return await this.client.callTool({
 			name,

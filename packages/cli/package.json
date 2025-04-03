@@ -49,7 +49,6 @@
 		"@types/js-yaml": "catalog:types",
 		"@types/node": "catalog:types",
 		"@types/semver": "catalog:types",
-		"@types/sinon": "^17.0.4",
 		"c12": "catalog:utils",
 		"citty": "catalog:prod",
 		"consola": "catalog:cli",
@@ -61,7 +60,9 @@
 		"rollup": "catalog:cli",
 		"rollup-plugin-visualizer": "^5.14.0",
 		"typescript": "catalog:cli",
-		"unbuild": "catalog:cli"
+		"unbuild": "catalog:cli",
+		"@mcpn/test-utils": "workspace:*",
+		"vitest": "catalog:testing"
 	},
 	"packageManager": "pnpm@10.6.3",
 	"dependencies": {

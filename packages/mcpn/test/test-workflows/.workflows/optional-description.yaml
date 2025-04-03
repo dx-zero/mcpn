@@ -1,0 +1,9 @@
+optional_description_mode:
+  description: "Mode to test optional tool descriptions"
+  prompt: |
+    # Optional Descriptions Test
+    This mode tests tools with and without descriptions.
+    - 0: This tool has a description
+    - 1
+    - 2: Another tool with a description
+    

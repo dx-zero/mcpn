@@ -1,0 +1,32 @@
+{
+  "name": "@mcpn/test-utils",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared test utilities for MCPN SDK and CLI",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "unbuild",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "catalog:prod"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "typescript": "catalog:cli",
+    "unbuild": "catalog:cli"
+  }
+} 

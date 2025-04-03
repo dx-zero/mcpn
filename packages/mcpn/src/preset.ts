@@ -24,7 +24,7 @@ export function loadPresetConfig(filePath: string): DevToolsConfig {
 		}
 
 		return config;
-	} catch (error: unknown) {
+	} catch (error: any) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		console.error(
 			`Error loading preset config from ${filePath}: ${errorMessage}`,
@@ -88,7 +88,7 @@ export function getPresetContent(presetName: string): string {
 			}
 		}
 		return fs.readFileSync(presetPath, "utf8");
-	} catch (error: unknown) {
+	} catch (error: any) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		throw new Error(`Error reading preset "${presetName}": ${errorMessage}`);
 	}

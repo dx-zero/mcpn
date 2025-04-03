@@ -2,12 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as yaml from "js-yaml";
 import { z } from "zod";
-import type { JsonSchema, ZodSchemaMap } from "./@types/common";
-import type {
-	DevToolsConfig,
-	ParameterConfig,
-	PromptTools,
-} from "./@types/config";
+import type { DevToolsConfig, ParameterConfig } from "./@types/config";
 
 // Default empty configuration
 const defaultConfig: DevToolsConfig = {};
@@ -23,7 +18,7 @@ export function mergeConfigs(
 	target: DevToolsConfig,
 	source: DevToolsConfig,
 ): DevToolsConfig {
-	for (const [key, value] of Object.entries(source)) {
+	Object.entries(source).forEach(([key, value]) => {
 		if (target[key]) {
 			// If the property already exists, merge with the existing one
 			target[key] = {
@@ -36,7 +31,7 @@ export function mergeConfigs(
 			// Otherwise, just set it
 			target[key] = value;
 		}
-	}
+	});
 
 	return target;
 }
@@ -48,10 +43,7 @@ export function mergeConfigs(
  * @param {any} sourceTools - The source tools to merge
  * @returns {any} The merged tools or undefined if both inputs are undefined
  */
-function mergeTools(
-	targetTools?: PromptTools,
-	sourceTools?: PromptTools,
-): PromptTools | undefined {
+function mergeTools(targetTools?: any, sourceTools?: any): any {
 	if (!targetTools && !sourceTools) {
 		return undefined;
 	}
@@ -69,7 +61,7 @@ function mergeTools(
 			...targetTools.split(",").map((t) => t.trim()),
 			...sourceTools.split(",").map((t) => t.trim()),
 		]);
-		return [...toolsSet].join(", ");
+		return Array.from(toolsSet).join(", ");
 	}
 
 	// Convert string to object format if needed
@@ -169,7 +161,7 @@ export async function loadConfig(
 			console.error(`Loading config from: ${filePath}`);
 
 			try {
-				const content = fs.readFileSync(filePath, "utf8");
+				const content = fs.readFileSync(filePath, "utf-8");
 				const fileConfig = yaml.load(content) as DevToolsConfig;
 
 				if (typeof fileConfig !== "object") {
@@ -179,9 +171,8 @@ export async function loadConfig(
 
 				// Merge this file's config into the overall config
 				mergeConfigs(mergedConfig, fileConfig);
-			} catch (error_: unknown) {
-				const errorMessage =
-					error_ instanceof Error ? error_.message : String(error_);
+			} catch (err: unknown) {
+				const errorMessage = err instanceof Error ? err.message : String(err);
 				console.error(
 					`Error loading config from ${filePath}: ${errorMessage}, skipping`,
 				);
@@ -259,7 +250,7 @@ export function loadConfigSync(directoryPath?: string): DevToolsConfig {
 			console.error(`Loading config from: ${filePath}`);
 
 			try {
-				const content = fs.readFileSync(filePath, "utf8");
+				const content = fs.readFileSync(filePath, "utf-8");
 				const fileConfig = yaml.load(content) as DevToolsConfig;
 
 				if (typeof fileConfig !== "object") {
@@ -269,9 +260,8 @@ export function loadConfigSync(directoryPath?: string): DevToolsConfig {
 
 				// Merge this file's config into the overall config
 				mergeConfigs(mergedConfig, fileConfig);
-			} catch (error_: unknown) {
-				const errorMessage =
-					error_ instanceof Error ? error_.message : String(error_);
+			} catch (err: unknown) {
+				const errorMessage = err instanceof Error ? err.message : String(err);
 				console.error(
 					`Error loading config from ${filePath}: ${errorMessage}, skipping`,
 				);
@@ -314,24 +304,27 @@ export function validateToolConfig(
 					return `Parameter "${paramName}" is missing type property`;
 				}
 
-				const validTypes = new Set([
+				const validTypes = [
 					"string",
 					"number",
 					"boolean",
 					"array",
 					"object",
 					"enum",
-				]);
-				if (!validTypes.has(param.type)) {
+				];
+				if (!validTypes.includes(param.type)) {
 					return `Parameter "${paramName}" has invalid type "${param.type}"`;
 				}
 
 				// For enum types, check that enum values are provided
-				if (
-					param.type === "enum" &&
-					(!param.enum || !Array.isArray(param.enum) || param.enum.length === 0)
-				) {
-					return `Parameter "${paramName}" of type "enum" must have a non-empty enum array`;
+				if (param.type === "enum") {
+					if (
+						!param.enum ||
+						!Array.isArray(param.enum) ||
+						param.enum.length === 0
+					) {
+						return `Parameter "${paramName}" of type "enum" must have a non-empty enum array`;
+					}
 				}
 
 				// Recursively validate nested parameters
@@ -343,7 +336,7 @@ export function validateToolConfig(
 							return `Nested parameter "${nestedName}" in "${paramName}" is missing type property`;
 						}
 
-						if (!validTypes.has(nestedParam.type)) {
+						if (!validTypes.includes(nestedParam.type)) {
 							return `Nested parameter "${nestedName}" in "${paramName}" has invalid type "${nestedParam.type}"`;
 						}
 
@@ -364,7 +357,7 @@ export function validateToolConfig(
 						return `Items in array parameter "${paramName}" must specify a type`;
 					}
 
-					if (!validTypes.has(param.items.type)) {
+					if (!validTypes.includes(param.items.type)) {
 						return `Items in array parameter "${paramName}" have invalid type "${param.items.type}"`;
 					}
 
@@ -397,21 +390,13 @@ function validateNestedParameter(
 	param: ParameterConfig,
 	path: string,
 ): string | null {
-	const validTypes = new Set([
-		"string",
-		"number",
-		"boolean",
-		"array",
-		"object",
-		"enum",
-	]);
+	const validTypes = ["string", "number", "boolean", "array", "object", "enum"];
 
 	// For enum types, check that enum values are provided
-	if (
-		param.type === "enum" &&
-		(!param.enum || !Array.isArray(param.enum) || param.enum.length === 0)
-	) {
-		return `Parameter "${path}" of type "enum" must have a non-empty enum array`;
+	if (param.type === "enum") {
+		if (!param.enum || !Array.isArray(param.enum) || param.enum.length === 0) {
+			return `Parameter "${path}" of type "enum" must have a non-empty enum array`;
+		}
 	}
 
 	// Recursively validate nested objects
@@ -421,7 +406,7 @@ function validateNestedParameter(
 				return `Nested parameter "${nestedName}" in "${path}" is missing type property`;
 			}
 
-			if (!validTypes.has(nestedParam.type)) {
+			if (!validTypes.includes(nestedParam.type)) {
 				return `Nested parameter "${nestedName}" in "${path}" has invalid type "${nestedParam.type}"`;
 			}
 
@@ -441,7 +426,7 @@ function validateNestedParameter(
 			return `Items in array parameter "${path}" must specify a type`;
 		}
 
-		if (!validTypes.has(param.items.type)) {
+		if (!validTypes.includes(param.items.type)) {
 			return `Items in array parameter "${path}" have invalid type "${param.items.type}"`;
 		}
 
@@ -459,112 +444,126 @@ function validateNestedParameter(
 
 /**
  * Converts parameter configuration to JSON Schema format
- * @param {Record<string, ParameterConfig>} parameters - The parameter definitions
- * @returns {any} The JSON Schema representation
+ * @param {Record<string, ParameterConfig>} parameters - Parameter configurations
+ * @returns {object} JSON Schema object
  */
 export function convertParametersToJsonSchema(
 	parameters: Record<string, ParameterConfig>,
-): JsonSchema {
-	const schema: JsonSchema = {
-		type: "object",
-		properties: {} as Record<string, JsonSchema>,
-	};
+): any {
+	const properties: Record<string, any> = {};
+	const required: string[] = [];
 
 	for (const [name, param] of Object.entries(parameters)) {
-		(schema.properties as Record<string, JsonSchema>)[name] =
-			convertParameterToJsonSchema(param);
+		if (param.required) {
+			required.push(name);
+		}
+
+		properties[name] = convertParameterToJsonSchema(param);
+	}
+
+	// Fix the schema format to be compatible with MCP SDK
+	const schema = {
+		type: "object",
+		properties,
+		...(required.length > 0 ? { required } : {}),
+	};
+
+	return schema;
+}
+
+/**
+ * Converts a single parameter configuration to JSON Schema
+ * @param {ParameterConfig} param - Parameter configuration
+ * @returns {object} JSON Schema for the parameter
+ */
+export function convertParameterToJsonSchema(param: ParameterConfig): any {
+	const schema: any = {};
+
+	switch (param.type) {
+		case "string":
+			schema.type = "string";
+			break;
+		case "number":
+			schema.type = "number";
+			break;
+		case "boolean":
+			schema.type = "boolean";
+			break;
+		case "array":
+			schema.type = "array";
+			if (param.items) {
+				schema.items = convertParameterToJsonSchema(param.items);
+			} else {
+				schema.items = { type: "string" };
+			}
+			break;
+		case "object":
+			schema.type = "object";
+			if (param.properties) {
+				const nestedSchema = convertParametersToJsonSchema(param.properties);
+				schema.properties = nestedSchema.properties;
+				if (nestedSchema.required && nestedSchema.required.length > 0) {
+					schema.required = nestedSchema.required;
+				}
+			} else {
+				schema.additionalProperties = true;
+			}
+			break;
+		case "enum":
+			if (param.enum && param.enum.length > 0) {
+				const firstValue = param.enum[0];
+				if (typeof firstValue === "number") {
+					schema.type = "number";
+				} else {
+					schema.type = "string";
+				}
+				schema.enum = param.enum;
+			} else {
+				schema.type = "string";
+				schema.enum = [];
+			}
+			break;
+	}
+
+	if (param.description) {
+		schema.description = param.description;
+	}
+
+	if (param.default !== undefined) {
+		schema.default = param.default;
 	}
 
 	return schema;
 }
 
 /**
- * Converts a single ParameterConfig to its JSON Schema representation
- *
- * @param {ParameterConfig} param - The parameter configuration
- * @returns {any} The JSON Schema representation for the parameter
- */
-export function convertParameterToJsonSchema(
-	param: ParameterConfig,
-): JsonSchema {
-	const schemaPart: JsonSchema = {};
-
-	switch (param.type) {
-		case "string": {
-			schemaPart.type = "string";
-			break;
-		}
-		case "number": {
-			schemaPart.type = "number";
-			break;
-		}
-		case "boolean": {
-			schemaPart.type = "boolean";
-			break;
-		}
-		case "array": {
-			schemaPart.type = "array";
-			schemaPart.items = param.items
-				? convertParameterToJsonSchema(param.items)
-				: { type: "string" };
-			break;
-		}
-		case "object": {
-			schemaPart.type = "object";
-			if (param.properties) {
-				const nestedSchema = convertParametersToJsonSchema(param.properties);
-				schemaPart.properties = nestedSchema.properties;
-			} else {
-				schemaPart.additionalProperties = true;
-			}
-			break;
-		}
-		case "enum": {
-			if (param.enum && param.enum.length > 0) {
-				const firstValue = param.enum[0];
-				schemaPart.type = typeof firstValue === "number" ? "number" : "string";
-				schemaPart.enum = param.enum;
-			} else {
-				schemaPart.type = "string";
-				schemaPart.enum = [];
-			}
-			break;
-		}
-	}
-
-	if (param.description) {
-		schemaPart.description = param.description;
-	}
-
-	if (param.default !== undefined) {
-		schemaPart.default = param.default;
-	}
-
-	return schemaPart;
-}
-
-/**
  * Converts parameter configuration to Zod schema
- * @param {Record<string, ParameterConfig>} parameters - The parameter definitions
- * @returns {Record<string, z.ZodTypeAny>} The Zod schema representation
+ * @param {Record<string, ParameterConfig>} parameters - Parameter configurations
+ * @returns {object} Zod schema object for use with MCP SDK
  */
 export function convertParametersToZodSchema(
 	parameters: Record<string, ParameterConfig>,
-): ZodSchemaMap {
-	const zodSchema: ZodSchemaMap = {};
+): Record<string, z.ZodTypeAny> {
+	const schemaObj: Record<string, z.ZodTypeAny> = {};
 
 	for (const [name, param] of Object.entries(parameters)) {
-		zodSchema[name] = convertParameterToZodSchema(param);
+		let schema = convertParameterToZodSchema(param);
+
+		// If parameter is required, don't add .optional()
+		if (!param.required) {
+			schema = schema.optional();
+		}
+
+		schemaObj[name] = schema;
 	}
 
-	return zodSchema;
+	return schemaObj;
 }
 
 /**
- * Converts a single ParameterConfig to its Zod schema representation
- *
- * @param {ParameterConfig} param - The parameter configuration
- * @returns {z.ZodTypeAny} The Zod schema representation for the parameter
+ * Converts a single parameter configuration to a Zod schema
+ * @param {ParameterConfig} param - Parameter configuration
+ * @returns {z.ZodTypeAny} Zod schema for the parameter
  */
 export function convertParameterToZodSchema(
 	param: ParameterConfig,
@@ -572,19 +571,16 @@ export function convertParameterToZodSchema(
 	let schema: z.ZodTypeAny;
 
 	switch (param.type) {
-		case "string": {
+		case "string":
 			schema = z.string();
 			break;
-		}
-		case "number": {
+		case "number":
 			schema = z.number();
 			break;
-		}
-		case "boolean": {
+		case "boolean":
 			schema = z.boolean();
 			break;
-		}
-		case "array": {
+		case "array":
 			if (param.items) {
 				// Create array with the specific item type
 				schema = z.array(convertParameterToZodSchema(param.items));
@@ -593,8 +589,7 @@ export function convertParameterToZodSchema(
 				schema = z.array(z.string());
 			}
 			break;
-		}
-		case "object": {
+		case "object":
 			if (param.properties) {
 				// Create object with specific properties
 				const propertySchemas = convertParametersToZodSchema(param.properties);
@@ -604,8 +599,7 @@ export function convertParameterToZodSchema(
 				schema = z.record(z.unknown());
 			}
 			break;
-		}
-		case "enum": {
+		case "enum":
 			if (param.enum && param.enum.length > 0) {
 				const firstValue = param.enum[0];
 				if (typeof firstValue === "number") {
@@ -613,10 +607,10 @@ export function convertParameterToZodSchema(
 					// Since z.nativeEnum expects an actual TypeScript enum,
 					// we'll use z.union of z.literal values
 					schema = z.union(
-						param.enum.map((value) => z.literal(value as number)) as [
-							z.ZodLiteral<number>,
-							z.ZodLiteral<number>,
-							...z.ZodLiteral<number>[],
+						param.enum.map((value) => z.literal(value)) as [
+							z.ZodLiteral<any>,
+							z.ZodLiteral<any>,
+							...z.ZodLiteral<any>[],
 						],
 					);
 				} else {
@@ -628,11 +622,9 @@ export function convertParameterToZodSchema(
 				schema = z.enum([""] as [string, ...string[]]);
 			}
 			break;
-		}
-		default: {
+		default:
 			// Default to string for unknown types
 			schema = z.string();
-		}
 	}
 
 	// Add description if available
@@ -643,11 +635,6 @@ export function convertParameterToZodSchema(
 	// Add default value if specified
 	if (param.default !== undefined) {
 		schema = schema.default(param.default);
-	}
-
-	// Make schema optional if required is explicitly false
-	if (param.required === false) {
-		schema = schema.optional();
 	}
 
 	return schema;

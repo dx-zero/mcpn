@@ -207,7 +207,7 @@ export function registerToolsFromConfig(
 				let finalText = text;
 				if (params && Object.keys(params).length > 0) {
 					// Filter out used parameters
-					const unusedParams: Record<string, unknown> = {};
+					const unusedParams: Record<string, any> = {};
 					for (const [paramKey, value] of Object.entries(params)) {
 						if (!usedParams.has(paramKey)) {
 							unusedParams[paramKey] = value;

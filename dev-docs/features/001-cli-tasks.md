@@ -19,7 +19,7 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 ## Test Environment Setup
 
 - [x] Extend the existing Mocha/Chai testing framework for CLI tests
-- [x] Utilize the existing `__tests__/cli/` directory for CLI test files
+- [x] Utilize the existing `test/cli/` directory for CLI test files
 - [x] Create file system mocks for directory and file operations
 - [x] Set up command-line argument parsing mocks
 - [x] Create test fixtures for IDE configurations
@@ -33,9 +33,9 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 
 ### Test First
 
-- [x] Create tests in `__tests__/cli/command-parser.test.ts` for command-line parsing
-- [x] Create tests in `__tests__/cli/help-display.test.ts` for help documentation
-- [x] Create tests in `__tests__/cli/backward-compatibility.test.ts` for existing flags
+- [x] Create tests in `test/cli/command-parser.test.ts` for command-line parsing
+- [x] Create tests in `test/cli/help-display.test.ts` for help documentation
+- [x] Create tests in `test/cli/backward-compatibility.test.ts` for existing flags
 - [x] Create tests to verify command routing (init, add, remove, default server)
 - [x] Create tests for command aliases (i → add, rm/uninstall → remove)
 
@@ -70,7 +70,7 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 
 ### Test First
 
-- [x] Create tests in `__tests__/cli/init-command.test.ts` for all init functionality
+- [x] Create tests in `test/cli/init-command.test.ts` for all init functionality
 - [x] Create tests for interactive IDE selection with mocked prompts
 - [x] Create tests for directory creation and file generation
 - [x] Create tests for each IDE configuration format
@@ -104,14 +104,13 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 
 ### Test First
 
-- [ ] Create tests in `__tests__/cli/add-command.test.ts` for all add functionality
+- [ ] Create tests in `test/cli/add-command.test.ts` for all add functionality
 - [ ] Create tests for alias resolution to built-in presets
 - [ ] Create tests for URL validation and security checks
 - [ ] Create tests for HTTP request handling with mock server
 - [ ] Create tests for YAML syntax and schema validation
 - [ ] Create tests for filename generation and conflict resolution
 - [ ] Create tests for workflow name conflict detection
-- [ ] Create tests for metadata creation and updates
 - [ ] Create tests for the `--force` flag behavior
 - [ ] Create tests for interactive conflict resolution using mocked prompts
 - [ ] Create tests for alias support (`npx mcpn i`)
@@ -137,7 +136,7 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 
 ### Test First
 
-- [ ] Create tests in `__tests__/cli/remove-command.test.ts` for all remove functionality
+- [ ] Create tests in `test/cli/remove-command.test.ts` for all remove functionality
 - [ ] Create tests for workflow identification with test fixtures
 - [ ] Create tests for file removal operations
 - [ ] Create tests for conflict detection and resolution
@@ -160,7 +159,7 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 
 ### Test First
 
-- [ ] Create tests in `__tests__/cli/error-handling.test.ts` for error scenarios
+- [ ] Create tests in `test/cli/error-handling.test.ts` for error scenarios
 - [ ] Create tests for missing prerequisites
 - [ ] Create tests for invalid inputs
 - [ ] Create tests for error message generation
@@ -222,11 +221,11 @@ This document outlines the implementation tasks and testing plan for the MCPN CL
 
 Tests should follow the existing project pattern:
 
-- Files in `__tests__/cli/` directory
+- Files in `test/cli/` directory
 - Naming convention: `feature-name.test.ts`
 - Use Mocha's `describe` and `it` functions
 - Use Chai for assertions
-- Utilize existing test fixtures in `__tests__/test-workflows/`
+- Utilize existing test fixtures in `test/test-workflows/`
 
 ### Local HTTP Server for Testing
 

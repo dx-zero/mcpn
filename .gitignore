@@ -24,3 +24,5 @@ yarn-error.log*
 Thumbs.db
 .hidden
 llms_*.txt
+
+dev-docs/frameworks

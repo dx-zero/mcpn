@@ -2,4 +2,4 @@ debugger_mode:
   prompt: |
     # Custom Debugger Mode
 
-	This is a completely custom prompt for the debugger mode.
+    This is a completely custom prompt for the debugger mode.

@@ -62,7 +62,7 @@ export function getPackageInfo(): PackageInfo {
 	const packageJsonPath = join(PROJECT_ROOT, "package.json");
 	try {
 		return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-	} catch (error: unknown) {
+	} catch (error: any) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		console.error(
 			`Error reading package.json at ${packageJsonPath}: ${errorMessage}`,
@@ -145,6 +145,9 @@ export function appendFormattedTools(
 
 		for (const [index, tool] of toolsList.entries()) {
 			resultText += `${index + 1}. ${tool.name}`;
+			console.error(
+				`[appendFormattedTools - sequential] Processing tool: ${JSON.stringify(tool)}`,
+			);
 			if (
 				(!tool.prompt && tool.description) ||
 				(tool.prompt && tool.description)
@@ -153,6 +156,9 @@ export function appendFormattedTools(
 			}
 			if (tool.description) {
 				resultText += `${tool.description}`;
+				console.error(
+					`[appendFormattedTools - sequential] Added description. Intermediate text: ${resultText}`,
+				);
 			}
 			if (tool.prompt && tool.description) {
 				resultText += " - ";
@@ -162,9 +168,15 @@ export function appendFormattedTools(
 			}
 			if (tool.prompt) {
 				resultText += `${tool.prompt}`;
+				console.error(
+					`[appendFormattedTools - sequential] Added prompt. Intermediate text: ${resultText}`,
+				);
 			}
 			if (tool.optional) {
 				resultText += " (Optional)";
+				console.error(
+					`[appendFormattedTools - sequential] Added optional flag. Intermediate text: ${resultText}`,
+				);
 			}
 			resultText += "\n";
 		}
@@ -174,6 +186,9 @@ export function appendFormattedTools(
 
 		for (const tool of toolsList) {
 			resultText += `- ${tool.name}`;
+			console.error(
+				`[appendFormattedTools - dynamic] Processing tool: ${JSON.stringify(tool)}`,
+			);
 			if (
 				(!tool.prompt && tool.description) ||
 				(tool.prompt && tool.description)
@@ -182,6 +197,9 @@ export function appendFormattedTools(
 			}
 			if (tool.description) {
 				resultText += `${tool.description}`;
+				console.error(
+					`[appendFormattedTools - dynamic] Added description. Intermediate text: ${resultText}`,
+				);
 			}
 			if (tool.prompt && tool.description) {
 				resultText += " - ";
@@ -191,9 +209,15 @@ export function appendFormattedTools(
 			}
 			if (tool.prompt) {
 				resultText += `${tool.prompt}`;
+				console.error(
+					`[appendFormattedTools - dynamic] Added prompt. Intermediate text: ${resultText}`,
+				);
 			}
 			if (tool.optional) {
 				resultText += " (Optional)";
+				console.error(
+					`[appendFormattedTools - dynamic] Added optional flag. Intermediate text: ${resultText}`,
+				);
 			}
 			resultText += "\n";
 		}

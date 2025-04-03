@@ -93,7 +93,7 @@ The client connects to the server using the STDIO transport, which allows it to 
 
 To add new test scenarios:
 
-1. Define the scenario in `__tests__/server-configs.test.ts` or create a new test file
+1. Define the scenario in `test/server-configs.test.ts` or create a new test file
 2. Follow the existing test patterns
 3. Use the `client.connect()` method with appropriate arguments
 4. Verify the server behavior with assertions

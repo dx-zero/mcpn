@@ -4,7 +4,7 @@ This document outlines the testing plan for the DevTools MCP server, covering bo
 
 ## Automated Testing
 
-Our automated test suite in the `__tests__` directory covers:
+Our automated test suite in the `test` directory covers:
 
 1. Basic server configuration scenarios
 2. Preset loading and combinations
@@ -130,7 +130,7 @@ Beyond configuration testing, it's important to verify the actual functionality 
 
 ## Test File Reference
 
-The automated tests use test files located in `__tests__/test-workflows/`. These files can also be used for manual testing to verify specific behaviors:
+The automated tests use test files located in `test/test-workflows/`. These files can also be used for manual testing to verify specific behaviors:
 
 ### Standard Config Tests
 
