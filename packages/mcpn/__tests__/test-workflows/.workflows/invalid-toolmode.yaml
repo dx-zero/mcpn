@@ -1,6 +1,0 @@
-invalid_tool:
-  description: "Tool with invalid toolMode"
-  tools:
-    - name: "tool1"
-      description: "Test tool 1"
-  toolMode: "invalid" # Only "sequential" or "situational" are valid

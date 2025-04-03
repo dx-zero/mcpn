@@ -1,6 +1,0 @@
-unicode_tool:
-  description: "Tool with Unicode characters: 你好, 안녕하세요, Привет"
-  prompt: |
-    # Unicode Test
-
-    Unicode text: 你好, 안녕하세요, Привет, اَلْعَرَبِيَّةُ

@@ -1,10 +1,3 @@
-#!/usr/bin/env node
-
-/**
- * This file serves as a direct command-line entry point for the MCP server,
- * primarily intended for testing or standalone execution without the full CLI package.
- */
-
 import mri from "mri";
 import { resolve } from "pathe";
 import type { CommandLineArgs } from "./@types/common";
@@ -53,12 +46,12 @@ export function parseCliEntryArgs(
 }
 
 // --- Main Execution --- //
-(async function main() {
+export async function main(argv = process.argv.slice(2)) {
 	// Get package info
 	const packageJson = getPackageInfo();
 
 	// Parse command line arguments using the local parser
-	const { configPath, presets } = parseCliEntryArgs();
+	const { configPath, presets } = parseCliEntryArgs(argv);
 
 	// Load and merge configuration using SDK function
 	const finalConfig = loadAndMergeConfig(presets, configPath);
@@ -68,4 +61,19 @@ export function parseCliEntryArgs(
 
 	// Start the server using SDK function
 	await startServer(server, presets, configPath);
-})();
+
+	return server;
+}
+
+// Only run the main function when this file is executed directly
+// Use require.main for CJS compatibility check, fallback to import.meta.url for ESM
+const isMainEntry =
+	import.meta.main ||
+	import.meta.url === new URL(process.argv[1], `file://${process.cwd()}/`).href;
+
+if (isMainEntry) {
+	main().catch((err) => {
+		console.error("Error starting MCP server:", err);
+		process.exit(1);
+	});
+}

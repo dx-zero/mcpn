@@ -41,12 +41,11 @@
 	"scripts": {
 		"dev": "tsx src/server.ts",
 		"dev:verbose": "NODE_ENV=development tsx src/server.ts",
-		"start": "node dist/server.js",
-		"inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/server.js",
+		"inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/cli-entry.mjs",
 		"build": "unbuild",
-		"prepublishOnly": "npm run build",
+		"prepublishOnly": "pnpm run build",
 		"update": "npm version patch && npm publish",
-		"test": "pnpm run build && node --loader ts-node/esm --experimental-specifier-resolution=node node_modules/mocha/bin/mocha.js ./__tests__/**/*.test.ts",
+		"test": "vitest",
 		"cli:dist": "node dist/cli-entry.mjs --preset thinking"
 	},
 	"dependencies": {
@@ -62,8 +61,7 @@
 		"@types/mocha": "catalog:types",
 		"@types/node": "catalog:types",
 		"chai": "catalog:testing",
-		"mocha": "catalog:testing",
-		"sinon": "catalog:testing",
+		
 		"ts-node": "^10.9.2",
 		"tsx": "catalog:cli",
 		"typescript": "catalog:cli",

@@ -8,14 +8,9 @@ import type { TemplateParams } from "./@types/common";
 
 export class McpTestClient {
 	private client: Client;
-	private transport: StdioClientTransport;
+	private transport: StdioClientTransport | undefined;
 
 	constructor() {
-		this.transport = new StdioClientTransport({
-			command: "node",
-			args: ["dist/server.js"],
-		});
-
 		this.client = new Client(
 			{
 				name: "devtools-mcp-test-client",
@@ -42,7 +37,7 @@ export class McpTestClient {
 		// Create a new transport with the specified args
 		this.transport = new StdioClientTransport({
 			command: "node",
-			args: ["dist/server.js", ...args],
+			args: ["dist/cli-entry.mjs", ...args],
 		});
 
 		// Connect the client to the transport
@@ -54,8 +49,13 @@ export class McpTestClient {
 	 * Close the connection to the server
 	 */
 	async close(): Promise<void> {
-		await this.transport.close();
-		console.log("Disconnected from MCP server");
+		if (this.transport) {
+			await this.transport.close();
+			console.log("Disconnected from MCP server");
+			this.transport = undefined;
+		} else {
+			console.log("Transport not initialized, skipping close.");
+		}
 	}
 
 	/**

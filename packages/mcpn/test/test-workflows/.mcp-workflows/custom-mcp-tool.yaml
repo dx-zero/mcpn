@@ -3,4 +3,4 @@ custom_mcp_tool:
   prompt: |
     # Custom MCP Tool
 
-    This is a custom tool from the .mcp-workflows directory.
+	This is a custom tool from the .mcp-workflows directory.

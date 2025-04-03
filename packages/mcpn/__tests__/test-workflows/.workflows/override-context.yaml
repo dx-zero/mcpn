@@ -1,2 +1,0 @@
-debugger_mode:
-  context: "This is custom context that should be appended to the default prompt."
