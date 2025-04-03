@@ -15,6 +15,9 @@ const INVALID_CONFIG_DIR = path.join(TEST_CONFIG_DIR, "not-workflows");
 const WORKFLOWS_DIR = path.join(TEST_CONFIG_DIR, ".workflows");
 const MCP_WORKFLOWS_DIR = path.join(TEST_CONFIG_DIR, ".mcp-workflows");
 
+// Define the path to the CLI entry point once
+const CLI_ENTRY_POINT = path.join(__dirname, "..", "bin", "mcpn.mjs");
+
 describe("MCP Server Configuration Tests", () => {
   // Vitest default timeout is 5000ms. Configure globally or per-test if needed.
   let client: McpTestClient;
@@ -150,7 +153,9 @@ describe("MCP Server Configuration Tests", () => {
   });
 
   beforeEach(() => {
-    client = new McpTestClient();
+    client = new McpTestClient({
+      cliEntryPoint: CLI_ENTRY_POINT, // Use the constant
+    });
   });
 
   afterEach(async () => {
@@ -522,7 +527,9 @@ describe("MCP Server Configuration Tests", () => {
     Test prompt with object-based tools.`
       );
 
-      client = new McpTestClient();
+      client = new McpTestClient({
+        cliEntryPoint: CLI_ENTRY_POINT, // Use the constant
+      });
     });
 
     afterEach(async () => {

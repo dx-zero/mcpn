@@ -67,6 +67,7 @@
 	"packageManager": "pnpm@10.6.3",
 	"dependencies": {
 		"@mcpn/core": "workspace:*",
+		"@mcpn/test-utils": "workspace:*",
 		"@types/js-yaml": "catalog:types",
 		"js-yaml": "catalog:prod"
 	}

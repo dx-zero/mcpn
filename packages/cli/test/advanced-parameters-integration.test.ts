@@ -2,7 +2,7 @@ import { describe, it, beforeEach, afterEach, expect } from "vitest";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { x } from "tinyexec";
-import { McpTestClient } from "../src/client.js";
+import { McpTestClient } from "@mcpn/test-utils";
 
 // Create dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);

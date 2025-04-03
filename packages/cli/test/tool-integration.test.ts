@@ -3,7 +3,7 @@ import { x } from "tinyexec";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { McpTestClient } from "../src/client.js";
+import { McpTestClient } from "@mcpn/test-utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
