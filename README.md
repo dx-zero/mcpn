@@ -68,10 +68,49 @@ Workflows MCP (mcpn) are the building blocks of software development, an orchest
 Think of it like a dynamic prompting library that you can easily share and version control through yaml files that also lets you define how to best use many MCP tools across many MCP servers for specific tasks.
 
 
+## Installation
 
-## Usage
+
+Install the MCP server into an MCP client using the following command or JSON:
+
+```bash
+npx -y mcpn@latest init
+```
+
+If using JSON in Cursor to setup your MCP server, you can use the following config:
+
+```json
+{
+  "mcpServers": {
+    "workflows-mcp": {
+      "command": "npx",
+      "args": ["-y", "mcpn@latest"]
+    }
+  }
+}
+```
+
+
+## Documentation
 
 Documentation: [https://mcpn.ai](https://mcpn.ai)
+
+
+## Examples
+
+... TBD
+
+## License
+
+... TBD
+
+## Links
+
+... TBD
+
+========================================================================
+
+Move below to documentation
 
 ## Overview
 
