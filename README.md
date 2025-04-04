@@ -1,10 +1,77 @@
-# Workflows MCP v0.1.0
 
-Built by [@tedx_ai](https://x.com/tedx_ai)
+<p align="center">
+  <picture align="center">
+    <!-- <source media="(prefers-color-scheme: dark)" srcset="./public/banner.png"> -->
+    <img align="center" alt="mcpn Banner Main" src="./public/banner.png" width="560">
+  </picture>
+</p>
+
+<p align="center">
+  <strong>
+  <em>mcpn.ai</em> helps you create, organize, and share AI workflows and prompts.
+ <br>Like a dynamic prompt library you can share & version across MCP tools and servers for specific tasks.
+  </strong>
+</p>
+
+<p align="center">
+  <img alt="NPM Downloads" src="https://img.shields.io/npm/dx-zero/mcpn?style=flat-square&logo=npm">
+  <img alt="jsDelivr hits (npm)" src="https://img.shields.io/jsdelivr/npm/dx-zero/mcpn?style=flat-square&logo=jsdeliver">
+  <img alt="GitHub Sponsors" src="https://img.shields.io/github/sponsors/dx-zero/mcpn?style=flat-square&logo=github">
+<br />
+<strong>Created by</strong><br />
+<a href="https://twitter.com/tedx_ai">
+  <img src="https://img.shields.io/twitter/follow/tedx_ai?style=social" alt="Follow @tedx_ai on Twitter">
+</a>
+<a href="https://twitter.com/kregenrek">
+  <img src="https://img.shields.io/twitter/follow/kregenrek?style=social" alt="Follow @kregenrek on Twitter">
+</a>
+</p>
+
+
+## Usage
+
+Basic Example 
+<table>
+<tr>
+  <td style="width:50%; vertical-align:top;">
+
+```yaml
+plan_prd:
+  description: "Create a product requirements..."
+  prompt: |
+    You are an expert product manager/business
+    analyst and are now entering "PRD Mode"
+    Begin by deeply reflecting upon the notes, 
+    requirements and images provided...
+  tools: createPRD, createStoriesFromPRD, createRoadmap
+
+coding_max:
+  description: "Highly effective Coding Agent"
+  prompt: |
+    You are now entering "Developer Mode" - 
+    deeply reflect upon the changes being asked and 
+    analyze existing code to map the full scope...
+  tools: getConsoleLogs, getErrorLogs, getLinter
+
+  ...
+```
+  </td>
+  <td style="width:50%; vertical-align:top;">
+    <img align="center" alt="Example" src="./public/templates.jpg" width="400 ">
+  </td>
+</tr>
+</table>
+
 
 Workflows MCP (mcpn) are the building blocks of software development, an orchestration of multiple MCP servers and prompts.
 
 Think of it like a dynamic prompting library that you can easily share and version control through yaml files that also lets you define how to best use many MCP tools across many MCP servers for specific tasks.
+
+
+
+## Usage
+
+Documentation: [https://mcpn.ai](https://mcpn.ai)
 
 ## Overview
 
@@ -293,194 +360,4 @@ Tools can accept typed parameters that an MCP Client / agent can provide to impr
 
 #### Example Input Parameter Types
 
-```yaml
-# String parameter
-name:
-  type: "string"
-  description: "User's name"
-  required: true
-
-# Number parameter with default
-limit:
-  type: "number"
-  description: "Maximum items to return"
-  default: 10
-
-# Boolean parameter with default
-includeArchived:
-  type: "boolean"
-  description: "Include archived items"
-  default: false
-
-# Enum parameter with predefined options
-sortOrder:
-  type: "enum"
-  enum: ["asc", "desc"]
-  description: "Sort direction"
-  default: "asc"
-
-# Array parameter with item type
-tags:
-  type: "array"
-  description: "List of tags to filter by"
-  items:
-    type: "string"
-    description: "A tag value"
-
-# Object parameter with nested properties
-filters:
-  type: "object"
-  description: "Complex filter object"
-  properties:
-    status:
-      type: "enum"
-      enum: ["active", "inactive", "pending"]
-      description: "Status filter"
-    dateRange:
-      type: "object"
-      properties:
-        start:
-          type: "string"
-          description: "Start date"
-        end:
-          type: "string"
-          description: "End date"
 ```
-
-### Configuration Loading
-
-The system loads configurations in the following order:
-
-1. Internal presets from the `presets` directory
-2. User-defined configurations from `.workflows` or `.mcp-workflows` directory
-3. Merges configurations, with user-defined settings taking precedence
-
-When merging configurations:
-
-- Tool arrays are concatenated rather than replaced
-- Other properties are overridden by the user-defined configuration
-- Parameters are merged with user-defined parameters taking precedence
-
-## How It Works
-
-Workflows MCP operates through a sophisticated configuration and tool registration system:
-
-1. **Configuration Loading and Merging**
-
-   - Loads preset configurations from internal YAML files in the `presets` directory
-   - Optionally loads user-defined configurations from `.workflows` or `.mcp-workflows` directories
-   - Merges configurations with user configs taking precedence over presets
-   - Supports both sequential and situational tool execution modes
-
-2. **Tool Registration and Validation**
-
-   - Each tool is dynamically registered with the MCP server based on the merged configuration
-   - Tools can be customized with:
-     - Custom names and descriptions
-     - Typed parameters with validation
-     - Custom prompts or extensions of preset prompts
-     - Sequential or situational execution strategies
-   - Validates tool configurations and parameters at registration time
-
-3. **Parameter Handling**
-
-   - Parameters are defined using a type-safe configuration system
-   - Supports multiple parameter types: string, number, boolean, array, object, and enum
-   - Automatically converts parameter definitions to Zod schemas for runtime validation
-   - Provides automatic validation of parameter values during tool execution
-
-4. **Prompt Management**
-
-   - Manages prompts through a flexible system that supports:
-     - Default prompts from presets
-     - Custom user-defined prompts
-     - Additional context injection
-     - Dynamic tool availability based on mode
-   - Supports both static and dynamic prompt generation based on configuration
-
-5. **Error Handling and Debugging**
-   - Comprehensive error handling during configuration loading and tool execution
-   - Detailed logging for debugging and troubleshooting
-   - Graceful fallbacks when configurations or tools are missing
-   - Runtime validation of tool inputs and configurations
-
-This architecture allows for powerful, type-safe interactions between tools and clients while maintaining flexibility through configuration-driven customization.
-
-## License
-
-MIT
-
-## Notes
-
-1. vibe coders
-2. engineers (solo founders)
-3. enterprise teams
-
---
-
-npx mcpn@latest add task-manager
-npx mcpn@latest add vibe-coder
-npx mcpn@latest add react
-npx mcpn@latest add firebase-auth
-npx mcpn@latest add "https://tedx.ai/mcp/supabase"
-npx mcpn@latest add supabase
-
-- installing global rules for AI
-- installing supabase MCP
-- installing MCPN workflows (dynamically routes prompts OR prompts with tools)
-
-"bundler" - rules, prompts, mcp tools
-
---
-
-generalized workflows (vibe-coder)
-tech-stack specific workflows (react, supabase, firebase-auth); need to talk options
-
----
-
-npx mcpn@latest login
-
-- trigger a login flow
-  - trigger oauth / sso login flows
-  - aves token to local machine,
-  - token is passed in headers to future API requests when fetching packages (privately hosted JSON)
-- this token is used to authenticate into registries
-
-tasks:
-
-- what is the schema for the JSON file that enterprises/private registries expose?
-- how do we define in our yaml template global rules for AI to be installed?
-- how do we orchestrate + define in our yaml template the installation of an MCP server?
-- how does updating packages work?
-
----
-
-phase 1:
-
-- yaml template, public remote registry
-- mcpn directory for tech stack specific presets + starter kit presets
-- documentation
-  - CLI intro
-  - starter kits
-  - contribution guidelines
-  - intention
-- branding
-- video content / x content strategy
-- partnership agreement
-- github org
-
-phase 2:
-
-- automate mcp installation (find something existing for now)
-- automate global/project rules for AI
-
-phase 3:
-
-- private remote registry w/ login flow
-
----
-
-prompts vs mcpn workflows
-
-todo: scoping for mcp tool registration based on yaml file name
-many MCP servers may have tools of the same name...
