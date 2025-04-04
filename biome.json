@@ -46,7 +46,8 @@
 				"useNodejsImportProtocol": "error"
 			},
 			"complexity": {
-        "noForEach": "off"
+        "noForEach": "off",
+				"useOptionalChain": "off"
       },
 			"correctness": {
 				"useImportExtensions": "off"

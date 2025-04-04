@@ -3,7 +3,7 @@
 		"workflows-mcp": {
 			"command": "node",
 			"args": [
-				"/Users/kregenrek/projects/mcpn/packages/cli/bin/mcpn.mjs server --preset thinking"
+				"/Users/kregenrek/projects/mcpn/packages/cli/bin/mcpn.mjs server"
 			]
 		}
 	}

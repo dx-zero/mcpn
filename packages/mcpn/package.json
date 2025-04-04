@@ -63,7 +63,6 @@
 		"@types/node": "catalog:types",
 		"@types/semver": "catalog:types",
 		"c12": "catalog:utils",
-		"chai": "catalog:testing",
 		"ts-node": "^10.9.2",
 		"tsx": "catalog:cli",
 		"typescript": "catalog:cli",

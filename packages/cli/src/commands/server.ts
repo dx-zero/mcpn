@@ -45,6 +45,10 @@ export default defineCommand({
 			type: "string",
 			description: "Path to a specific user configuration file or directory",
 		},
+		presetsDir: {
+			type: "string",
+			description: "Directory containing preset YAML files",
+		},
 	},
 	async run(ctx) {
 		logger.info("Starting MCP server...");
@@ -72,10 +76,19 @@ export default defineCommand({
 				logger.warn("Could not determine package version.");
 			}
 
+			// Determine CLI's own dist/presets directory
+			const cliFile = fileURLToPath(import.meta.url);
+			const cliDir = dirname(cliFile);
+			const cliDistPresetsDir = join(cliDir, "../presets");
+
+			// Use explicit --presets-dir if provided, else default to CLI's dist/presets
+			const presetsDirArg = ctx.args.presetsDir as string | undefined;
+			const presetsDir = presetsDirArg || cliDistPresetsDir;
+
 			logger.info(
 				`Loading configuration with presets: ${presets.join(", ")}${configPath ? ` and config: ${configPath}` : ""}`,
 			);
-			const finalConfig = loadAndMergeConfig(presets, configPath);
+			const finalConfig = loadAndMergeConfig(presets, configPath, presetsDir);
 
 			const server = createMcpServer(finalConfig, version);
 

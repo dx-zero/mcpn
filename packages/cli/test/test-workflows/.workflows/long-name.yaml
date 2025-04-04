@@ -1,0 +1,6 @@
+this_is_a_very_long_tool_name_that_tests_the_boundary_cases_of_our_tool_naming_system_and_ensures_it_handles_extremely_verbose_identifiers_gracefully:
+  description: "Tool with a very long name"
+  prompt: |
+    # Long Name Tool
+
+    This tool has an extremely long name to test boundary cases.

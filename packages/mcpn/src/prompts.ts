@@ -1,16 +1,21 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import * as yaml from "js-yaml";
-import type { TemplateParams } from "./@types/common";
-import type { DevToolsConfig, PromptConfig } from "./@types/config";
-import type { PresetConfigs } from "./@types/preset";
-import type { PromptFunction, PromptFunctionsMap } from "./@types/prompts";
+import type { DevToolsConfig, PromptConfig } from "./@types/config.js";
 import {
-	SOURCE_PRESETS_DIR,
 	appendFormattedTools,
 	formatToolsList,
 	processTemplate,
-} from "./utils";
+} from "./utils.js";
+
+// In ES modules, __dirname is not available directly
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Directory where preset YAML files are stored
+const PRESETS_DIR = path.join(__dirname, "presets");
 
 /**
  * Applies configuration to a default prompt
@@ -23,7 +28,7 @@ import {
 const applyConfig = (
 	defaultPrompt: string,
 	config?: PromptConfig,
-	params?: TemplateParams,
+	params?: Record<string, any>,
 ): string => {
 	if (!config) {
 		// If no config, just process the default prompt with parameters
@@ -56,22 +61,22 @@ const applyConfig = (
  * @returns {Record<string, any>} An object mapping preset names to their configuration objects
  * @throws Will log an error if there are issues reading the directory or parsing YAML files
  */
-function discoverPresetConfigs(): PresetConfigs {
-	const presetConfigs: PresetConfigs = {};
+function discoverPresetConfigs(): { [key: string]: any } {
+	const presetConfigs: { [key: string]: any } = {};
 
 	try {
-		// Get all YAML files in the source presets directory using the constant
+		// Get all YAML files in the presets directory
 		const presetFiles = fs
-			.readdirSync(SOURCE_PRESETS_DIR)
+			.readdirSync(PRESETS_DIR)
 			.filter((file) => file.endsWith(".yaml") || file.endsWith(".yml"));
 
 		// Load each preset file
 		for (const presetFile of presetFiles) {
-			const presetPath = path.join(SOURCE_PRESETS_DIR, presetFile);
+			const presetPath = path.join(PRESETS_DIR, presetFile);
 			const presetName = path.basename(presetFile, path.extname(presetFile));
 
 			try {
-				const content = fs.readFileSync(presetPath, "utf8");
+				const content = fs.readFileSync(presetPath, "utf-8");
 				const presetConfig = yaml.load(content) as DevToolsConfig;
 
 				// Store the configuration with the preset file name as the key
@@ -98,13 +103,13 @@ function discoverPresetConfigs(): PresetConfigs {
 function createPromptFunction(
 	modeName: string,
 	presetName: string,
-	presetConfigs: PresetConfigs,
-): PromptFunction {
-	return (config?: DevToolsConfig, params?: TemplateParams) => {
+	presetConfigs: { [key: string]: any },
+): (config?: DevToolsConfig, params?: Record<string, any>) => string {
+	return (config?: DevToolsConfig, params?: Record<string, any>) => {
 		try {
 			const presetConfig = presetConfigs[presetName];
 
-			if (presetConfig?.[modeName]?.prompt) {
+			if (presetConfig && presetConfig[modeName]?.prompt) {
 				return applyConfig(
 					presetConfig[modeName].prompt,
 					config?.[modeName],
@@ -136,25 +141,31 @@ function createPromptFunction(
 const presetConfigs = discoverPresetConfigs();
 
 // Object to store prompt functions for all modes
-const promptFunctions: PromptFunctionsMap = {};
+const promptFunctions: Record<
+	string,
+	(config?: DevToolsConfig, params?: Record<string, any>) => string
+> = {};
 
 /**
  * Initializes prompt functions by processing all discovered preset configurations
  * @returns Record of prompt functions indexed by mode name
  */
-function initializePromptFunctions(): PromptFunctionsMap {
+function initializePromptFunctions(): Record<
+	string,
+	(config?: DevToolsConfig, params?: Record<string, any>) => string
+> {
 	// Process each preset file
-	for (const [presetName, presetConfig] of Object.entries(presetConfigs)) {
+	Object.entries(presetConfigs).forEach(([presetName, presetConfig]) => {
 		// Process each mode in the preset
-		for (const modeName of Object.keys(presetConfig)) {
+		Object.keys(presetConfig).forEach((modeName) => {
 			// Register the prompt function for this mode
 			promptFunctions[modeName] = createPromptFunction(
 				modeName,
 				presetName,
 				presetConfigs,
 			);
-		}
-	}
+		});
+	});
 
 	return promptFunctions;
 }

@@ -19,7 +19,9 @@
   },
   "scripts": {
     "build": "unbuild",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "test": "pnpm run build && vitest",
+    "test:1": "pnpm run build &&vitest run 'CL1'"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:prod"

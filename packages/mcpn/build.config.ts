@@ -3,7 +3,7 @@ import { defineBuildConfig } from "unbuild";
 export default defineBuildConfig({
 	entries: [
 		"src/index",
-		"src/cli-entry",
+		//"src/cli-entry",
 		{
 			builder: "copy",
 			input: "src/presets",

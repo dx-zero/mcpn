@@ -3,6 +3,7 @@ import * as path from "node:path";
 import * as yaml from "js-yaml";
 import { z } from "zod";
 import type { DevToolsConfig, ParameterConfig } from "./@types/config";
+import { loadAvailablePresets } from "./preset"; // or wherever your preset loader is
 
 // Default empty configuration
 const defaultConfig: DevToolsConfig = {};

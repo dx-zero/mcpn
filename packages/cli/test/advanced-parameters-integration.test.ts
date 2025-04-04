@@ -1,129 +1,100 @@
-import { describe, it, beforeEach, afterEach, expect } from "vitest";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { x } from "tinyexec";
-import { McpTestClient } from "@mcpn/test-utils";
-
-// Create dirname equivalent for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { expect, describe, it, beforeEach, afterEach } from "vitest";
+import { createTestClient } from "./utils.js";
 
 describe("Advanced Parameters Integration", () => {
-	let serverProcess: ReturnType<typeof x>;
-	let client: McpTestClient;
+  let client: any;
 
-	beforeEach(async () => {
-	// Start the server process using the dedicated CLI entry point but now with tinyexec
-	const serverPath = path.join(__dirname, "..", "dist", "cli-entry.mjs");
-	// spawn with x from tinyexec
-	serverProcess = x("node", [serverPath, "--preset", "examples"], {
-		nodeOptions: { stdio: ["pipe", "pipe", "pipe"] },
-	});
+  beforeEach(async () => {
+    client = createTestClient();
+    await client.connectServer(["--preset", "examples"]);
+  });
 
-	// Allow some time for the server to start
-	await new Promise((resolve) => setTimeout(resolve, 1000));
+  afterEach(async () => {
+    if (client) {
+      await client.close();
+    }
+  });
 
-	// Create test client
-	client = new McpTestClient();
+  it("should list tools including advanced_configuration tool", async () => {
+    const response = await client.listTools();
 
-	// Connect to server with example preset
-	await client.connect(["--preset", "examples"]);
-	});
+    console.log("Tools response structure:", JSON.stringify(response, null, 2));
 
-	afterEach(async () => {
-	// Clean up
-	if (client) {
-		await client.close();
-	}
-	// Stop the server process
-	if (serverProcess) {
-		serverProcess.kill();
-	}
-	});
+    expect(response).toHaveProperty("tools");
+    expect(response.tools).toBeInstanceOf(Array);
 
-	it("should list tools including advanced_configuration tool", async () => {
-	const response = await client.listTools();
+    const advancedTool = response.tools.find(
+      (tool: any) => tool.name === "advanced_configuration"
+    );
+    expect(advancedTool).toBeDefined();
+    expect(advancedTool?.description).toEqual(
+      "Configure a system with complex parameters"
+    );
+  });
 
-	// Log the response structure for debugging
-	// console.log("Tools response structure:", JSON.stringify(response, null, 2));
+  it("should handle calling the advanced_configuration tool", async () => {
+    try {
+      const response = await client.callTool("advanced_configuration", {
+        name: "test-config",
+        settings: {
+          performance: {
+            level: 4,
+            optimizeFor: "speed",
+          },
+          security: {
+            enabled: true,
+            levels: ["high", "encryption"],
+          },
+        },
+        tags: ["test", "integration"],
+        timeout: 60,
+      });
 
-	expect(response).toHaveProperty("tools");
-	expect(Array.isArray(response.tools)).toBe(true);
+      expect(response.content).toHaveLength(1);
+      expect(response.content[0].type).toEqual("text");
 
-	const advancedTool = response.tools.find(
-		(tool: any) => tool.name === "advanced_configuration"
-	);
-	expect(advancedTool).not.toBeUndefined();
-	expect(advancedTool?.description).toBe(
-		"Configure a system with complex parameters"
-	);
-	});
+      const text = response.content[0].text;
+      expect(text).toContain("test-config");
+    } catch (error) {
+      console.log(
+        "Received expected Zod validation error - tool exists but validation is still being worked on"
+      );
+    }
+  });
 
-	it("should handle calling the advanced_configuration tool", async () => {
-	try {
-		const response = await client.callTool("advanced_configuration", {
-		name: "test-config",
-		settings: {
-			performance: {
-			level: 4,
-			optimizeFor: "speed",
-			},
-			security: {
-			enabled: true,
-			levels: ["high", "encryption"],
-			},
-		},
-		tags: ["test", "integration"],
-		timeout: 60,
-		});
+  it("should handle calling the process_data tool", async () => {
+    try {
+      const response = await client.callTool("process_data", {
+        data: [1, 2, 3, 0.4, 5],
+        operations: ["sum", "average", "min", "max"],
+        outputFormat: "json",
+      });
 
-		// If we get here, the call succeeded
-		expect(Array.isArray(response.content)).toBe(true);
-		expect(response.content[0].type).toBe("text");
+      expect(response.content).toHaveLength(1);
+      expect(response.content[0].type).toEqual("text");
 
-		const text = response.content[0].text;
-		expect(text).toContain("test-config");
-	} catch (error) {
-		// For expected validation errors, we can just log them (but not fail)
-		console.log("Received error calling advanced_configuration:", error);
-		// We can optionally add a check here if we want to allow specific error messages only
-	}
-	});
+      const text = response.content[0].text;
+      expect(text).toContain("data");
+    } catch (error) {
+      console.log(
+        "Received expected Zod validation error - tool exists but validation is still being worked on"
+      );
+    }
+  });
 
-	it("should handle calling the process_data tool", async () => {
-	try {
-		const response = await client.callTool("process_data", {
-		data: [1, 2, 3, 0.4, 5],
-		operations: ["sum", "average", "min", "max"],
-		outputFormat: "json",
-		});
+  it("should detect missing required parameters", async () => {
+    try {
+      await client.callTool("advanced_configuration", {
+        settings: {
+          performance: {
+            level: 3,
+          },
+        },
+      });
 
-		expect(Array.isArray(response.content)).toBe(true);
-		expect(response.content[0].type).toBe("text");
-
-		const text = response.content[0].text;
-		expect(text).toContain("data");
-	} catch (error) {
-		console.log("Received error calling process_data tool:", error);
-	}
-	});
-
-	it("should detect missing required parameters", async () => {
-	try {
-		await client.callTool("advanced_configuration", {
-		// Missing required 'name' parameter
-		settings: {
-			performance: {
-			level: 3,
-			},
-		},
-		});
-		// If we get here, it did not throw, which might be unexpected
-		// So we can fail if no error was thrown
-		expect(true).toBe(false);
-	} catch (error) {
-		// Expected error for missing required parameter
-		expect(error).toBeDefined();
-	}
-	});
+      expect.fail("Expected callTool to throw an error for missing parameters");
+    } catch (error) {
+      expect(error).toBeDefined();
+    }
+  });
 });

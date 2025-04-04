@@ -1,16 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import type { ZodSchemaMap } from "./@types/common";
-import type { TemplateParams } from "./@types/common";
-import type { DevToolsConfig, PromptConfig } from "./@types/config";
-import type { ToolCallback, ToolResult } from "./@types/tool";
 import {
 	convertParametersToZodSchema,
 	loadConfigSync,
 	mergeConfigs,
 	validateToolConfig,
 } from "./config";
-import { listAvailablePresets, loadPresetConfigs } from "./preset";
+import { loadAvailablePresets, loadPresetConfigs } from "./preset";
 import { promptFunctions } from "./prompts";
 import {
 	appendFormattedTools,
@@ -19,51 +15,12 @@ import {
 } from "./utils";
 
 /**
- * Loads and merges configuration from presets and user config
- * @param presets - Array of preset names to load
- * @param configPath - Optional path to user config
- */
-export function loadAndMergeConfig(
-	presets: string[],
-	configPath?: string,
-): DevToolsConfig {
-	// Log available presets
-	const availablePresets = listAvailablePresets();
-	console.error(`Available presets: ${availablePresets.join(", ")}`);
-	console.error(`Using presets: ${presets.join(", ")}`);
-
-	// 1. Load preset configs
-	const presetConfig = loadPresetConfigs(presets);
-	console.error(
-		`Loaded ${Object.keys(presetConfig).length} tools from presets`,
-	);
-
-	// 2. Load user configs from .workflows directory if provided
-	const userConfig = configPath ? loadConfigSync(configPath) : {};
-	if (configPath) {
-		console.error(
-			`Loaded ${
-				Object.keys(userConfig).length
-			} tool configurations from user config directory: ${configPath}`,
-		);
-	}
-
-	// 3. Merge configs (user config overrides preset config)
-	const finalConfig = mergeConfigs(presetConfig, userConfig);
-	console.error(
-		`Final configuration contains ${Object.keys(finalConfig).length} tools`,
-	);
-
-	return finalConfig;
-}
-
-/**
  * Creates and configures the MCP server with tools from the provided configuration
  * @param config - The tool configuration object
  * @param version - Server version
  */
 export function createMcpServer(
-	config: DevToolsConfig,
+	config: Record<string, any>,
 	version: string,
 ): McpServer {
 	// Create an MCP server
@@ -113,20 +70,20 @@ export function createMcpServer(
  */
 export function registerToolsFromConfig(
 	server: McpServer,
-	config: DevToolsConfig,
+	config: Record<string, any>,
 ): void {
 	// Function to add a tool if it's not disabled
 	const addTool = (
 		name: string,
 		description: string,
-		inputSchema: ZodSchemaMap | undefined,
-		callback: ToolCallback,
+		inputSchema: any | undefined,
+		callback: (params?: Record<string, any>) => Promise<any>,
 	) => {
 		server.tool(
 			name,
 			description,
-			inputSchema || {},
-			async (params: TemplateParams): Promise<ToolResult> => {
+			inputSchema,
+			async (params: Record<string, any>) => {
 				try {
 					// Log parameters for debugging
 					console.error(`Tool ${name} called with params:`, params);
@@ -162,10 +119,10 @@ export function registerToolsFromConfig(
 	};
 
 	// Dynamically register all tools from the config
-	for (const [key, toolConfig] of Object.entries(config)) {
+	Object.entries(config).forEach(([key, toolConfig]: [string, any]) => {
 		// Skip if toolConfig is undefined or disabled
 		if (!toolConfig || toolConfig.disabled) {
-			continue;
+			return;
 		}
 
 		// Find corresponding prompt function if available
@@ -193,7 +150,7 @@ export function registerToolsFromConfig(
 			toolName,
 			toolConfig.description || `${key.replace(/_/g, " ")} tool`,
 			inputSchema,
-			async (params?: TemplateParams): Promise<ToolResult> => {
+			async (params?: Record<string, any>) => {
 				// Generate the tool prompt with template processing
 				const { text, usedParams } = generateToolPrompt(
 					key,
@@ -227,7 +184,7 @@ export function registerToolsFromConfig(
 				return { content: [{ type: "text", text: finalText }] };
 			},
 		);
-	}
+	});
 }
 
 /**
@@ -236,12 +193,12 @@ export function registerToolsFromConfig(
  */
 function generateToolPrompt(
 	key: string,
-	toolConfig: PromptConfig,
+	toolConfig: Record<string, any>,
 	promptFunction:
-		| ((config: DevToolsConfig, params?: TemplateParams) => string)
+		| ((config: Record<string, any>, params?: Record<string, any>) => string)
 		| undefined,
-	fullConfig: DevToolsConfig,
-	params?: TemplateParams,
+	fullConfig: Record<string, any>,
+	params?: Record<string, any>,
 ): { text: string; usedParams: Set<string> } {
 	let basePrompt = "";
 
@@ -254,6 +211,8 @@ function generateToolPrompt(
 			usedParams: params ? new Set(Object.keys(params)) : new Set(),
 		};
 	}
+
+	// If promptFunction didn't return, handle toolConfig.prompt directly
 	if (toolConfig.prompt) {
 		basePrompt = toolConfig.prompt;
 
@@ -301,7 +260,42 @@ export async function startServer(
 				configPath ? ` and user config from: ${configPath}` : ""
 			}`,
 		);
-	} catch (error_) {
-		console.error("Error starting server:", error_);
+	} catch (err) {
+		console.error("Error starting server:", err);
 	}
+}
+
+export function loadAndMergeConfig(
+	presets: string[],
+	configPath?: string,
+	presetsDir?: string,
+): Record<string, any> {
+	// Log available presets
+	const availablePresets = loadAvailablePresets(presetsDir);
+	console.error(`Available presets: ${availablePresets.join(", ")}`);
+	console.error(`Using presets: ${presets.join(", ")}`);
+
+	// 1. Load preset configs from the specified directory (or fallback)
+	const presetConfig = loadPresetConfigs(presets, presetsDir);
+	console.error(
+		`Loaded ${Object.keys(presetConfig).length} tools from presets`,
+	);
+
+	// 2. Load user configs from .workflows directory if provided
+	const userConfig = configPath ? loadConfigSync(configPath) : {};
+	if (configPath) {
+		console.error(
+			`Loaded ${
+				Object.keys(userConfig).length
+			} tool configurations from user config directory: ${configPath}`,
+		);
+	}
+
+	// 3. Merge configs (user config overrides preset config)
+	const finalConfig = mergeConfigs(presetConfig, userConfig);
+	console.error(
+		`Final configuration contains ${Object.keys(finalConfig).length} tools`,
+	);
+
+	return finalConfig;
 }

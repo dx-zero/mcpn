@@ -1,1 +1,1 @@
-export { McpTestClient } from "./McpTestClient.js";
+export * from "./McpTestClient";

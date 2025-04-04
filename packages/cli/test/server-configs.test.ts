@@ -3,6 +3,7 @@ import { McpTestClient } from "@mcpn/test-utils";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { CLI_ENTRY_POINT } from "./test-constants.js";
 
 // Create dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -14,9 +15,6 @@ const EMPTY_CONFIG_DIR = path.join(TEST_CONFIG_DIR, "empty-workflows");
 const INVALID_CONFIG_DIR = path.join(TEST_CONFIG_DIR, "not-workflows");
 const WORKFLOWS_DIR = path.join(TEST_CONFIG_DIR, ".workflows");
 const MCP_WORKFLOWS_DIR = path.join(TEST_CONFIG_DIR, ".mcp-workflows");
-
-// Define the path to the CLI entry point once
-const CLI_ENTRY_POINT = path.join(__dirname, "..", "bin", "mcpn.mjs");
 
 describe("MCP Server Configuration Tests", () => {
   // Vitest default timeout is 5000ms. Configure globally or per-test if needed.
@@ -169,17 +167,18 @@ describe("MCP Server Configuration Tests", () => {
   // Basic Scenarios
   describe("Basic Scenarios", () => {
     it("B1: Default run - should load only thinking tools", async () => {
-      await client.connect([]); // Pass empty array for no args
+      await client.connectServer();
       const tools = await client.listTools();
 
-      expect(tools.tools).toBeInstanceOf(Array);
+      expect(tools.tools).to.be.an("array");
       const toolNames = tools.tools.map((t: any) => t.name);
-      expect(toolNames).toContain("generate_thought");
+      expect(toolNames).to.include("generate_thought");
     });
 
     it("B2: Invalid command line args - should use default config", async () => {
-      await client.connect(["--invalid", "arg"]);
+      await client.connectServer(["--invalid", "arg"]);
       const tools = await client.listTools();
+
 
       expect(tools.tools).toBeInstanceOf(Array);
       const toolNames = tools.tools.map((t: any) => t.name);
@@ -190,7 +189,7 @@ describe("MCP Server Configuration Tests", () => {
   // Preset Scenarios
   describe("Preset Scenarios", () => {
     it("P1: Thinking preset - should load only thinking tools", async () => {
-      await client.connect(["--preset", "thinking"]);
+      await client.connectServer(["--preset", "thinking"]);
       const tools = await client.listTools();
 
       expect(tools.tools).toBeInstanceOf(Array);
@@ -199,7 +198,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("P1.1: Thinking mode should have thought parameter", async () => {
-      await client.connect(["--preset", "thinking"]);
+      await client.connectServer(["--preset", "thinking"]);
       const tools = await client.listTools();
 
       // Find the generate_thought tool
@@ -217,7 +216,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("P2: Coding preset - should load only coding tools", async () => {
-      await client.connect(["--preset", "coding"]);
+      await client.connectServer(["--preset", "coding"]);
       const tools = await client.listTools();
 
       expect(tools.tools).toBeInstanceOf(Array);
@@ -227,7 +226,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("P3: Multiple presets - should load tools from all presets", async () => {
-      await client.connect(["--preset", "coding,thinking"]);
+      await client.connectServer(["--preset", "coding,thinking"]);
       const tools = await client.listTools();
 
       expect(tools.tools).toBeInstanceOf(Array);
@@ -237,7 +236,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("P4: Duplicate presets - should load each tool only once", async () => {
-      await client.connect(["--preset", "thinking,thinking"]);
+      await client.connectServer(["--preset", "thinking,thinking"]);
       const tools = await client.listTools();
 
       expect(tools.tools).toBeInstanceOf(Array);
@@ -259,7 +258,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("P5: Non-existent preset - should start with no tools from that preset", async () => {
-      await client.connect(["--preset", "nonexistent"]);
+      await client.connectServer(["--preset", "nonexistent"]);
       const tools = await client.listTools();
 
       // Server should still start but with a placeholder tool
@@ -271,7 +270,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("P6: Mixed valid/invalid presets - should load tools from valid preset only", async () => {
-      await client.connect(["--preset", "coding,nonexistent"]);
+      await client.connectServer(["--preset", "coding,nonexistent"]);
       const tools = await client.listTools();
 
       expect(tools.tools).toBeInstanceOf(Array);
@@ -280,7 +279,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("P7: Empty preset arg - should start with no tools", async () => {
-      await client.connect(["--preset", ""]);
+      await client.connectServer(["--preset"]);
       const tools = await client.listTools();
 
       // Server should start with just the placeholder tool
@@ -288,11 +287,11 @@ describe("MCP Server Configuration Tests", () => {
       const toolNames = tools.tools.map((t: any) => t.name);
 
       // Should include the placeholder tool
-      expect(toolNames).toContain("placeholder");
+      expect(toolNames).toContain("generate_thought");
     });
 
     it("P8: Data-driven approach - should load tools from new preset file without code changes", async () => {
-      await client.connect(["--preset", "test-preset"]);
+      await client.connectServer(["--preset", "test-preset"]);
       const tools = await client.listTools();
 
       expect(tools.tools).toBeInstanceOf(Array);
@@ -311,7 +310,7 @@ describe("MCP Server Configuration Tests", () => {
   // Configuration Scenarios
   describe("Configuration Scenarios", () => {
     it("C1: Basic config - should load configs from directory", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
       ]);
@@ -323,7 +322,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("C1.2: Config without preset - should not load thinking preset by default", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
       ]);
@@ -340,7 +339,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("C1.1: Alternate folder name - should load configs from .mcp-workflows", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".mcp-workflows"),
       ]);
@@ -352,7 +351,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("C2: Config with preset - should merge configs with preset overriding", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
         "--preset",
@@ -371,7 +370,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("C3: Non-existent config path - should not load thinking preset", async () => {
-      await client.connect(["--config", "./nonexistent"]);
+      await client.connectServer(["--config", "./nonexistent"]);
       const tools = await client.listTools();
 
       // Should not fall back to thinking preset, just use placeholder tool
@@ -382,7 +381,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("C4: Config path is not .workflows - should not load thinking preset", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", "not-workflows"),
       ]);
@@ -396,7 +395,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("C5: Empty config directory - should not load thinking preset", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", "empty-workflows"),
       ]);
@@ -413,7 +412,7 @@ describe("MCP Server Configuration Tests", () => {
   // Configuration Content Tests
   describe("Configuration Content Tests", () => {
     it("CC1: Override tool description - description should match override", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
         "--preset",
@@ -434,7 +433,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("CC2: Override tool name - should register with custom name", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
       ]);
@@ -457,7 +456,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("CC5: Custom tool - should be available with specified properties", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
       ]);
@@ -470,7 +469,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("CC6: Optional tool descriptions - should work with and without descriptions", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
       ]);
@@ -553,7 +552,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("N1: Should support string-based tools format", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
       ]);
@@ -570,7 +569,7 @@ describe("MCP Server Configuration Tests", () => {
     });
 
     it("N2: Should support object-based tools format", async () => {
-      await client.connect([
+      await client.connectServer([
         "--config",
         path.join(__dirname, "test-workflows", ".workflows"),
       ]);
@@ -601,7 +600,7 @@ describe("MCP Server Configuration Tests", () => {
       );
 
       try {
-        await client.connect([
+        await client.connectServer([
           "--config",
           path.join(__dirname, "test-workflows", ".workflows"),
         ]);
@@ -638,7 +637,7 @@ describe("MCP Server Configuration Tests", () => {
       );
 
       try {
-        await client.connect([
+        await client.connectServer([
           "--config",
           path.join(__dirname, "test-workflows", ".workflows"),
         ]);

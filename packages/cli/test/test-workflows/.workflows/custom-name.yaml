@@ -1,0 +1,7 @@
+debugger_mode:
+  name: "custom_debugger"
+  description: "A debugger tool with a custom name"
+  prompt: |
+    # Custom Named Debugger
+
+    This debugger has a custom name to avoid conflicts with other MCP servers.

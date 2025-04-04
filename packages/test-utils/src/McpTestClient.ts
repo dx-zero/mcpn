@@ -40,6 +40,12 @@ export class McpTestClient {
 	 */
 	async connect(args: string[] = []): Promise<void> {
 		// Create a new transport with the specified args
+
+		console.log("Starting MCP server with args:", [
+			this.options.cliEntryPoint,
+			...args,
+		]);
+
 		this.transport = new StdioClientTransport({
 			command: "node",
 			args: [this.options.cliEntryPoint, ...args], // Use the provided entry point
@@ -48,6 +54,14 @@ export class McpTestClient {
 		// Connect the client to the transport
 		await this.client.connect(this.transport);
 		console.log("Connected to MCP server");
+	}
+
+	/**
+	 * Connect to the server with "server" as the first argument
+	 * @param args Additional arguments to pass to the server
+	 */
+	async connectServer(args: string[] = []): Promise<void> {
+		return this.connect(["server", ...args]);
 	}
 
 	/**

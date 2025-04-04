@@ -7,7 +7,15 @@ const isAnalysingSize = process.env.BUNDLE_SIZE === "true";
 export default defineBuildConfig({
 	declaration: !isAnalysingSize,
 	failOnWarn: true,
-	entries: ["src/index"],
+	entries: [
+		"src/index",
+		{
+			builder: "copy",
+			input: "src/presets",
+			outDir: "dist/presets",
+			pattern: "**/*.yaml",
+		},
+	],
 	hooks: {
 		"rollup:options"(ctx, options) {
 			// bundle yaml files
