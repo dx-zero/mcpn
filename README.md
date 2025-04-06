@@ -84,7 +84,7 @@ If using JSON in Cursor to setup your MCP server, you can use the following conf
   "mcpServers": {
     "workflows-mcp": {
       "command": "npx",
-      "args": ["-y", "mcpn@latest"]
+      "args": ["-y", "mcpn@latest server"]
     }
   }
 }
@@ -191,7 +191,7 @@ If using JSON in Cursor to setup your MCP server, you can use the following conf
   "mcpServers": {
     "workflows-mcp": {
       "command": "npx",
-      "args": ["-y", "mcpn@latest"]
+      "args": ["-y", "mcpn@latest server"]
     }
   }
 }
@@ -200,13 +200,13 @@ If using JSON in Cursor to setup your MCP server, you can use the following conf
 To provide custom configurations, you can use the `--config` flag to point to a directory containing YAML configuration files. The directory must be named `.workflows` or `.mcp-workflows` as so:
 
 ```bash
-npx mcpn@latest --config /path/to/.workflows
+npx mcpn@latest server --config /path/to/.workflows
 ```
 
 If you want to enable presets, you can use the `--preset` flag to specify which presets to load:
 
 ```bash
-npx mcpn@latest --preset thinking,coding,github
+npx mcpn@latest server --preset thinking,coding,github
 ```
 
 Here's what this would look like in a Cursor config all combined:
@@ -216,7 +216,7 @@ Here's what this would look like in a Cursor config all combined:
   "mcpServers": {
     "workflows-mcp": {
       "command": "npx",
-      "args": ["mcpn@latest", "--config", "/path/to/.workflows", "--preset", "thinking,coding"]
+      "args": ["mcpn@latest server", "--config", "/path/to/.workflows", "--preset", "thinking,coding"]
     }
   }
 }
