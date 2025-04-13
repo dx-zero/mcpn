@@ -1,8 +1,9 @@
 import { existsSync, promises as fsp } from "node:fs";
 import { tmpdir } from "node:os";
 import process from "node:process";
+import path from "node:path";
 
-import { getPresetContent, listAvailablePresets } from "@mcpn/core";
+import { getPresetRawContent, listAvailablePresets } from "@mcpn/core";
 import { type CommandContext, defineCommand } from "citty";
 import { colors } from "consola/utils";
 import { downloadTemplate } from "giget";
@@ -184,7 +185,7 @@ export default defineCommand({
 				}
 
 				// Get the preset content from core using the new function
-				const content = getPresetContent(presetName);
+				const content = getPresetRawContent(presetName);
 
 				// Write to destination
 				await fsp.writeFile(destFilePath, content);

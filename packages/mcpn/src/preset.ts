@@ -121,3 +121,42 @@ export function loadAvailablePresets(presetsDirOverride?: string) {
 		.filter((file) => file.endsWith(".yaml") || file.endsWith(".yml"))
 		.map((file) => path.basename(file, path.extname(file)));
 }
+
+/**
+ * Retrieves the raw content of a specific preset file.
+ *
+ * @param {string} presetName - The name of the preset to load (without extension).
+ * @param {string} [presetsDirOverride] - Optional override path for the presets directory.
+ * @returns {string} The raw content of the preset file.
+ * @throws {Error} If the preset file is not found or cannot be read.
+ */
+export function getPresetRawContent(
+	presetName: string,
+	presetsDirOverride?: string,
+): string {
+	const presetsDir = resolvePresetsDir(presetsDirOverride);
+	const presetFile = path.join(presetsDir, `${presetName}.yaml`);
+
+	if (!fs.existsSync(presetFile)) {
+		const ymlPresetFile = path.join(presetsDir, `${presetName}.yml`);
+		if (fs.existsSync(ymlPresetFile)) {
+			// Try .yml if .yaml doesn't exist
+			try {
+				return fs.readFileSync(ymlPresetFile, "utf-8");
+			} catch (error: unknown) {
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				throw new Error(
+					`Error reading preset file ${ymlPresetFile}: ${errorMessage}`,
+				);
+			}
+		}
+		throw new Error(`Preset "${presetName}" not found at ${presetFile} or ${ymlPresetFile}`);
+	}
+
+	try {
+		return fs.readFileSync(presetFile, "utf-8");
+	} catch (error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		throw new Error(`Error reading preset file ${presetFile}: ${errorMessage}`);
+	}
+}
