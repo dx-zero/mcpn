@@ -2,12 +2,12 @@ import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-// List of packages to publish
-const packages = ["mcpn", "mcp-server"];
+// List of packages to publish (directory names)
+const packages = ["cli", "mcpn", "test-utils"];
 
-// List of all packages that need version bumping (including those not published)
+// List of all packages that need version bumping (directory names)
 // @TODO
-const allPackages = ["mcp-server", "mcpn"];
+const allPackages = ["cli", "mcpn", "test-utils"];
 
 function run(command: string, cwd: string) {
 	console.log(`Executing: ${command} in ${cwd}`);
