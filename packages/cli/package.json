@@ -1,0 +1,74 @@
+{
+	"name": "mcpn",
+	"version": "0.1.0",
+	"description": "MCP workflow orchestration and registry tool with presets for thinking, coding and more",
+	"type": "module",
+	"keywords": [
+		"mcp",
+		"model-context-protocol",
+		"workflows",
+		"prompts",
+		"prompt engineering",
+		"ai",
+		"mcpn",
+		"mcp network"
+	],
+	"contributors": [
+		{
+			"name": "Ted Werbel",
+			"email": "ted@agentdesk.ai"
+		},
+		{
+			"name": "Kevin Kern",
+			"email": "kevin@instructa.org"
+		}
+	],
+	"bugs": "https://github.com/dx-zero/mcpn/issues",
+	"license": "MIT",
+	"exports": {
+		".": "./dist/index.mjs",
+		"./cli": "./bin/mcpn.mjs"
+	},
+	"types": "./dist/index.d.ts",
+	"bin": {
+		"mcpn": "bin/mcpn.mjs"
+	},
+	"files": ["dist", "bin"],
+	"scripts": {
+		"build": "unbuild",
+		"dev": "unbuild --stub",
+		"prepublishOnly": "npm run build",
+		"release": "npm publish",
+		"release:alpha": "npm publish --tag alpha",
+		"mcpn": "node ./bin/mcpn.mjs",
+		"mcpn-bun": "bun --bun ./dist/mcpn.mjs",
+		"test:dist": "node ./bin/mcpn.mjs info ./playground"
+	},
+	"devDependencies": {
+		"@rollup/plugin-yaml": "catalog:cli",
+		"@types/js-yaml": "catalog:types",
+		"@types/node": "catalog:types",
+		"@types/semver": "catalog:types",
+		"c12": "catalog:utils",
+		"citty": "catalog:prod",
+		"consola": "catalog:cli",
+		"giget": "catalog:cli",
+		"jiti": "catalog:cli",
+		"magicast": "catalog:utils",
+		"mri": "catalog:cli",
+		"pathe": "catalog:prod",
+		"rollup": "catalog:cli",
+		"rollup-plugin-visualizer": "^5.14.0",
+		"typescript": "catalog:cli",
+		"unbuild": "catalog:cli",
+		"@mcpn/test-utils": "workspace:*",
+		"vitest": "catalog:testing"
+	},
+	"packageManager": "pnpm@10.6.3",
+	"dependencies": {
+		"@mcpn/core": "workspace:*",
+		"@mcpn/test-utils": "workspace:*",
+		"@types/js-yaml": "catalog:types",
+		"js-yaml": "catalog:prod"
+	}
+}

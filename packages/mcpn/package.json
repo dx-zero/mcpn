@@ -1,0 +1,73 @@
+{
+	"name": "@mcpn/core",
+	"version": "0.0.1",
+	"description": "MCP workflow orchestration and registry tool with presets for thinking, coding and more",
+	"type": "module",
+	"keywords": [
+		"mcp",
+		"model-context-protocol",
+		"workflows",
+		"prompts",
+		"prompt engineering",
+		"ai",
+		"mcpn",
+		"mcp network"
+	],
+	"contributors": [
+		{
+			"name": "Ted Werbel",
+			"email": "ted@agentdesk.ai"
+		},
+		{
+			"name": "Kevin Kern",
+			"email": "kevin@instructa.org"
+		}
+	],
+	"bugs": "https://github.com/dx-zero/mcpn/issues",
+	"license": "MIT",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"scripts": {
+		"dev": "tsx src/server.ts",
+		"dev:verbose": "NODE_ENV=development tsx src/server.ts",
+		"inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/cli-entry.mjs",
+		"build": "unbuild",
+		"prepublishOnly": "pnpm run build",
+		"update": "npm version patch && npm publish",
+		"test": "vitest",
+		"cli:dist": "node dist/cli-entry.mjs --preset thinking"
+	},
+	"dependencies": {
+		"@anthropic-ai/sdk": "^0.39.0",
+		"@modelcontextprotocol/sdk": "catalog:prod",
+		"js-yaml": "catalog:prod",
+		"mri": "^1.2.0",
+		"openai": "^4.91.1",
+		"pathe": "^2.0.3",
+		"zod": "catalog:prod"
+	},
+	"devDependencies": {
+		"@mcpn/test-utils": "workspace:*",
+		"@types/js-yaml": "catalog:types",
+		"@types/node": "catalog:types",
+		"@types/semver": "catalog:types",
+		"c12": "catalog:utils",
+		"ts-node": "^10.9.2",
+		"tsx": "catalog:cli",
+		"typescript": "catalog:cli",
+		"unbuild": "catalog:cli",
+		"vitest": "catalog:testing"
+	},
+	"packageManager": "pnpm@10.6.3"
+}

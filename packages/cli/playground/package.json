@@ -1,0 +1,6 @@
+{
+	"name": "mcpn-cli-playground",
+	"version": "1.0.0",
+	"private": true,
+	"packageManager": "pnpm@10.7.1"
+}
