@@ -1,0 +1,1 @@
+YAML file templates should also support the ability to define global rules for AI that should be installed along with everything else. These will be specific to each IDE type, so we'll need a specific kind of installation flow across all the different IDEs to install these global rules.

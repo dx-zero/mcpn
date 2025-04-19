@@ -1,0 +1,13 @@
+template_calculator:
+  name: template_calculator
+  description: Calculator with template parameters
+  parameters:
+    expression:
+      type: string
+      description: The mathematical expression to evaluate
+      required: true
+    precision:
+      type: number
+      description: Number of decimal places in the result
+      default: 2
+  prompt: Calculate {{expression}} with {{precision}} decimal places precision.

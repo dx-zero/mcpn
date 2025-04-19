@@ -1,13 +1,19 @@
 kevin_mode:
-  description: "Reflect on a thought and produce a reflection/new set of thoughts"
-  parameters:
-    thought:
-      type: "string"
-      description: "A thought to deeply reflect upon"
-      required: true
-  prompt: |
-    Deeply reflect upon the provided thought.
-    Reflect upon the implications/tradeoffs it may have as it relates to my current goals, challenges and our conversation.
-    Do not change anything in our system, just return some thoughts/considerations/analysis based on your reflection of the provided thought.
+  description: "Generates a PRD"
+  prompt: Ask the user 10 questions about their idea
   toolMode: "sequential"
-  tools: "analyzeLogs, generateReport, validateFindings"
+  tools: "proposePlan, generatePRD"
+
+proposePlan:
+  description: "Generates a PRD"
+  parameters:
+    answers:
+      type: "string"
+      description: "Answers to the 10 questions asked"
+      required: true
+  prompt: Based on the answers to the 10 question, propose a plan for our PRD here are the answers {{ answers }}
+  toolMode: "sequential"
+  tools: "123tool, 456tool"
+
+generatePRD:
+  prompt: Generate a PRD and save to features folder

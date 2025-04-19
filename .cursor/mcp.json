@@ -1,0 +1,10 @@
+{
+	"mcpServers": {
+		"workflows-mcp": {
+			"command": "node",
+			"args": [
+				"{{FULL_ABSOLUTE_PATH}}/packages/cli/bin/mcpn.mjs server"
+			]
+		}
+	}
+}
