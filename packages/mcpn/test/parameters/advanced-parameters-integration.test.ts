@@ -1,5 +1,17 @@
 import { expect, describe, it, beforeEach, afterEach } from "vitest";
-import { createTestClient } from "./utils.js";
+import { McpTestClient } from "@mcpn/test-utils";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+
+// compute the CLI entry‑point no matter where this test lives
+const cliEntryPointPath = path.resolve(__dirname, "../../../cli/bin/mcpn.mjs");
+
+function createTestClient() {
+  return new McpTestClient({ cliEntryPoint: cliEntryPointPath });
+}
 
 describe("Advanced Parameters Integration", () => {
   let client: any;
@@ -24,11 +36,11 @@ describe("Advanced Parameters Integration", () => {
     expect(response.tools).toBeInstanceOf(Array);
 
     const advancedTool = response.tools.find(
-      (tool: any) => tool.name === "advanced_configuration"
+      (tool: any) => tool.name === "advanced_configuration",
     );
     expect(advancedTool).toBeDefined();
     expect(advancedTool?.description).toEqual(
-      "Configure a system with complex parameters"
+      "Configure a system with complex parameters",
     );
   });
 
@@ -57,7 +69,7 @@ describe("Advanced Parameters Integration", () => {
       expect(text).toContain("test-config");
     } catch (error) {
       console.log(
-        "Received expected Zod validation error - tool exists but validation is still being worked on"
+        "Received expected Zod validation error - tool exists but validation is still being worked on",
       );
     }
   });
@@ -77,7 +89,7 @@ describe("Advanced Parameters Integration", () => {
       expect(text).toContain("data");
     } catch (error) {
       console.log(
-        "Received expected Zod validation error - tool exists but validation is still being worked on"
+        "Received expected Zod validation error - tool exists but validation is still being worked on",
       );
     }
   });

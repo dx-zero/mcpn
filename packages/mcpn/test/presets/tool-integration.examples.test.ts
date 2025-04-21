@@ -1,14 +1,16 @@
 import { describe, it, beforeAll, afterAll, expect } from "vitest";
 import { McpTestClient } from "@mcpn/test-utils";
-import * as fs from "fs";
-import * as path from "path";
-import { getModulePaths, writeYamlFile, createTestClient } from "./utils";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const { __dirname } = getModulePaths(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+const cliEntryPointPath = path.resolve(__dirname, "../../../cli/bin/mcpn.mjs");
 
-const EXAMPLES_YAML_PATH = path.join(__dirname, "..", "src", "presets", "examples.yaml");
+const EXAMPLES_YAML_PATH = path.join(__dirname, "..", "..", "src", "presets", "examples.yaml");
 
-let client: McpTestClient;
+let client: any;
 
 beforeAll(async () => {
   if (!fs.existsSync(EXAMPLES_YAML_PATH)) {
@@ -21,15 +23,15 @@ beforeAll(async () => {
         description: "Perform mathematical calculations",
         parameters: {
           expression: { type: "string", description: "The mathematical expression to evaluate", required: true },
-          precision: { type: "number", description: "Number of decimal places in the result", default: 2 },
+          precision:  { type: "number", description: "Number of decimal places in the result", default: 2 },
         },
         prompt: "Evaluate the expression with the given precision.",
       },
     };
-    writeYamlFile(EXAMPLES_YAML_PATH, examplesYaml);
+    fs.writeFileSync(EXAMPLES_YAML_PATH, JSON.stringify(examplesYaml, null, 2));
   }
 
-  client = createTestClient();
+  client = new McpTestClient({ cliEntryPoint: cliEntryPointPath });
   await client.connectServer(["--preset", "examples"]);
 }, 15000);
 
@@ -68,4 +70,4 @@ describe("Parameterized Tool Integration Tests", () => {
       throw error;
     }
   }, 15000);
-}); 
+});
