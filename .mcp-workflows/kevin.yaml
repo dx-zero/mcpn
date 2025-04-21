@@ -4,6 +4,9 @@ kevin_mode:
   toolMode: "sequential"
   tools: "proposePlan, generatePRD"
 
+kevcoder:
+  prompt: "1. search latest april 2025 docs 2. just implement and avoid fluff"
+
 proposePlan:
   description: "Generates a PRD"
   parameters:

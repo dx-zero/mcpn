@@ -3,7 +3,7 @@
 		"workflows-mcp": {
 			"command": "node",
 			"args": [
-				"{{FULL_ABSOLUTE_PATH}}/packages/cli/bin/mcpn.mjs server"
+				"./packages/cli/bin/mcpn.mjs server --preset kevin"
 			]
 		}
 	}

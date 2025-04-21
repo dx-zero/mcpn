@@ -59,6 +59,7 @@
 		"eslint": "catalog:cli",
 		"eslint-config-unjs": "^0.4.2",
 		"execa": "catalog:utils",
+		"fs-extra": "^11.3.0",
 		"globals": "^15.15.0",
 		"h3": "catalog:prod",
 		"inquirer": "catalog:cli",
@@ -78,16 +79,19 @@
 		"typescript": "catalog:cli",
 		"typescript-eslint": "^8.26.1",
 		"unbuild": "catalog:cli",
+		"unplugin-yaml": "^2.2.0",
 		"vite": "catalog:cli",
 		"vitest": "catalog:testing",
 		"vitest-package-exports": "catalog:testing",
 		"wrangler": "^3.1.0",
-		
+		"yaml": "^2.7.1",
 		"zod": "catalog:prod"
 	},
 	"packageManager": "pnpm@10.6.3",
 	"pnpm": {
-		"onlyBuiltDependencies": ["better-sqlite3"],
+		"onlyBuiltDependencies": [
+			"better-sqlite3"
+		],
 		"overrides": {
 			"mcpn": "workspace:*"
 		}
