@@ -76,14 +76,11 @@ export default defineCommand({
 				logger.warn("Could not determine package version.");
 			}
 
-			// Determine CLI's own dist/presets directory
-			const cliFile = fileURLToPath(import.meta.url);
-			const cliDir = dirname(cliFile);
-			const cliDistPresetsDir = join(cliDir, "../presets");
-
-			// Use explicit --presets-dir if provided, else default to CLI's dist/presets
-			const presetsDirArg = ctx.args.presetsDir as string | undefined;
-			const presetsDir = presetsDirArg || cliDistPresetsDir;
+			// If the caller supplied --presets-dir we use it; otherwise we let the
+			// core package resolve its own presets directory. This prevents the
+			// CLI’s (mostly empty) dist/presets folder from shadowing the real
+			// presets and fixes the missing‑preset errors in the test‑suite.
+			const presetsDir = ctx.args.presetsDir as string | undefined;
 
 			logger.info(
 				`Loading configuration with presets: ${presets.join(", ")}${configPath ? ` and config: ${configPath}` : ""}`,
