@@ -8,6 +8,8 @@ import {
 } from "./config";
 import { loadAvailablePresets, loadPresetConfigs } from "./preset";
 import { promptFunctions } from "./prompts";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import {
 	appendFormattedTools,
 	formatToolsList,
@@ -277,17 +279,60 @@ export function loadAndMergeConfig(
 
 	// 1. Load preset configs from the specified directory (or fallback)
 	const presetConfig = loadPresetConfigs(presets, presetsDir);
+
+	// 1b. Also look for preset YAMLs inside the user‑defined config directory.
+	//     If --config was not supplied, fall back to ".mcp-workflows" in CWD.
+	let effectiveConfigDir: string | undefined = configPath;
+	if (!effectiveConfigDir) {
+		const defaultDir = path.resolve(process.cwd(), ".mcp-workflows");
+		if (fs.existsSync(defaultDir) && fs.statSync(defaultDir).isDirectory()) {
+			effectiveConfigDir = defaultDir;
+		}
+	}
+
+	let userPresetConfig: Record<string, any> = {};
+	if (effectiveConfigDir) {
+		userPresetConfig = loadPresetConfigs(presets, effectiveConfigDir);
+		if (Object.keys(userPresetConfig).length > 0) {
+			console.error(
+				`Loaded ${Object.keys(userPresetConfig).length} tools from custom preset directory: ${effectiveConfigDir}`,
+			);
+		}
+		// Custom presets override built‑ins
+		mergeConfigs(presetConfig, userPresetConfig);
+	}
 	console.error(
 		`Loaded ${Object.keys(presetConfig).length} tools from presets`,
 	);
 
-	// 2. Load user configs from .workflows directory if provided
-	const userConfig = configPath ? loadConfigSync(configPath) : {};
+// 2. Decide whether we should also pull in *all* YAML files from a user
+//    config directory. We only do that when either:
+//
+//      • The caller explicitly passed --config <dir>,  OR
+//      • No preset was requested (legacy behaviour).
+//
+	let userConfig: Record<string, any> = {};
+
 	if (configPath) {
+		// --config was supplied – respect it and load the whole directory
+		userConfig = loadConfigSync(configPath);
 		console.error(
 			`Loaded ${
 				Object.keys(userConfig).length
 			} tool configurations from user config directory: ${configPath}`,
+		);
+	} else if (presets.length === 0 && effectiveConfigDir) {
+		// No --preset flag – fall back to the default .mcp‑workflows scan
+		userConfig = loadConfigSync(effectiveConfigDir);
+		console.error(
+			`Loaded ${
+				Object.keys(userConfig).length
+			} tool configurations from default config directory: ${effectiveConfigDir}`,
+		);
+	} else {
+		// Presets were specified and no --config directory: skip unrelated YAMLs
+		console.error(
+			"Skipped loading standalone tool YAMLs because preset(s) were specified and no --config directory was provided",
 		);
 	}
 

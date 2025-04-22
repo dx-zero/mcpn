@@ -1,0 +1,8 @@
+echo_tool:
+  description: "Echo back the provided text"
+  parameters:
+    text:
+      type: "string"
+      description: "Text to echo"
+      required: true
+  prompt: "Echo: {{ text }}"

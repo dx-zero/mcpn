@@ -24,6 +24,7 @@
 		"test": "vitest",
 		"lint": "biome lint",
 		"biome:write-fix": "biome check --write --unsafe",
+		"inspect": "npx @modelcontextprotocol/inspector node -- pnpm --workspace-root exec mcpn server",
 		"publish-npm": "pnpm -r --filter='./packages/mcpn' run build && tsx scripts/release.ts",
 		"clean": "find . -name 'node_modules' -type d -prune -exec rm -rf {} \\; 2>/dev/null || true",
 		"clean:dist": "find . -name 'dist' -type d -prune -exec rm -rf {} \\; 2>/dev/null || true",

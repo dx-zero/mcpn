@@ -41,7 +41,6 @@
 	"scripts": {
 		"dev": "tsx src/server.ts",
 		"dev:verbose": "NODE_ENV=development tsx src/server.ts",
-		"inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/cli-entry.mjs",
 		"build": "unbuild",
 		"prepublishOnly": "pnpm run build",
 		"update": "npm version patch && npm publish",
