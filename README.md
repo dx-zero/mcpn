@@ -1,4 +1,3 @@
-
 <p align="center">
   <picture align="center">
     <!-- <source media="(prefers-color-scheme: dark)" srcset="./public/banner.png"> -->
@@ -27,10 +26,10 @@
 </a>
 </p>
 
-
 ## Usage
 
-Basic Example 
+Basic Example
+
 <table>
 <tr>
   <td style="width:50%; vertical-align:top;">
@@ -41,20 +40,21 @@ plan_prd:
   prompt: |
     You are an expert product manager/business
     analyst and are now entering "PRD Mode"
-    Begin by deeply reflecting upon the notes, 
+    Begin by deeply reflecting upon the notes,
     requirements and images provided...
   tools: createPRD, createStoriesFromPRD, createRoadmap
 
 coding_max:
   description: "Highly effective Coding Agent"
   prompt: |
-    You are now entering "Developer Mode" - 
-    deeply reflect upon the changes being asked and 
+    You are now entering "Developer Mode" -
+    deeply reflect upon the changes being asked and
     analyze existing code to map the full scope...
   tools: getConsoleLogs, getErrorLogs, getLinter
 
   ...
 ```
+
   </td>
   <td style="width:50%; vertical-align:top;">
     <img align="center" alt="Example" src="./public/templates.jpg" width="400 ">
@@ -62,14 +62,11 @@ coding_max:
 </tr>
 </table>
 
-
 Workflows MCP (mcpn) are the building blocks of software development, an orchestration of multiple MCP servers and prompts.
 
 Think of it like a dynamic prompting library that you can easily share and version control through yaml files that also lets you define how to best use many MCP tools across many MCP servers for specific tasks.
 
-
 ## Installation
-
 
 Install the MCP server into an MCP client using the following command or JSON:
 
@@ -90,11 +87,9 @@ If using JSON in Cursor to setup your MCP server, you can use the following conf
 }
 ```
 
-
 ## Documentation
 
 Documentation: [https://mcpn.ai](https://mcpn.ai)
-
 
 ## Examples
 
@@ -216,7 +211,13 @@ Here's what this would look like in a Cursor config all combined:
   "mcpServers": {
     "workflows-mcp": {
       "command": "npx",
-      "args": ["mcpn@latest server", "--config", "/path/to/.workflows", "--preset", "thinking,coding"]
+      "args": [
+        "mcpn@latest server",
+        "--config",
+        "/path/to/.workflows",
+        "--preset",
+        "thinking,coding"
+      ]
     }
   }
 }
@@ -398,5 +399,7 @@ Tools can accept typed parameters that an MCP Client / agent can provide to impr
 | `properties`  | For object types, defines the properties of the object                 | No                       |
 
 #### Example Input Parameter Types
+
+```
 
 ```
