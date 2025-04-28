@@ -1,11 +1,16 @@
 import { describe, it, beforeAll, afterAll, expect } from "vitest";
-import { createTestClient } from "./utils.js";
+import { McpTestClient } from "@mcpn/test-utils";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+const cliEntryPointPath = path.resolve(__dirname, "../../../cli/bin/mcpn.mjs");
 
 let client: any;
 
 beforeAll(async () => {
-  client = createTestClient();
+  client = new McpTestClient({ cliEntryPoint: cliEntryPointPath });
   await client.connectServer(["--preset", "thinking"]);
 }, 15000);
 
@@ -35,4 +40,4 @@ describe("Generate Thought Parameter Tests", () => {
       throw error;
     }
   }, 15000);
-}); 
+});

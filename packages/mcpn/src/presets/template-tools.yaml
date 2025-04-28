@@ -1,6 +1,6 @@
-test_calculator:
-  name: calculator
-  description: Perform mathematical calculations
+template_calculator:
+  name: template_calculator
+  description: Calculator with template parameters
   parameters:
     expression:
       type: string
@@ -10,4 +10,4 @@ test_calculator:
       type: number
       description: Number of decimal places in the result
       default: 2
-  prompt: Evaluate the expression with the given precision.
+  prompt: Calculate {{expression}} with {{precision}} decimal places precision.

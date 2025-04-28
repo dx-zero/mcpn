@@ -12,6 +12,7 @@
 		"noEmit": true,
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": false,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"types": ["unplugin-yaml/types"]
 	}
 }

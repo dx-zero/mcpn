@@ -1,0 +1,8 @@
+example_mode:
+  description: "Add your description here"
+  parameters:
+    myparam:
+      type: "string"
+      description: "a random idea"
+  prompt: |
+    Insert your prompt here

@@ -1,10 +1,15 @@
 {
-	"mcpServers": {
-		"workflows-mcp": {
-			"command": "node",
-			"args": [
-				"{{FULL_ABSOLUTE_PATH}}/packages/cli/bin/mcpn.mjs server"
-			]
-		}
-	}
+  "mcpServers": {
+    "workflows-mcp": {
+      "command": "pnpm",
+      "args": [
+        "--workspace-root",      
+        "exec",                  
+        "mcpn",
+        "server",
+        "--preset",
+        "kevin"
+      ]
+    }
+  }
 }

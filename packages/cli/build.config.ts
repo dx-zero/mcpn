@@ -27,6 +27,12 @@ export default defineBuildConfig({
 			if (isAnalysingSize) {
 				plugins.unshift(visualizer({ template: "raw-data" }));
 			}
+
+			// options.plugins.push(
+      //   YAMLPlugin({
+      //     // optional: include/exclude or custom `yaml` parse options
+      //   }),
+      // )
 		},
 	},
 	rollup: {
